@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.PurchasedMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.Purchased" >
+    <id column="purchased_id" property="purchasedId" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="evaluation" property="evaluation" jdbcType="INTEGER" />
+    <result column="evaluation_text" property="evaluationText" jdbcType="CHAR" />
+    <result column="evaluation_time" property="evaluationTime" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    purchased_id, order_id, time, evaluation, evaluation_text, evaluation_time, state
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_purchased
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_purchased
+    where purchased_id = #{purchasedId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_purchased
+    where purchased_id = #{purchasedId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.Purchased" >
+    insert into tb_purchased (purchased_id, order_id, time, 
+      evaluation, evaluation_text, evaluation_time, 
+      state)
+    values (#{purchasedId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{time,jdbcType=TIMESTAMP}, 
+      #{evaluation,jdbcType=INTEGER}, #{evaluationText,jdbcType=CHAR}, #{evaluationTime,jdbcType=TIMESTAMP}, 
+      #{state,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Purchased" >
+    insert into tb_purchased
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="purchasedId != null" >
+        purchased_id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="evaluation != null" >
+        evaluation,
+      </if>
+      <if test="evaluationText != null" >
+        evaluation_text,
+      </if>
+      <if test="evaluationTime != null" >
+        evaluation_time,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="purchasedId != null" >
+        #{purchasedId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evaluation != null" >
+        #{evaluation,jdbcType=INTEGER},
+      </if>
+      <if test="evaluationText != null" >
+        #{evaluationText,jdbcType=CHAR},
+      </if>
+      <if test="evaluationTime != null" >
+        #{evaluationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.Purchased" >
+    update tb_purchased
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evaluation != null" >
+        evaluation = #{evaluation,jdbcType=INTEGER},
+      </if>
+      <if test="evaluationText != null" >
+        evaluation_text = #{evaluationText,jdbcType=CHAR},
+      </if>
+      <if test="evaluationTime != null" >
+        evaluation_time = #{evaluationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where purchased_id = #{purchasedId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.Purchased" >
+    update tb_purchased
+    set order_id = #{orderId,jdbcType=BIGINT},
+      time = #{time,jdbcType=TIMESTAMP},
+      evaluation = #{evaluation,jdbcType=INTEGER},
+      evaluation_text = #{evaluationText,jdbcType=CHAR},
+      evaluation_time = #{evaluationTime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER}
+    where purchased_id = #{purchasedId,jdbcType=BIGINT}
+  </update>
+</mapper>

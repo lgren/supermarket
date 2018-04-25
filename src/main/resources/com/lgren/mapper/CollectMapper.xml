@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.CollectMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.Collect" >
+    <id column="collect_id" property="collectId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="collect_goods_id" property="collectGoodsId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    collect_id, user_id, collect_goods_id
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_collect
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_collect
+    where collect_id = #{collectId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_collect
+    where collect_id = #{collectId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.Collect" >
+    insert into tb_collect (collect_id, user_id, collect_goods_id
+      )
+    values (#{collectId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{collectGoodsId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Collect" >
+    insert into tb_collect
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="collectId != null" >
+        collect_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="collectGoodsId != null" >
+        collect_goods_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="collectId != null" >
+        #{collectId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="collectGoodsId != null" >
+        #{collectGoodsId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.Collect" >
+    update tb_collect
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="collectGoodsId != null" >
+        collect_goods_id = #{collectGoodsId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where collect_id = #{collectId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.Collect" >
+    update tb_collect
+    set user_id = #{userId,jdbcType=BIGINT},
+      collect_goods_id = #{collectGoodsId,jdbcType=BIGINT}
+    where collect_id = #{collectId,jdbcType=BIGINT}
+  </update>
+</mapper>

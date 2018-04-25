@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.CartMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.Cart" >
+    <id column="cart_id" property="cartId" jdbcType="BIGINT" />
+    <result column="cart_goods" property="cartGoods" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cart_id, cart_goods, user_id
+  </sql>
+  <select id="getCartByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_cart where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_cart
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_cart
+    where cart_id = #{cartId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_cart
+    where cart_id = #{cartId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.Cart" >
+    insert into tb_cart (cart_id, cart_goods, user_id
+      )
+    values (#{cartId,jdbcType=BIGINT}, #{cartGoods,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Cart" >
+    insert into tb_cart
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cartId != null" >
+        cart_id,
+      </if>
+      <if test="cartGoods != null" >
+        cart_goods,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cartId != null" >
+        #{cartId,jdbcType=BIGINT},
+      </if>
+      <if test="cartGoods != null" >
+        #{cartGoods,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.Cart" >
+    update tb_cart
+    <set >
+      <if test="cartGoods != null" >
+        cart_goods = #{cartGoods,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where cart_id = #{cartId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.Cart" >
+    update tb_cart
+    set cart_goods = #{cartGoods,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT}
+    where cart_id = #{cartId,jdbcType=BIGINT}
+  </update>
+</mapper>

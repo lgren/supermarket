@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.CartGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.CartGoods" >
+    <id column="cart_goods_id" property="cartGoodsId" jdbcType="BIGINT" />
+    <result column="cart_id" property="cartId" jdbcType="BIGINT" />
+    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+    <result column="cart_goods_time" property="cartGoodsTime" jdbcType="TIMESTAMP" />
+    <result column="number" property="number" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cart_goods_id, cart_id, goods_id, cart_goods_time, number, price
+  </sql>
+  <select id="getCartGoodsByCartId" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"/> from tb_cart_goods where cart_id = #{cart_id}
+  </select>
+  <select id="getCartGoodsByGoodsId" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"/> from tb_cart_goods where goods_id = #{goods_id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"/> from tb_cart_goods
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_cart_goods
+    where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_cart_goods
+    where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.CartGoods" >
+    insert into tb_cart_goods (cart_goods_id, cart_id, goods_id, 
+      cart_goods_time, number, price
+      )
+    values (#{cartGoodsId,jdbcType=BIGINT}, #{cartId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
+      #{cartGoodsTime,jdbcType=TIMESTAMP}, #{number,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.CartGoods" >
+    insert into tb_cart_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cartGoodsId != null" >
+        cart_goods_id,
+      </if>
+      <if test="cartId != null" >
+        cart_id,
+      </if>
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="cartGoodsTime != null" >
+        cart_goods_time,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cartGoodsId != null" >
+        #{cartGoodsId,jdbcType=BIGINT},
+      </if>
+      <if test="cartId != null" >
+        #{cartId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="cartGoodsTime != null" >
+        #{cartGoodsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.CartGoods" >
+    update tb_cart_goods
+    <set >
+      <if test="cartId != null" >
+        cart_id = #{cartId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="cartGoodsTime != null" >
+        cart_goods_time = #{cartGoodsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.CartGoods" >
+    update tb_cart_goods
+    set cart_id = #{cartId,jdbcType=BIGINT},
+      goods_id = #{goodsId,jdbcType=BIGINT},
+      cart_goods_time = #{cartGoodsTime,jdbcType=TIMESTAMP},
+      number = #{number,jdbcType=INTEGER},
+      price = #{price,jdbcType=DOUBLE}
+    where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
+  </update>
+</mapper>

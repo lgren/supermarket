@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.ReceivingAddressMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.ReceivingAddress" >
+    <id column="receiving_address_id" property="receivingAddressId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="receiving_name" property="receivingName" jdbcType="CHAR" />
+    <result column="area" property="area" jdbcType="CHAR" />
+    <result column="address" property="address" jdbcType="CHAR" />
+    <result column="post_code" property="postCode" jdbcType="CHAR" />
+    <result column="phone" property="phone" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    receiving_address_id, user_id, receiving_name, area, address, post_code, phone
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_receiving_address
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_receiving_address
+    where receiving_address_id = #{receivingAddressId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_receiving_address
+    where receiving_address_id = #{receivingAddressId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.ReceivingAddress" >
+    insert into tb_receiving_address (receiving_address_id, user_id, receiving_name, 
+      area, address, post_code, phone
+      )
+    values (#{receivingAddressId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{receivingName,jdbcType=CHAR}, 
+      #{area,jdbcType=CHAR}, #{address,jdbcType=CHAR}, #{postCode,jdbcType=CHAR}, #{phone,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.ReceivingAddress" >
+    insert into tb_receiving_address
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="receivingAddressId != null" >
+        receiving_address_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="receivingName != null" >
+        receiving_name,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="postCode != null" >
+        post_code,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="receivingAddressId != null" >
+        #{receivingAddressId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="receivingName != null" >
+        #{receivingName,jdbcType=CHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=CHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=CHAR},
+      </if>
+      <if test="postCode != null" >
+        #{postCode,jdbcType=CHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.ReceivingAddress" >
+    update tb_receiving_address
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="receivingName != null" >
+        receiving_name = #{receivingName,jdbcType=CHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=CHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=CHAR},
+      </if>
+      <if test="postCode != null" >
+        post_code = #{postCode,jdbcType=CHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=CHAR},
+      </if>
+    </set>
+    where receiving_address_id = #{receivingAddressId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.ReceivingAddress" >
+    update tb_receiving_address
+    set user_id = #{userId,jdbcType=BIGINT},
+      receiving_name = #{receivingName,jdbcType=CHAR},
+      area = #{area,jdbcType=CHAR},
+      address = #{address,jdbcType=CHAR},
+      post_code = #{postCode,jdbcType=CHAR},
+      phone = #{phone,jdbcType=CHAR}
+    where receiving_address_id = #{receivingAddressId,jdbcType=BIGINT}
+  </update>
+</mapper>

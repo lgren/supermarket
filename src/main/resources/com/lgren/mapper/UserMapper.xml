@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.User" >
+    <id column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="CHAR" />
+    <result column="password" property="password" jdbcType="CHAR" />
+    <result column="avatar_url" property="avatarUrl" jdbcType="CHAR" />
+    <result column="nickname" property="nickname" jdbcType="CHAR" />
+    <result column="real_name" property="realName" jdbcType="CHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="CHAR" />
+    <result column="birthday" property="birthday" jdbcType="DATE" />
+    <result column="email" property="email" jdbcType="CHAR" />
+    <result column="homeAddress" property="homeaddress" jdbcType="CHAR" />
+    <result column="liveAddress" property="liveaddress" jdbcType="CHAR" />
+    <result column="money" property="money" jdbcType="DOUBLE" />
+    <result column="payment_password" property="paymentPassword" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, username, password, avatar_url, nickname, real_name, gender, phone, birthday, 
+    email, homeAddress, liveAddress, money, payment_password
+  </sql>
+  <select id="getUserByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_user where username = #{username}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_user
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_user
+    where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_user
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.User" >
+    insert into tb_user (user_id, username, password, 
+      avatar_url, nickname, real_name, 
+      gender, phone, birthday, 
+      email, homeAddress, liveAddress, 
+      money, payment_password)
+    values (#{userId,jdbcType=BIGINT}, #{username,jdbcType=CHAR}, #{password,jdbcType=CHAR}, 
+      #{avatarUrl,jdbcType=CHAR}, #{nickname,jdbcType=CHAR}, #{realName,jdbcType=CHAR}, 
+      #{gender,jdbcType=INTEGER}, #{phone,jdbcType=CHAR}, #{birthday,jdbcType=DATE}, 
+      #{email,jdbcType=CHAR}, #{homeaddress,jdbcType=CHAR}, #{liveaddress,jdbcType=CHAR}, 
+      #{money,jdbcType=DOUBLE}, #{paymentPassword,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.User" >
+    insert into tb_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="homeaddress != null" >
+        homeAddress,
+      </if>
+      <if test="liveaddress != null" >
+        liveAddress,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="paymentPassword != null" >
+        payment_password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=CHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=CHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        #{avatarUrl,jdbcType=CHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=CHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=CHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=CHAR},
+      </if>
+      <if test="homeaddress != null" >
+        #{homeaddress,jdbcType=CHAR},
+      </if>
+      <if test="liveaddress != null" >
+        #{liveaddress,jdbcType=CHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="paymentPassword != null" >
+        #{paymentPassword,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.User" >
+    update tb_user
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=CHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=CHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url = #{avatarUrl,jdbcType=CHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=CHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=CHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=CHAR},
+      </if>
+      <if test="homeaddress != null" >
+        homeAddress = #{homeaddress,jdbcType=CHAR},
+      </if>
+      <if test="liveaddress != null" >
+        liveAddress = #{liveaddress,jdbcType=CHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="paymentPassword != null" >
+        payment_password = #{paymentPassword,jdbcType=CHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.User" >
+    update tb_user
+    set username = #{username,jdbcType=CHAR},
+      password = #{password,jdbcType=CHAR},
+      avatar_url = #{avatarUrl,jdbcType=CHAR},
+      nickname = #{nickname,jdbcType=CHAR},
+      real_name = #{realName,jdbcType=CHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=CHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      email = #{email,jdbcType=CHAR},
+      homeAddress = #{homeaddress,jdbcType=CHAR},
+      liveAddress = #{liveaddress,jdbcType=CHAR},
+      money = #{money,jdbcType=DOUBLE},
+      payment_password = #{paymentPassword,jdbcType=CHAR}
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+</mapper>

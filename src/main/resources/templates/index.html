@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <style type="text/css" rel="stylesheet">
+    .col-sm-3 > div {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
+    <div class="row">
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+        <!--<a shiro:user="" th:if="${userId==null}" th:text="" th:href="@{'toCart?userId='+${userId}}"></a><br/>-->
+        <a shiro:user="" th:href="@{'toCart?userId='+${#httpSession.getAttribute('userId')}}">购物车</a><br/>
+        <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="toUser">个人中心</a><br/>
+        <a shiro:user="" href="toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
+    </div>
+    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+      <div th:each="good : ${goods}">
+        <div>
+          <a th:href="@{'remote/goods.do/' + ${good.getGoodsId()}}">前往</a><br/>
+          <span>商品名:</span><span th:text="${good.getName()}"></span><br/>
+          <span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>
+          <span>图片:</span><span th:text="${good.getImageUrl()}"></span><br/>
+          <span>原价:</span><span th:text="${good.getPrice()}"></span><br/>
+          <span>折扣价:</span><span th:text="${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+        </div>
+      </div>
+    </div>
+    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+      <div th:each="shop : ${shops}">
+        <div>
+          <a th:href="@{'remote/shop.do/' + ${shop.getShopId()}}">前往</a><br/>
+          <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
+          <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
+        </div>
+      </div>
+    </div>
+    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+  </div>
+  <div class="row">
+    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+  </div>
+</div>
+</body>
+
+<!--<script type="text/javascript">
+    $(function(){
+        var $show1 = $("#show1");
+        var $show2 = $("#show2");
+        var $show3 = $("#show3");
+        var $show4 = $("#show4");
+        var $show5 = $("#show5");
+        var $show6 = $("#show6");
+        $.ajax({
+            url : "/remote/goods.do",
+            type : "get",
+            success : function (data) {
+                var str = "";
+                for (var d in data) {
+                    str += "<div>";
+                    for(var d2 in data[d]) {
+                        var strVar2 = "<div><span>"+d2+"</span>-><span>"+data[d][d2]+"</span></div>";
+                        str += strVar2;
+                    }
+                    str += "</div>";
+                }
+                $show1.html(str);
+            },
+            error : function (data) {
+                $show1.html(data);
+            }
+        })
+        $.ajax({
+            url : "/remote/shop.do",
+            type : "get",
+            success : function (data) {
+                var str = "";
+                for (var d in data) {
+                    str += "<div>";
+                    for(var d2 in data[d]) {
+                        var strVar2 = "<div><span>"+d2+"</span>-><span>"+data[d][d2]+"</span></div>";
+                        str += strVar2;
+                    }
+                    str += "</div>";
+                }
+                $show2.html(str);
+            },
+            error : function (data) {
+                $show2.html(data);
+            }
+        })
+    })
+</script>-->
+</html>

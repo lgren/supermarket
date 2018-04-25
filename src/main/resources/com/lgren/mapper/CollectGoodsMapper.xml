@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.CollectGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.CollectGoods" >
+    <id column="collect_goods_id" property="collectGoodsId" jdbcType="BIGINT" />
+    <result column="collect_id" property="collectId" jdbcType="BIGINT" />
+    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+    <result column="collect_goods_time" property="collectGoodsTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    collect_goods_id, collect_id, goods_id, collect_goods_time
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_collect_goods
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_collect_goods
+    where collect_goods_id = #{collectGoodsId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_collect_goods
+    where collect_goods_id = #{collectGoodsId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.CollectGoods" >
+    insert into tb_collect_goods (collect_goods_id, collect_id, goods_id, 
+      collect_goods_time)
+    values (#{collectGoodsId,jdbcType=BIGINT}, #{collectId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
+      #{collectGoodsTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.CollectGoods" >
+    insert into tb_collect_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="collectGoodsId != null" >
+        collect_goods_id,
+      </if>
+      <if test="collectId != null" >
+        collect_id,
+      </if>
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="collectGoodsTime != null" >
+        collect_goods_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="collectGoodsId != null" >
+        #{collectGoodsId,jdbcType=BIGINT},
+      </if>
+      <if test="collectId != null" >
+        #{collectId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="collectGoodsTime != null" >
+        #{collectGoodsTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.CollectGoods" >
+    update tb_collect_goods
+    <set >
+      <if test="collectId != null" >
+        collect_id = #{collectId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="collectGoodsTime != null" >
+        collect_goods_time = #{collectGoodsTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where collect_goods_id = #{collectGoodsId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.CollectGoods" >
+    update tb_collect_goods
+    set collect_id = #{collectId,jdbcType=BIGINT},
+      goods_id = #{goodsId,jdbcType=BIGINT},
+      collect_goods_time = #{collectGoodsTime,jdbcType=TIMESTAMP}
+    where collect_goods_id = #{collectGoodsId,jdbcType=BIGINT}
+  </update>
+</mapper>

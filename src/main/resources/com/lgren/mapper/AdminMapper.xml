@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.AdminMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.Admin" >
+    <id column="admin_id" property="adminId" jdbcType="BIGINT" />
+    <result column="position" property="position" jdbcType="INTEGER" />
+    <result column="superior_id" property="superiorId" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="CHAR" />
+    <result column="password" property="password" jdbcType="CHAR" />
+    <result column="avatar_url" property="avatarUrl" jdbcType="CHAR" />
+    <result column="nickname" property="nickname" jdbcType="CHAR" />
+    <result column="real_name" property="realName" jdbcType="CHAR" />
+    <result column="gender" property="gender" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="CHAR" />
+    <result column="email" property="email" jdbcType="CHAR" />
+    <result column="homeAddress" property="homeaddress" jdbcType="CHAR" />
+    <result column="liveAddress" property="liveaddress" jdbcType="CHAR" />
+    <result column="birthday" property="birthday" jdbcType="DATE" />
+    <result column="wages" property="wages" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    admin_id, position, superior_id, username, password, avatar_url, nickname, real_name, 
+    gender, phone, email, homeAddress, liveAddress, birthday, wages
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" >
+      select <include refid="Base_Column_List"/> from tb_admin
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_admin
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_admin
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.Admin" >
+    insert into tb_admin (admin_id, position, superior_id, 
+      username, password, avatar_url, 
+      nickname, real_name, gender, 
+      phone, email, homeAddress, liveAddress, 
+      birthday, wages)
+    values (#{adminId,jdbcType=BIGINT}, #{position,jdbcType=INTEGER}, #{superiorId,jdbcType=BIGINT}, 
+      #{username,jdbcType=CHAR}, #{password,jdbcType=CHAR}, #{avatarUrl,jdbcType=CHAR}, 
+      #{nickname,jdbcType=CHAR}, #{realName,jdbcType=CHAR}, #{gender,jdbcType=INTEGER}, 
+      #{phone,jdbcType=CHAR}, #{email,jdbcType=CHAR}, #{homeaddress,jdbcType=CHAR}, #{liveaddress,jdbcType=CHAR}, 
+      #{birthday,jdbcType=DATE}, #{wages,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Admin" >
+    insert into tb_admin
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="adminId != null" >
+        admin_id,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="superiorId != null" >
+        superior_id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="homeaddress != null" >
+        homeAddress,
+      </if>
+      <if test="liveaddress != null" >
+        liveAddress,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="wages != null" >
+        wages,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="adminId != null" >
+        #{adminId,jdbcType=BIGINT},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=INTEGER},
+      </if>
+      <if test="superiorId != null" >
+        #{superiorId,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=CHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=CHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        #{avatarUrl,jdbcType=CHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=CHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=CHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=CHAR},
+      </if>
+      <if test="homeaddress != null" >
+        #{homeaddress,jdbcType=CHAR},
+      </if>
+      <if test="liveaddress != null" >
+        #{liveaddress,jdbcType=CHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="wages != null" >
+        #{wages,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.Admin" >
+    update tb_admin
+    <set >
+      <if test="position != null" >
+        position = #{position,jdbcType=INTEGER},
+      </if>
+      <if test="superiorId != null" >
+        superior_id = #{superiorId,jdbcType=BIGINT},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=CHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=CHAR},
+      </if>
+      <if test="avatarUrl != null" >
+        avatar_url = #{avatarUrl,jdbcType=CHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=CHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=CHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=CHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=CHAR},
+      </if>
+      <if test="homeaddress != null" >
+        homeAddress = #{homeaddress,jdbcType=CHAR},
+      </if>
+      <if test="liveaddress != null" >
+        liveAddress = #{liveaddress,jdbcType=CHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="wages != null" >
+        wages = #{wages,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.Admin" >
+    update tb_admin
+    set position = #{position,jdbcType=INTEGER},
+      superior_id = #{superiorId,jdbcType=BIGINT},
+      username = #{username,jdbcType=CHAR},
+      password = #{password,jdbcType=CHAR},
+      avatar_url = #{avatarUrl,jdbcType=CHAR},
+      nickname = #{nickname,jdbcType=CHAR},
+      real_name = #{realName,jdbcType=CHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=CHAR},
+      email = #{email,jdbcType=CHAR},
+      homeAddress = #{homeaddress,jdbcType=CHAR},
+      liveAddress = #{liveaddress,jdbcType=CHAR},
+      birthday = #{birthday,jdbcType=DATE},
+      wages = #{wages,jdbcType=DECIMAL}
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </update>
+</mapper>

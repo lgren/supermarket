@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lgren.dao.ShopMapper" >
+  <resultMap id="BaseResultMap" type="com.lgren.pojo.po.Shop" >
+    <id column="shop_id" property="shopId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="warehousr_id" property="warehousrId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="CHAR" />
+    <result column="description" property="description" jdbcType="CHAR" />
+    <result column="show_time" property="showTime" jdbcType="TIMESTAMP" />
+    <result column="money" property="money" jdbcType="DOUBLE" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    shop_id, user_id, warehousr_id, name, description, show_time, money, state
+  </sql>
+  <select id="getShopByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from tb_shop where user_id = #{userId}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_shop
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_shop
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_shop
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lgren.pojo.po.Shop" >
+    insert into tb_shop (shop_id, user_id, warehousr_id, 
+      name, description, show_time, 
+      money, state)
+    values (#{shopId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{warehousrId,jdbcType=BIGINT}, 
+      #{name,jdbcType=CHAR}, #{description,jdbcType=CHAR}, #{showTime,jdbcType=TIMESTAMP}, 
+      #{money,jdbcType=DOUBLE}, #{state,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Shop" >
+    insert into tb_shop
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shopId != null" >
+        shop_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="warehousrId != null" >
+        warehousr_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="showTime != null" >
+        show_time,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shopId != null" >
+        #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="warehousrId != null" >
+        #{warehousrId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=CHAR},
+      </if>
+      <if test="showTime != null" >
+        #{showTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lgren.pojo.po.Shop" >
+    update tb_shop
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="warehousrId != null" >
+        warehousr_id = #{warehousrId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=CHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=CHAR},
+      </if>
+      <if test="showTime != null" >
+        show_time = #{showTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lgren.pojo.po.Shop" >
+    update tb_shop
+    set user_id = #{userId,jdbcType=BIGINT},
+      warehousr_id = #{warehousrId,jdbcType=BIGINT},
+      name = #{name,jdbcType=CHAR},
+      description = #{description,jdbcType=CHAR},
+      show_time = #{showTime,jdbcType=TIMESTAMP},
+      money = #{money,jdbcType=DOUBLE},
+      state = #{state,jdbcType=INTEGER}
+    where shop_id = #{shopId,jdbcType=BIGINT}
+  </update>
+</mapper>
