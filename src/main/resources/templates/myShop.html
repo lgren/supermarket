@@ -7,7 +7,7 @@
   <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
   <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
   <style type="text/css" rel="stylesheet">
-    .col-sm-3 > div {
+    .col-sm-3 > div, .col-sm-3 > form {
       border: black 1px solid;
       margin-bottom: 10px;
     }
@@ -32,13 +32,13 @@
         <a shiro:user="" href="toCart">购物车</a><br/>
         <a shiro:user="" href="toCollect">我的收藏</a><br/>
         <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a shiro:user="" href="toSeller">卖家中心</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
         <a shiro:user="" href="logout">注销</a>
       </div>
     </div>
     <div id="show2" class="col-sm-6" style="background-color: #85c5ff">
       <form th:each="shopVO : ${myShopVOList}" class="form-horizontal">
-        <a th:href="@{'toShop/' + ${shopVO.getShopId()}}">前往</a><br/>
+        <a th:href="@{'toMyShopGoods/' + ${shopVO.getShopId()}}">前往</a><br/>
         <!--隐藏域 shopId-->
         <input th:value="${shopVO.getShopId()}" type="hidden" id="shopId" name="shopId"/>
         <!--隐藏域 put方法-->
@@ -61,12 +61,32 @@
         <div id="authCodeDiv" class="form-group hidden">
           <label for="authCode" class="col-sm-2 control-label">验证码</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode" value="yzm"/>
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" class="btn btn-default" th:onclick="'change('+${shopVO.getShopId()}+')'">保存修改</button>
+            <button type="button" class="btn btn-default" th:onclick="'changeShop(this)'">保存修改
+            </button>
+            <button type="button" class="btn btn-default" th:onclick="'deleteShop('+${shopVO.getShopId()}+')'">
+              删除此店
+            </button>
+            <select th:value="${shopVO.getState()}"
+                    th:onchange="'changeShopState('+${shopVO.getShopId()}+',this)'"
+                    class="btn btn-default" name="state" id="state">
+              <option th:unless="${shopVO.getState()}" th:selected="${shopVO.getState() == 0} ? true : false"
+                      value="0">
+                等待审核
+              </option>
+              <option th:if="${shopVO.getState()}" th:selected="${shopVO.getState() == 1} ? true : false"
+                      value="1">
+                正常营业
+              </option>
+              <option th:if="${shopVO.getState()}" th:selected="${shopVO.getState() == 2} ? true : false"
+                      value="2">
+                暂停营业
+              </option>
+            </select>
           </div>
         </div>
       </form>
@@ -83,59 +103,7 @@
 </div>
 </body>
 <script type="text/javascript">
-    // 购物车添加商品 -2请先登录 -1该商品失效 0添加失败 1添加成功
-    function addCartGoods(goodsId) {
-        $.ajax({
-            url: "../addCartGoods.do",
-            type: "post",
-            data: {
-                "goodsId": goodsId
-            },
-            success: function (data) {
-                if (data == 1) {
-                    alert("添加成功")
-                } else {
-                    if (data == -2) {
-                        alert("请先登录");
-                        window.location.href = "../toLogin";
-                        return null;
-                    }
-                    data == 0 ? alert("添加失败") :
-                        data == -1 ? alert("商品已经失效") : alert("商品已经添加");
-                }
-            },
-            error: function (data) {
-            }
-        })
-    }
-
-    function addCollectGoods(goodsId) {
-        $.ajax({
-            url: "../addCollectGoods.do",
-            type: "post",
-            data: {
-                "goodsId": goodsId
-            },
-            success: function (data) {
-                if (data == 1) {
-                    alert("添加成功")
-                } else {
-                    if (data == -2) {
-                        alert("请先登录");
-                        window.location.href = "../toLogin";
-                        return null;
-                    }
-                    data == 0 ? alert("添加失败") :
-                        data == -1 ? alert("商品已经失效") : alert("商品已经添加");
-                }
-            },
-            error: function (data) {
-
-            }
-        })
-    }
-
-    function change() {
+    function changeShop(node) {
         var $authCode = $("#authCode");
         var $authCodeDiv = $("#authCodeDiv");
         if ($authCode.val() == null || $authCode.val() == "") {
@@ -143,20 +111,39 @@
             $authCodeDiv.removeClass("hidden");
             return null;
         }
-        var formData = $("form").serialize();
+        var formData = $(node).parent().parent().parent().serialize();
         $.ajax({
-            url: "/shopUpdate.do",
+            url: "shopUpdate.do",
             type: "put",
             data: formData,
             success: function (data) {
-                //1:修改成功 --- f+ 1:shopId为空 10:未找到shop 11:修改失败
-                 if (data == "1") {
-                    alert("修改成功");
-                    window.location.reload();
-                    return null;
-                 }
-                 data == "f1" ? alert("未正确传入参数") :
-                     data == "f10" ? alert("未正确找到商店,请正确操作") : alert("修改失败");
+                //1:修改成功 --- f+ 1:shopId为空 2:session中userId为空 10:未找到shop 11:修改失败 12:没权限修改
+                switch (data) {
+                    case "1": {
+                        alert("修改成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("未正确传入参数");
+                        break;
+                    case "f2":
+                        alert("登录已失效,请先登录");
+                        break;
+                    case "f10":
+                        alert("未正确找到商店,请正确操作");
+                        break;
+                    case "f11":
+                        alert("修改失败");
+                        break;
+                    case "f12":
+                        alert("不能改变此状态");
+                        break;
+                    default :
+                        ;
+                        break;
+                }
 
             },
             error: function (data) {
@@ -164,5 +151,91 @@
             }
         })
     }
+
+    function changeShopState(shopId, node) {
+        var $node = $(node);
+        var $thisFormNode = $node.parent().parent().parent();
+        var shopState = $("#state").val();
+        $.ajax({
+            url: "shopUpdate.do",
+            type: "post",
+            data: {
+                "_method": "put",
+                "shopId": shopId,
+                "state": shopState
+            },
+            success: function (data) {
+                //1:修改成功 --- f+ 1:shopId为空 2:session中userId为空 10:未找到shop 11:修改失败 12:没权限修改
+                switch (data) {
+                    case "1": {
+                        alert("修改成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("未正确传入参数");
+                        break;
+                    case "f2":
+                        alert("登录已失效,请先登录");
+                        break;
+                    case "f10":
+                        alert("未正确找到商店,请正确操作");
+                        break;
+                    case "f11":
+                        alert("修改失败");
+                        break;
+                    case "f12":
+                        alert("不能改变此状态");
+                        break;
+                    default :
+                        ;
+                        break;
+                }
+
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    function deleteShop(shopId) {
+        $.ajax({
+            url: "deleteShop.do/" + shopId,
+            type: "post",
+            data: {
+                "_method": "delete"
+            },
+            success: function (data) {
+                // 0删除失败 1删除成功 2未登录 3.参数shopId为空
+                switch (data) {
+                    case 0 :
+                        alert("删除失败");
+                        break;
+                    case 1 : {
+                        alert("删除成功");
+                        window.location.reload();
+                    }
+                        break;
+                    case 2 : {
+                        alert("未登录,请先登录");
+                        window.location.href = "toLogin";
+                    }
+                        break;
+                    case 3 :
+                        alert("操作异常");
+                        break;
+                    default : break;
+                }
+
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    //    has-success has-warning has-error
 </script>
 </html>

@@ -35,6 +35,8 @@ public class ToHtmlAction {
     @Autowired
     private UserApi userApi;
     @Autowired
+    private ReceivingAddressApi receivingAddressApi;
+    @Autowired
     private HttpServletRequest request;
     @Autowired
     private HttpSession session;
@@ -74,13 +76,15 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toUser")
     public String toUser(Map<String, Object> map) {
-        UserDTO userDTO = userApi.getUserById((Long) session.getAttribute("userId"));
+        Long userId = (Long) session.getAttribute("userId");
+        UserDTO userDTO = userApi.getUserById(userId);
         UserHtmlDTO userHtmlDTO = new UserHtmlDTO();
         if (userDTO != null) {
             userHtmlDTO = mapper.map(userDTO, UserHtmlDTO.class);
             userHtmlDTO.setGenderStr(userDTO.getGender() == 1 ? "男" : "女");
         }
         map.put("user", userHtmlDTO);
+        map.put("receivingAddressVOList", receivingAddressApi.getReceivingAddressVOListByUserId(userId));
         return "user";
     }
 
@@ -113,17 +117,59 @@ public class ToHtmlAction {
         return "myShop";
     }
 
+    /**
+     * 处理异常 10:找不到商店 11:查询商品异常
+     * @param map
+     * @param shopId
+     * @return
+     */
     @GetMapping(value = "/toShop/{shopId}")
     public String toShop(Map<String, Object> map, @PathVariable("shopId") Long shopId) {
         ShopVO shopVO = shopApi.getShopById(shopId);
         if (shopVO == null) {
-            return "notFindGoods";
+            return "notFindShop";
         }
         map.put("shopVO", shopVO);
-        map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId));
+        try {
+            map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId));
+        } catch (RuntimeException re) {
+            switch (re.getMessage()) {
+                case "10" : return "notFindShop";
+                default: break;
+            }
+        }
         return "shop";
     }
 
+    /**
+     * 处理异常 10:找不到商店 11:查询商品异常 12:该用户与商铺负责人不匹配
+     * @param map
+     * @param shopId
+     * @return
+     */
+    @GetMapping(value = "/toMyShopGoods/{shopId}")
+    public String toMyShopGoods(Map<String, Object> map, @PathVariable("shopId") Long shopId) {
+        ShopVO shopVO = shopApi.getShopById(shopId);
+        if (shopVO == null) {
+            return "notFindShop";
+        }
+        map.put("shopVO", shopVO);
+        try {
+            map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId,(Long) session.getAttribute("userId")));
+        } catch (RuntimeException re) {
+            switch (re.getMessage()) {
+                case "12" : return "redirect:../toMyShop";
+                case "10" : return "notFindShop";
+                default: break;
+            }
+        }
+        return "myShopGoods";
+    }
+
+    @GetMapping(value = "/toApplyShop")
+    public String toShop() {
+        return "applyShop";
+    }
 
 
 

@@ -1,99 +1,121 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>两个人商城</title>
-    <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>这是注册</h1></div>
     <div class="row">
-        <div class="col-sm-12" style="text-align: center">
-            <h1>这是注册</h1>
-        </div>
-      <div class="col-sm-6 col-sm-offset-6 text-center"><a href="toIndex">返回主页</a></div>
-        <div id="show" class="col-sm-6 col-sm-offset-3">
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label for="username" class="col-sm-2 control-label">用户名:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="username" id="username" placeholder="username"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="password" class="col-sm-2 control-label">密码:</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" name="password" id="password" placeholder="Password"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="rePassword" class="col-sm-2 control-label">确认密码:</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="rePassword" placeholder="RePassword"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="authCode" class="col-sm-2 control-label">验证码</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" class="btn btn-default" onclick="registration()">注册</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+        <a shiro:user="" href="toCart">购物车</a><br/>
+        <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="toUser">个人中心</a><br/>
+        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
     </div>
+    <div id="show1" class="col-sm-6 col-sm-offset-3">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="nickname" class="col-sm-2 control-label">昵称:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="nickname" id="nickname" placeholder="nickname"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="username" class="col-sm-2 control-label">用户名:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="username" id="username" placeholder="username"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password" class="col-sm-2 control-label">密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="rePassword" class="col-sm-2 control-label">确认密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="rePassword" placeholder="RePassword"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="authCode" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" onclick="registration()">注册</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 </body>
 
 <script type="text/javascript">
-function registration() {
-    var returnData;
-    var username =  $("#username").val();
-    var password = $("#password").val();
-    var rePassword = $("#rePassword").val();
-    var authCode = $("#authCode").val();
-    username == "" ? alert("用户名不能为空") :
-        password == "" ? alert("密码不能为空") :
-            rePassword == "" ? alert("确认密码不能为空") :
-                rePassword != password ? alert("两次密码输入不一致") :
-                    authCode == "" ? alert("验证码不能为空") :
-                        returnData = 1;
-    if (returnData != 1) {
-        return null;
-    }
-    $.ajax({
-        url : "/registration.do",
-        type : "post",
-        data : {
-            "username" : username,
-            "password" : password,
-            "authCode" : authCode
-        },
-        success : function (data) {
-            //f+* 1账号或密码不能为空 2账号或密码输入格式不对 10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
-            /*if (!isNaN(Number(data))) {
-                //data是纯数字
-            }*/
-            data == "f1" ? alert("账号或密码不能为空") :
-                data == "f2" ? alert("账号或密码输入格式不对") :
-                    data == "f10" ? alert("用户已存在") :
-                        data == "f11" ? alert("增加用户失败") :
-                            data == "f12" ? alert("未查找刚插入的用户") :
-                                data == "f13" ? alert("个人购物车增加失败") :
-                                    data == "f14" ? alert("个人收藏夹添加失败") :
-                                        window.location.href = "toIndex";
-        },
-        error : function (data) {
-
+    function registration() {
+        var returnData;
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var rePassword = $("#rePassword").val();
+        var authCode = $("#authCode").val();
+        username == "" ? alert("用户名不能为空") :
+            password == "" ? alert("密码不能为空") :
+                rePassword == "" ? alert("确认密码不能为空") :
+                    rePassword != password ? alert("两次密码输入不一致") :
+                        authCode == "" ? alert("验证码不能为空") :
+                            returnData = 1;
+        if (returnData != 1) {
+            return null;
         }
-    })
-}
+        $.ajax({
+            url: "/registration.do",
+            type: "post",
+            data: {
+                "username": username,
+                "password": password,
+                "authCode": authCode
+            },
+            success: function (data) {
+                //f+* 1账号或密码不能为空 2账号或密码输入格式不对 10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
+                /*if (!isNaN(Number(data))) {
+                    //data是纯数字
+                }*/
+                data == "f1" ? alert("账号或密码不能为空") :
+                    data == "f2" ? alert("账号或密码输入格式不对") :
+                        data == "f10" ? alert("用户已存在") :
+                            data == "f11" ? alert("增加用户失败") :
+                                data == "f12" ? alert("未查找刚插入的用户") :
+                                    data == "f13" ? alert("个人购物车增加失败") :
+                                        data == "f14" ? alert("个人收藏夹添加失败") :
+                                            window.location.href = "toIndex";
+            },
+            error: function (data) {
+
+            }
+        })
+    }
 </script>
 </html>

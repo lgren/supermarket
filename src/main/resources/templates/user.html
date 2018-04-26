@@ -6,6 +6,12 @@
   <script src="/webjars/jquery/jquery.min.js"></script>
   <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
   <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <style type="text/css" rel="stylesheet">
+    .col-sm-3 > div, .col-sm-3 > form {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -26,6 +32,7 @@
         <a shiro:guest="" href="toLogin">登陆界面</a><br/>
         <a shiro:user="" th:href="@{'toCart?userId='+${#httpSession.getAttribute('userId')}}">购物车</a><br/>
         <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
         <a href="toSeller">卖家中心</a><br/>
         <a href="logout">注销</a>
       </div>
@@ -95,7 +102,7 @@
         <div id="authCodeDiv" class="form-group hidden">
           <label for="authCode" class="col-sm-2 control-label">验证码</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode" value="yzm"/>
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
           </div>
         </div>
         <div class="form-group">
@@ -110,8 +117,107 @@
     <div id="show4" class="col-sm-2" style="background-color: #3176ff">test4</div>
   </div>
   <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+    <div id="show5" class="col-sm-3" style="background-color: #bcff84">
+      <form th:each="receivingAddressVO : ${receivingAddressVOList}" class="form-horizontal">
+        <!--<a th:href="@{'toMyShopGoods/' + ${shopVO.getShopId()}}">前往</a><br/>-->
+        <!--隐藏域 receivingAddressId-->
+        <input th:value="${receivingAddressVO.getReceivingAddressId()}" type="hidden" id="receivingAddressId" name="receivingAddressId"/>
+        <div class="form-group">
+          <label for="receivingName" class="col-sm-2 control-label">收货人:</label>
+          <div class="col-sm-10">
+            <input th:value="${receivingAddressVO.getReceivingName() != null ? receivingAddressVO.getReceivingName() : ''}" type="text"
+                   class="form-control"
+                   name="receivingName" id="receivingName" placeholder="name of receiving thing"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="area" class="col-sm-2 control-label">地区:</label>
+          <div class="col-sm-10">
+            <input th:value="${receivingAddressVO.getArea() != null ? receivingAddressVO.getArea() : ''}" type="text" class="form-control"
+                   name="area" id="area" placeholder="地区,如四川成都市武侯区等"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="address" class="col-sm-2 control-label">详细地址:</label>
+          <div class="col-sm-10">
+            <input th:value="${receivingAddressVO.getAddress() != null ? receivingAddressVO.getAddress() : ''}" type="text"
+                   class="form-control"
+                   name="address" id="address" placeholder="详细地址,如xxx街xxx路xxx小区xxx幢xxx单元xxx楼"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="receivingPhone" class="col-sm-2 control-label">手机号码:</label>
+          <div class="col-sm-10">
+            <input th:value="${receivingAddressVO.getPhone() != null ? #numbers.formatDecimal(receivingAddressVO.getPhone(),11,0) : ''}"
+                   type="number"
+                   class="form-control"
+                   name="phone" id="receivingPhone" placeholder="phone of receiving person"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="postCode" class="col-sm-2 control-label">邮政编码:</label>
+          <div class="col-sm-10">
+            <input
+                th:value="${receivingAddressVO.getPostCode() != null ? #numbers.formatDecimal(receivingAddressVO.getPostCode(),6,0) : ''}"
+                type="number" class="form-control" name="postCode" id="postCode" placeholder="Post Code"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" th:onclick="'changeReceivingAddress(this)'">保存修改
+            </button>
+            <button type="button" class="btn btn-default" th:onclick="'deleteReceivingAddress('+${receivingAddressVO.getReceivingAddressId()}+')'">删除收货地址
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="show6" class="col-sm-3" style="background-color: #d5ffbf">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="receivingNameAdd" class="col-sm-2 control-label">收货人:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="receivingName" id="receivingNameAdd" placeholder="name of receiving thing"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="areaAdd" class="col-sm-2 control-label">地区:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="area" id="areaAdd" placeholder="地区,如四川成都市武侯区等"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="addressAdd" class="col-sm-2 control-label">详细地址:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="address" id="addressAdd" placeholder="详细地址,如xxx街xxx路xxx小区xxx幢xxx单元xxx楼"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="receivingPhoneAdd" class="col-sm-2 control-label">手机号码:</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" name="phone" id="receivingPhoneAdd" placeholder="phone of receiving person"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="postCodeAdd" class="col-sm-2 control-label">邮政编码:</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" name="postCode" id="postCodeAdd" placeholder="Post Code"/>
+          </div>
+        </div>
+        <div id="authCodeDivAdd" class="form-group">
+          <label for="authCodeAdd" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="authCode" id="authCodeAdd" placeholder="authCode"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" th:onclick="'addReceivingAddress(this)'">确认添加
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
     <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
     <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
   </div>
@@ -140,6 +246,152 @@
                     alert("修改成功");
                     window.location.reload();
                 }
+            },
+            error: function (data) {
+            }
+        })
+    }
+
+    function changeReceivingAddress(node) {
+        var formNode = $(node).parent().parent().parent();
+        if (isNaN(Number(formNode.find("#receivingPhone").val()))) {
+            alert("手机号码只能是数字");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#postCode").val()))) {
+            alert("邮政编码只能是数字");
+            return null;
+            //data是纯数字
+        }
+        var formData = formNode.serialize();
+        $.ajax({
+            url: "receivingAddressUpdate.do",
+            type: "put",
+            data: formData,
+            success: function (data) {
+                //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:手机不是数字 4:手机长度不对 5:邮政编码长度不对 10:未找到user 12:添加收货地址失败
+                switch (data) {
+                    case "1": {
+                        alert("修改成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("未正确传入参数");
+                        break;
+                    case "f2":
+                        alert("登录已失效,请先登录");
+                        break;
+                    case "f3": case "f4":
+                        alert("手机号码只能是数字,且为11位数");
+                        break;
+                    case "f5":
+                        alert("邮政编码只能是数字,且为6位数");
+                        break;
+                    case "f10":
+                        alert("未正确找到该收货地址,请正确操作");
+                        break;
+                    case "f11":
+                        alert("修改失败");
+                        break;
+                    default :
+                        break;
+                }
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    function addReceivingAddress(node) {
+        var formNode = $(node).parent().parent().parent();
+        if (isNaN(Number(formNode.find("#receivingPhoneAdd").val()))) {
+            alert("手机号码只能是数字");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#postCodeAdd").val()))) {
+            alert("邮政编码只能是数字");
+            return null;
+            //data是纯数字
+        }
+        /*Number();*/
+        var $authCode = $("#authCodeAdd");
+        if ($authCode.val() == null || $authCode.val() == "") {
+            alert("请输入验证码");
+            return null;
+        }
+        var formData = formNode.serialize();
+        $.ajax({
+            url: "addReceivingAddress.do",
+            type: "post",
+            data: formData,
+            success: function (data) {
+                //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:手机不是数字 4:手机长度不对 5:邮政编码长度不对 10:未找到user 12:添加收货地址失败
+                switch (data) {
+                    case "1": {
+                        alert("修改成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("未正确传入参数");
+                        break;
+                    case "f2":
+                        alert("登录已失效,请先登录");
+                        break;
+                    case "f3": case "f4":
+                    alert("手机号码只能是数字,且为11位数");
+                    break;
+                    case "f5":
+                        alert("邮政编码只能是数字,且为6位数");
+                        break;
+                    case "f10":
+                        alert("未正确找到该收货地址,请正确操作");
+                        break;
+                    case "f11":
+                        alert("修改失败");
+                        break;
+                    default :
+                        break;
+                }
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    function deleteReceivingAddress(receivingAddressId) {
+        $.ajax({
+            url: "deleteReceivingAddress.do/" + receivingAddressId,
+            type: "delete",
+            success: function (data) {
+                // 0删除失败 1删除成功 2未登录 3.参数receivingAddressId为空
+                switch (data) {
+                    case 0 :
+                        alert("删除失败");
+                        break;
+                    case 1 : {
+                        alert("删除成功");
+                        window.location.reload();
+                    }
+                        break;
+                    case 2 : {
+                        alert("未登录,请先登录");
+                        window.location.href = "toLogin";
+                    }
+                        break;
+                    case 3 :
+                        alert("操作异常");
+                        break;
+                    default : break;
+                }
+
             },
             error: function (data) {
 

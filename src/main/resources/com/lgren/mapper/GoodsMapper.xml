@@ -14,6 +14,9 @@
   <sql id="Base_Column_List" >
     goods_id, shop_id, image_url, name, type, price, discount, show_time
   </sql>
+  <select id="selectByGoodsIdAndShopId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from tb_goods where goods_id = #{param1,jdbcType=BIGINT} and shop_id = #{param2,jdbcType=BIGINT}
+  </select>
   <select id="getGoodsByShopId" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_goods where shop_id = #{shopId,jdbcType=BIGINT}
   </select>

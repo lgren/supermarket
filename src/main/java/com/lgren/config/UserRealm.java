@@ -32,7 +32,6 @@ public class UserRealm extends AuthorizingRealm {
             simpleAuthorizationInfo.addRole("seller");
         } else {
             simpleAuthorizationInfo.addRole("buyer");
-            simpleAuthorizationInfo.addRole("seller");
         }
         return simpleAuthorizationInfo;
     }

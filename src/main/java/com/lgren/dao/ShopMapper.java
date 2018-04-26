@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface ShopMapper {
+    Shop getShopByName(String name);
+
     @Select("select count(shop_id) from tb_shop where user_id = #{userId,jdbcType=BIGINT}")
     int getShopCountByUserId(Long userId);
 

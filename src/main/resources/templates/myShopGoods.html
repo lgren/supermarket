@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <style type="text/css" rel="stylesheet">
+    .col-sm-3 > div, .col-sm-3 > form {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1
+        th:text="${shopVO.getUserDTO().getNickname()}+'的'+${shopVO.getName()}"></h1></div>
+    <div class="row">
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="../toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="../toRegistration">注册界面</a><br/>
+        <a shiro:guest="" href="../toLogin">登陆界面</a><br/>
+        <a shiro:user="" href="../toCart">购物车</a><br/>
+        <a shiro:user="" href="../toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="../toUser">个人中心</a><br/>
+        <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
+        <a href="../toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
+    </div>
+    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+      <form th:each="goodVO : ${goodsVOList}" class="form-horizontal">
+        <!--<a th:href="@{'toMyShopGoods/' + ${shopVO.getShopId()}}">前往</a><br/>-->
+        <!--隐藏域 goodsId-->
+        <input th:value="${goodVO.getGoodsId()}" type="hidden" id="goodsId" name="goodsId"/>
+        <!--隐藏域 shopId-->
+        <input th:value="${shopVO.getShopId()}" type="hidden" id="shopId" name="shopId"/>
+        <div class="form-group">
+          <label for="name" class="col-sm-2 control-label">商品名:</label>
+          <div class="col-sm-10">
+            <input th:value="${goodVO.getName() != null ? goodVO.getName() : ''}" type="text" class="form-control"
+                   name="name" id="name" placeholder="goods's name"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="type" class="col-sm-2 control-label">商品类型:</label>
+          <div class="col-sm-10">
+            <input th:value="${goodVO.getType() != null ? goodVO.getType() : ''}" type="number"
+                   class="form-control"
+                   name="type" id="type" placeholder="goods's type"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="imageUrl" class="col-sm-2 control-label">图片:</label>
+          <div class="col-sm-10">
+            <input th:value="${goodVO.getImageUrl() != null ? goodVO.getImageUrl() : ''}" type="text"
+                   class="form-control"
+                   name="imageUrl" id="imageUrl" placeholder="goods's ImageUrl"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="price" class="col-sm-2 control-label">价格:</label>
+          <div class="col-sm-10">
+            <input th:value="${goodVO.getPrice() != null ? #numbers.formatDecimal(goodVO.getPrice(),0,2) : ''}"
+                   type="number"
+                   class="form-control"
+                   name="price" id="price" placeholder="goods's price"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="discount" class="col-sm-2 control-label">折扣:</label>
+          <div class="col-sm-10">
+            <input
+                th:value="${goodVO.getDiscount() != null ? #numbers.formatDecimal(goodVO.getDiscount(),1,2) : ''}"
+                type="number" min="0" max="10"
+                class="form-control"
+                name="discount" id="discount" placeholder="goods's discount min=0 max=10"/>
+          </div>
+        </div>
+        <!--<div id="authCodeDiv" class="form-group hidden">
+          <label for="authCode" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
+          </div>
+        </div>-->
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" th:onclick="'changeGoods(this)'">保存修改
+            </button>
+            <button type="button" class="btn btn-default" th:onclick="'deleteGoods('+${goodVO.getGoodsId()}+')'">删除商品
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+      <form class="form-horizontal">
+        <!--隐藏域 shopId-->
+        <input type="hidden" id="shopIdAdd" name="shopId" th:value="${shopVO.getShopId()}"/>
+        <div class="form-group">
+          <label for="nameAdd" class="col-sm-2 control-label">商品名:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control"
+                   name="name" id="nameAdd" placeholder="goods's name"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="typeAdd" class="col-sm-2 control-label">商品类型:</label>
+          <div class="col-sm-10">
+            <input type="number"
+                   class="form-control"
+                   name="type" id="typeAdd" placeholder="goods's type"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="imageUrlAdd" class="col-sm-2 control-label">图片:</label>
+          <div class="col-sm-10">
+            <input type="text"
+                   class="form-control"
+                   name="imageUrl" id="imageUrlAdd" placeholder="goods's ImageUrl"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="priceAdd" class="col-sm-2 control-label">价格:</label>
+          <div class="col-sm-10">
+            <input type="number"
+                   class="form-control"
+                   name="price" id="priceAdd" placeholder="goods's price"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="discountAdd" class="col-sm-2 control-label">折扣:</label>
+          <div class="col-sm-10">
+            <input type="number" min="0" max="10"
+                   class="form-control"
+                   name="discount" id="discountAdd" placeholder="goods's discount min=0 max=10 例如:8.5"/>
+          </div>
+        </div>
+        <div id="authCodeDivAdd" class="form-group">
+          <label for="authCodeAdd" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="authCode" id="authCodeAdd" placeholder="authCode"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" th:onclick="'addGoods(this)'">确认添加
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+  </div>
+  <div class="row">
+    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+  </div>
+</div>
+</body>
+<script>
+    function changeGoods(node) {
+        var formNode = $(node).parent().parent().parent();
+        var discountAddNumber = formNode.find("#discount").val();
+        if (discountAddNumber > 10 || 0 > discountAddNumber) {
+            alert("折扣最大值为10,最小值为0");
+            return null;
+        }
+        if (isNaN(Number(formNode.find("#type").val()))) {
+            alert("商品类型错误(目前只能填数字,之后做下拉框)");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#price").val()))) {
+            alert("价格只能是数字)");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#discount").val()))) {
+            alert("折扣只能是0-10的数字");
+            return null;
+            //data是纯数字
+        }
+        /*Number();*/
+        var formData = formNode.serialize();
+        $.ajax({
+            url: "../goodsUpdate.do",
+            type: "put",
+            data: formData,
+            success: function (data) {
+                //1:修改成功 --- f+ 1:goodsID为空 2:session中userId为空 3:类型不是数字 10:未找到goods 11:修改失败 12:未找到商店 13:该店铺还在审核
+                switch (data) {
+                    case "1": {
+                        alert("修改成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("未正确传入参数");
+                        break;
+                    case "f2":
+                        alert("登录已失效,请先登录");
+                        break;
+                    case "f3":
+                        alert("商品类型错误(目前只能填数字,之后做下拉框)");
+                        break;
+                    case "f10":
+                        alert("未找到商品,请正确操作");
+                        break;
+                    case "f11":
+                        alert("修改失败");
+                        break;
+                    case "f12":
+                        alert("未找到商店,请正确操作");
+                        break;
+                    case "f13":
+                        alert("店铺正在审核,不能进行此操作");
+                        break;
+                    default :
+                        break;
+                }
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    function addGoods(node) {
+        var formNode = $(node).parent().parent().parent();
+        var discountAddNumber = formNode.find("#discountAdd").val();
+        if (discountAddNumber > 10 || 0 > discountAddNumber) {
+            alert("折扣最大值为10,最小值为0");
+            return null;
+        }
+        if (isNaN(Number(formNode.find("#typeAdd").val()))) {
+            alert("商品类型错误(目前只能填数字,之后做下拉框)");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#priceAdd").val()))) {
+            alert("价格只能是数字)");
+            return null;
+            //data是纯数字
+        }
+        if (isNaN(Number(formNode.find("#discountAdd").val()))) {
+            alert("折扣只能是0-10的数字");
+            return null;
+            //data是纯数字
+        }
+        /*Number();*/
+        var $authCode = $("#authCodeAdd");
+        if ($authCode.val() == null || $authCode.val() == "") {
+            alert("请输入验证码");
+            return null;
+        }
+        var formData = formNode.serialize();
+        $.ajax({
+            url: "../addGoods.do",
+            type: "post",
+            data: formData,
+            success: function (data) {
+                //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:商铺还在审核中
+                switch (data) {
+                    case "1": {
+                        alert("添加成功");
+                        window.location.reload();
+                        return null;
+                    }
+                        break;
+                    case "f1":
+                        alert("信息填写不完整");
+                        break;
+                    case "f2":{
+                        alert("登录已失效,请先登录");
+                        window.location.href="../toLogin";
+                    }
+                        break;
+                    case "f3":
+                        alert("商品类型错误(目前只能填数字,之后做下拉框)");
+                        break;
+                    case "f10":
+                        alert("未正确找到商店,请正确操作");
+                        break;
+                    case "f11":
+                        alert("自家此商品已经存在");
+                        break;
+                    case "f12":
+                        alert("添加失败");
+                        break;
+                    case "f13":
+                        alert("店铺正在审核,不能进行此操作");
+                        break;
+                    default :
+                        break;
+                }
+
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+
+    function deleteGoods(goodsId) {
+        $.ajax({
+            url: "../deleteGoods.do/" + goodsId,
+            type: "post",
+            data: {
+                "_method": "delete"
+            },
+            success: function (data) {
+                // 0删除失败 1删除成功 2未登录 3.参数goodsId为空
+                switch (data) {
+                    case 0 :
+                        alert("删除失败");
+                        break;
+                    case 1 : {
+                        alert("删除成功");
+                        window.location.reload();
+                    }
+                        break;
+                    case 2 : {
+                        alert("未登录,请先登录");
+                        window.location.href = "toLogin";
+                    }
+                        break;
+                    case 3 :
+                        alert("操作异常");
+                        break;
+                    default : break;
+                }
+
+            },
+            error: function (data) {
+
+            }
+        })
+    }
+</script>
+</html>

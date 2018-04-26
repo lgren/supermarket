@@ -15,6 +15,11 @@ public class ReceivingAddressServiceImpl implements ReceivingAddressService {
 
 
     @Override
+    public List<ReceivingAddress> getReceivingAddressByUserId(Long userId) {
+        return receivingAddressMapper.getReceivingAddressByUserId(userId);
+    }
+
+    @Override
     public List<ReceivingAddress> selectAll() {
         return receivingAddressMapper.selectAll();
     }

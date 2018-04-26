@@ -1,15 +1,14 @@
 package com.lgren.controller.user;
 
-import com.lgren.controller.user.dto.MyShopDTO;
-import com.lgren.controller.user.dto.UserHtmlDTO;
-import com.lgren.controller.user.dto.UserLoginDTO;
+import com.lgren.controller.user.dto.*;
 import com.lgren.dao.ShopMapper;
-import com.lgren.exception.AddException;
-import com.lgren.exception.SelectException;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.CollectGoodsDTO;
+import com.lgren.pojo.dto.GoodsDTO;
+import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.User;
 import com.lgren.service.*;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -45,13 +44,17 @@ public class UserIndexAction {
     @Autowired
     private HttpSession session;
 
-    //登陆验证 -1代表账号或密码为空 0为失败 1为成功 2已经登陆了
+    /**
+     *
+     * @param userLoginDTO
+     * @return //数字(userId)代表成功 ---f+ 0:用户名或密码错误 1用户名或密码为空 2已经登陆了
+     */
     @ResponseBody
     @GetMapping(value = "userLogin.do")
-    public Long userLogin(UserLoginDTO userLoginDTO) {
+    public String userLogin(UserLoginDTO userLoginDTO) {
         if (StringUtils.isEmptyOrWhitespace(userLoginDTO.getUsername())
                 || StringUtils.isEmptyOrWhitespace(userLoginDTO.getPassword())) {
-            return -1L;
+            return "f1";
         }
         Subject currentUser = SecurityUtils.getSubject();
         if (!currentUser.isAuthenticated()) {
@@ -61,33 +64,33 @@ public class UserIndexAction {
                 session.setAttribute("username",userLoginDTO.getUsername());
                 Long userId = userService.getUserByUsername(userLoginDTO.getUsername()).getUserId();
                 session.setAttribute("userId",userId);
-                return userId;
+                return userId.toString();
             } catch (AuthenticationException ae) {
-                return 0L;
+                return "f0";
             }
         }
-        return 2L;
+        return "f2";
     }
     //注册
 
     /**
      *
-     * @param userLoginDTO
+     * @param userRegistrationDTO
      * @return // 数字:成功 --- f+* 0:参数问题 1账号或密码不能为空 2账号或密码输入格式不对 10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
      *
      */
     @ResponseBody
     @PostMapping(value = "registration.do")
-    public String registration(UserLoginDTO userLoginDTO) {
-        if (StringUtils.isEmptyOrWhitespace(userLoginDTO.getUsername())
-                || StringUtils.isEmptyOrWhitespace(userLoginDTO.getPassword())) {
+    public String registration(UserRegistrationDTO userRegistrationDTO) {
+        if (StringUtils.isEmptyOrWhitespace(userRegistrationDTO.getUsername())
+                || StringUtils.isEmptyOrWhitespace(userRegistrationDTO.getPassword())) {
             return "f1";
         }
         try {
-            Long userId = userHtmlService.addUser(userLoginDTO);
-            userLogin(userLoginDTO);
+            Long userId = userHtmlService.addUser(userRegistrationDTO);
+            userLogin(mapper.map(userRegistrationDTO,UserLoginDTO.class));
             return userId.toString();
-        } catch (AddException e) {
+        } catch (RuntimeException e) {
             return "f"+e.getMessage();
         }
     }
@@ -161,25 +164,225 @@ public class UserIndexAction {
         return collectGoodsService.insertByUserIdAndGoodsId(userId,goodsId);
     }
 
-    //shop基础信息修改 0修改失败 1为修改成功
-
     /**
      *
      * @param myShopDTO
-     * @return //1:修改成功 --- f+ 1:shopId为空 10:未找到shop 11:修改失败
+     * @return //1:修改成功 --- f+ 1:shopId为空 2:session中userId为空 3:类型不是数字 10:未找到shop 11:修改失败 12:没权限修改
      */
     @ResponseBody
     @PutMapping(value = "shopUpdate.do")
     public String shopUpdate(MyShopDTO myShopDTO) {
+        if (session.getAttribute("userId") == null) {
+            return "f2";
+        }
         if (myShopDTO.getShopId() == null) {
             return "f1";
         }
         try {
-            userHtmlService.shopUpdate(myShopDTO);
+            userHtmlService.shopUpdate(myShopDTO, (Long) session.getAttribute("adminId"));
             return "1";
-        } catch (SelectException se) {
+        } catch (RuntimeException se) {
             return se.getMessage();
         }
+    }
+
+    /**
+     *
+     * @param goodsDTO
+     * @return //1:修改成功 --- f+ 1:goodsID为空 2:session中userId为空 3:类型不是数字 10:未找到goods 11:修改失败 12:未找到商店 13:该店铺还在审核
+     *
+     */
+    @ResponseBody
+    @PutMapping(value = "goodsUpdate.do")
+    public String goodsUpdate(GoodsDTO goodsDTO) {
+        Long userId =(Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f2";
+        }
+        if (goodsDTO.getType() == null) {
+            return "f3";
+        }
+        if (goodsDTO.getGoodsId() == null) {
+            return "f1";
+        }
+        try {
+            userHtmlService.goodsUpdate(goodsDTO);
+            return "1";
+        } catch (RuntimeException se) {
+            return se.getMessage();
+        }
+    }
+
+    /**
+     *
+     * @param receivingAddressDTO
+     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:手机不是数字 4:手机长度不对 5:邮政编码长度不对 10:未找到user 12:添加收货地址失败
+     */
+    @ResponseBody
+    @PutMapping(value = "receivingAddressUpdate.do")
+    public String receivingAddressUpdate(ReceivingAddressDTO receivingAddressDTO) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f2";
+        }
+        receivingAddressDTO.setUserId(userId);
+        if (!NumberUtils.isNumber(receivingAddressDTO.getPhone())) {
+            return "f3";
+        }
+        if (StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getReceivingName())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getArea())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getAddress())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getPhone())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getPostCode())) {
+            return "f1";
+        }
+        if (receivingAddressDTO.getPhone().length() != 11) {
+            return "f4";
+        }
+        if (receivingAddressDTO.getPostCode().length() != 6) {
+            return "f5";
+        }
+        try {
+            userHtmlService.receivingAddressUpdate(receivingAddressDTO);
+            return "1";
+        } catch (RuntimeException se) {
+            return se.getMessage();
+        }
+    }
+
+    /**a
+     *
+     * @param applyShopDTO
+     * @return //数字(申请的shopId):添加成功 --- f+ 1:商店名或面熟描述为空 10:未找到user 11:商店名已经存在 12:添加商店失败 13:添加仓库失败
+     */
+    @ResponseBody
+    @PostMapping(value = "applyShop.do")
+    public String applyShop(ApplyShopDTO applyShopDTO) {
+        if (StringUtils.isEmptyOrWhitespace(applyShopDTO.getName()) || StringUtils.isEmptyOrWhitespace(applyShopDTO.getDescription())) {
+            return "f1";
+        }
+        try {
+            applyShopDTO.setUserId((Long) session.getAttribute("userId"));
+            return userHtmlService.addShop(applyShopDTO).toString();
+        } catch (RuntimeException ae) {
+            return "f"+ae.getMessage();
+        }
+    }
+
+    /**
+     *
+     * @param goodsDTO
+     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:该店铺还在审核
+     */
+    @ResponseBody
+    @PostMapping(value = "addGoods.do")
+    public String addGoods(GoodsDTO goodsDTO) {
+        if (session.getAttribute("userId") == null) {
+            return "f2";
+        }
+        if (goodsDTO.getType() == null) {
+            return "f3";
+        }
+        if (StringUtils.isEmptyOrWhitespace(goodsDTO.getName())
+                || StringUtils.isEmptyOrWhitespace(goodsDTO.getImageUrl())
+                || goodsDTO.getPrice() == null
+                || goodsDTO.getType() == null) {
+            return "f1";
+        }
+        try {
+            userHtmlService.addGoods(goodsDTO);
+            return "1";
+        } catch (RuntimeException ae) {
+            return "f"+ae.getMessage();
+        }
+    }
+
+    /**
+     *
+     * @param receivingAddressDTO
+     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:手机不是数字 4:手机长度不对 5:邮政编码长度不对 10:未找到user 12:添加收货地址失败
+     */
+    @ResponseBody
+    @PostMapping(value = "addReceivingAddress.do")
+    public String addReceivingAddress(ReceivingAddressDTO receivingAddressDTO) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f2";
+        }
+        receivingAddressDTO.setUserId(userId);
+        if (!NumberUtils.isNumber(receivingAddressDTO.getPhone())) {
+            return "f3";
+        }
+        if (StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getReceivingName())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getArea())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getAddress())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getPhone())
+                || StringUtils.isEmptyOrWhitespace(receivingAddressDTO.getPostCode())) {
+            return "f1";
+        }
+        if (receivingAddressDTO.getPhone().length() != 11) {
+            return "f4";
+        }
+        if (receivingAddressDTO.getPostCode().length() != 6) {
+            return "f5";
+        }
+        try {
+            userHtmlService.addReceivingAddress(receivingAddressDTO);
+            return "1";
+        } catch (RuntimeException ae) {
+            return "f"+ae.getMessage();
+        }
+    }
+
+    /**
+     *
+     * @param shopId
+     * @return // 0删除失败 1删除成功 2未登录 3.参数shopId为空
+     */
+    @ResponseBody
+    @DeleteMapping(value = "deleteShop.do/{shopId}")
+    public int deleteShop(@PathVariable("shopId") Long shopId) {
+        if (shopId == null) {
+            return 3;
+        }
+        if (session.getAttribute("userId") == null) {
+            return 2;
+        }
+        return userHtmlService.deleteShop(shopId) ? 1 : 0;
+    }
+
+    /**
+     *
+     * @param goodsId
+     * @return // 0删除失败 1删除成功 2未登录 3.参数shopId为空
+     */
+    @ResponseBody
+    @DeleteMapping(value = "deleteGoods.do/{goodsId}")
+    public int deleteGoods(@PathVariable("goodsId") Long goodsId) {
+        if (goodsId == null) {
+            return 3;
+        }
+        if (session.getAttribute("userId") == null) {
+            return 2;
+        }
+        return userHtmlService.deleteGoods(goodsId) ? 1 : 0;
+    }
+
+    /**
+     *
+     * @param receivingAddressId
+     * @return // 0删除失败 1删除成功 2未登录 3.参数shopId为空
+     */
+    @ResponseBody
+    @DeleteMapping(value = "deleteReceivingAddress.do/{receivingAddressId}")
+    public int deleteReceivingAddress(@PathVariable("receivingAddressId") Long receivingAddressId) {
+        if (receivingAddressId == null) {
+            return 3;
+        }
+        if (session.getAttribute("userId") == null) {
+            return 2;
+        }
+        return userHtmlService.deleteReceivingAddress(receivingAddressId) ? 1 : 0;
     }
 
 

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface CartGoodsMapper {
-    @Select("select count(cart_goods_id) from tb_cart_goods where cart_id = #{param1} and goods_id = #{param2}")
+    @Select("select count(cart_goods_id) from tb_cart_goods where cart_id = #{param1,jdbcType=BIGINT} and goods_id = #{param2,jdbcType=BIGINT}")
     int selectByCartIdandGoodsId(Long cartId, Long goodsId);
 
     List<CartGoods> getCartGoodsByCartId(Long cartId);

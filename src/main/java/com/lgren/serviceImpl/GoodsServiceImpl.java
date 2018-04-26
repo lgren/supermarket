@@ -15,6 +15,11 @@ public class GoodsServiceImpl implements GoodsService {
 
 
     @Override
+    public Goods selectByGoodsIdAndShopId(Long goodsId, Long userId) {
+        return goodsMapper.selectByGoodsIdAndShopId(goodsId,userId);
+    }
+
+    @Override
     public List<Goods> getGoodsByShopId(Long shopId) {
         return goodsMapper.getGoodsByShopId(shopId);
     }

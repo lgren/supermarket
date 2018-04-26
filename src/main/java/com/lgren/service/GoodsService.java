@@ -5,6 +5,8 @@ import com.lgren.pojo.po.Goods;
 import java.util.List;
 
 public interface GoodsService {
+    Goods selectByGoodsIdAndShopId(Long goodsId, Long userId);
+
     List<Goods> getGoodsByShopId(Long shopId);
 
     List<Goods> selectAll();

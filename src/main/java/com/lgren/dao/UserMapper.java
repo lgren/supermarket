@@ -9,7 +9,7 @@ public interface UserMapper {
     User getUserByUsername(String username);
 
 //    @Cacheable(key = "#userId",value = "")
-    @Select("select user_id from tb_user where username=#{param1} and password = #{param2}")
+    @Select("select user_id from tb_user where username=#{param1,jdbcType=CHAR} and password = #{param2,jdbcType=CHAR}")
     long userLogin(String username,String password);
 
     List<User> selectAll();
