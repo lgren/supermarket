@@ -29,18 +29,17 @@
       <div id="show" class="col-sm-6" style="text-align: center">
         <a shiro:guest="" href="toRegistration">注册界面</a><br/>
         <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-        <!--<a shiro:user="" th:if="${userId==null}" th:text="" th:href="@{'toCart?userId='+${userId}}"></a><br/>-->
-        <a shiro:user="" th:href="@{'toCart?userId='+${#httpSession.getAttribute('userId')}}">购物车</a><br/>
+        <a shiro:user="" href="toCart">购物车</a><br/>
         <a shiro:user="" href="toCollect">我的收藏</a><br/>
         <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a shiro:user="" href="toSeller">卖家中心</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
         <a shiro:user="" href="logout">注销</a>
       </div>
     </div>
     <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
       <div th:each="good : ${goods}">
         <div>
-          <a th:href="@{'remote/goods.do/' + ${good.getGoodsId()}}">前往</a><br/>
+          <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">前往</a><br/>
           <span>商品名:</span><span th:text="${good.getName()}"></span><br/>
           <span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>
           <span>图片:</span><span th:text="${good.getImageUrl()}"></span><br/>
@@ -79,7 +78,7 @@
         var $show5 = $("#show5");
         var $show6 = $("#show6");
         $.ajax({
-            url : "/remote/goods.do",
+            url : "/toGoods",
             type : "get",
             success : function (data) {
                 var str = "";

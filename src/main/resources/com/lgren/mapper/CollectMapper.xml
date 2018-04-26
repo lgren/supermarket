@@ -9,11 +9,14 @@
   <sql id="Base_Column_List" >
     collect_id, user_id, collect_goods_id
   </sql>
+  <select id="getCollectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from tb_collect where user_id = #{userId,jdbcType=BIGINT}
+  </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_collect
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from tb_collect
     where collect_id = #{collectId,jdbcType=BIGINT}

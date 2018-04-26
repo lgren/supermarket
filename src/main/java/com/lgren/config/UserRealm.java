@@ -48,10 +48,8 @@ public class UserRealm extends AuthorizingRealm {
         if (StringUtils.isEmptyOrWhitespace(username) || StringUtils.isEmptyOrWhitespace(password) ) {
             return simpleAuthenticationInfo;
         }
-        user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        if (userService.userLogin(user)) {
+        Long userId = userService.userLogin(username,password);
+        if (userId != null) {
             simpleAuthenticationInfo = new SimpleAuthenticationInfo(username,password,getName());
         }
         return simpleAuthenticationInfo;

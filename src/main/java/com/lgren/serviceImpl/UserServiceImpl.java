@@ -13,15 +13,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-
     @Override
     public User getUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
     }
 
     @Override
-    public boolean userLogin(User user) {
-        return userMapper.userLogin(user) > 0 ? true : false;
+    public long userLogin(String username,String password) {
+        return userMapper.userLogin(username,password);
     }
 
     @Override

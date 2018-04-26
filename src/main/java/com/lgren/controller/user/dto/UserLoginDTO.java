@@ -4,9 +4,13 @@ import java.util.Objects;
 
 public class UserLoginDTO {
     private String userId;
+
     private String username;
+
     private String password;
+
     private String authCode;
+
     private String autoLogin;
 
     public UserLoginDTO() {

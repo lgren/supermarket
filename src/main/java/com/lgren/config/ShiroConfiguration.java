@@ -167,9 +167,12 @@ public class ShiroConfiguration {
 //        filters.put("logout",null);
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put("/favicon.ico", "anon");
+        map.put("/toSeller", "anon");
         map.put("/**/logout", "logout");
         map.put("/toUser", "authc");//or"authc,roles[ROLE_USER]" 角色可以访问。由用户角色控制用户行为。
-        map.put("/toSeller", "authc,roles[seller]");
+        map.put("/toShop", "authc,roles[seller]");
+        map.put("/toCart", "authc");
+        map.put("/toCollect", "authc");
 //        map.put("/user/edit/**", "authc,perms[user:edit]");// 这里为了测试，固定写死的值，也可以从数据库或其他配置中读取，此处是用权限控制
         map.put("/**", "anon");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);

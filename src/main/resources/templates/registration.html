@@ -11,8 +11,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12" style="text-align: center">
-            <h1>这是注册</h1><a href="toIndex">返回主页</a>
+            <h1>这是注册</h1>
         </div>
+      <div class="col-sm-6 col-sm-offset-6 text-center"><a href="toIndex">返回主页</a></div>
         <div id="show" class="col-sm-6 col-sm-offset-3">
             <form class="form-horizontal">
                 <div class="form-group">
@@ -76,11 +77,20 @@ function registration() {
             "authCode" : authCode
         },
         success : function (data) {
-            data == -1 ? alert("用户名或密码不能为空") :
-                data == 0 ? alert("用户名已存在") :
-                    window.location.href = "toIndex";
+            //f+* 1账号或密码不能为空 2账号或密码输入格式不对 10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
+            /*if (!isNaN(Number(data))) {
+                //data是纯数字
+            }*/
+            data == "f1" ? alert("账号或密码不能为空") :
+                data == "f2" ? alert("账号或密码输入格式不对") :
+                    data == "f10" ? alert("用户已存在") :
+                        data == "f11" ? alert("增加用户失败") :
+                            data == "f12" ? alert("未查找刚插入的用户") :
+                                data == "f13" ? alert("个人购物车增加失败") :
+                                    data == "f14" ? alert("个人收藏夹添加失败") :
+                                        window.location.href = "toIndex";
         },
-        errer : function (data) {
+        error : function (data) {
 
         }
     })

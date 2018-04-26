@@ -1,49 +1,150 @@
 <!DOCTYPE html>
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>两个人商城</title>
-    <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="container-fluid">
-<div class="row">
+  <div class="row">
     <div class="col-sm-12" style="text-align: center"><h1>这是个人中心</h1></div>
     <div class="row">
-        <div shiro:user="" class="col-sm-6" style="text-align: center">
-            <h4>看到这个说明你是个有身份的人</h4>
-            <div>这是你的信息:<span shiro:principal=""></span></div>
-            <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-            <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-        </div>
-        <div shiro:guest="" class="col-sm-6" style="text-align: center">
-            <h4>看到这个说明你是个游客</h4></div>
-        <div id="show" class="col-sm-6" style="text-align: center">
-            <a href="toIndex">前往主页</a><br/>
-            <a shiro:guest="" href="toRegistration">注册界面</a><br/>
-            <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-            <a shiro:user="" th:href="@{'toCart?userId='+${#httpSession.getAttribute('userId')}}">购物车</a><br/>
-            <a shiro:user="" href="toCollect">我的收藏</a><br/>
-            <a shiro:user="" href="toSeller">卖家中心</a><br/>
-            <a href="logout">注销</a>
-        </div>
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+        <a shiro:user="" th:href="@{'toCart?userId='+${#httpSession.getAttribute('userId')}}">购物车</a><br/>
+        <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
+        <a href="logout">注销</a>
+      </div>
     </div>
-    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">test1</div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">test2</div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+    <div id="show1" class="col-sm-6" style="background-color: #bff7ff">
+      <form class="form-horizontal">
+        <input type="hidden" name="_method" value="put"/>
+        <!--隐藏域username-->
+        <input th:value="${#httpSession.getAttribute('userId')}" type="hidden" name="userId" id="userId"
+               readonly="readonly"/>
+        <div class="form-group">
+          <label for="nickname" class="col-sm-2 control-label">昵称:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getNickname() != null ? user.getNickname() : ''}" type="text" class="form-control"
+                   name="nickname" id="nickname" placeholder="nickname"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="realname" class="col-sm-2 control-label">真实姓名:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getRealName() != null ? user.getRealName() : ''}" type="text" class="form-control"
+                   name="realName" id="realName" placeholder="realName"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="genderStr" class="col-sm-2 control-label">性别:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getGenderStr() != null ? user.getGenderStr() : ''}" type="text" class="form-control"
+                   name="genderStr" id="genderStr" placeholder="gender"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phone" class="col-sm-2 control-label">手机号码:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getPhone() != null ? user.getPhone() : ''}" type="text" class="form-control"
+                   name="phone" id="phone" placeholder="phone" readonly="readonly"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email" class="col-sm-2 control-label">邮箱:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getEmail() != null ? user.getEmail() : ''}" type="email" class="form-control"
+                   name="email" id="email" placeholder="E-mail" readonly="readonly"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="birthday" class="col-sm-2 control-label">生日日期:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getBirthday() != null ? #dates.format(user.getBirthday(),'yyyy-MM-dd') : ''}"
+                   type="date" class="form-control" name="birthday" id="birthday" placeholder="birthday"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="liveaddress" class="col-sm-2 control-label">居住地址:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getLiveaddress() != null ? user.getLiveaddress() : ''}" type="text"
+                   class="form-control" name="liveaddress" id="liveaddress" placeholder="liveaddress"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="homeaddress" class="col-sm-2 control-label">家庭地址:</label>
+          <div class="col-sm-10">
+            <input th:value="${user.getHomeaddress() != null ? user.getHomeaddress() : ''}" type="text"
+                   class="form-control" name="homeaddress" id="homeaddress" placeholder="homeaddress"/>
+          </div>
+        </div>
+        <div id="authCodeDiv" class="form-group hidden">
+          <label for="authCode" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode" value="yzm"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" onclick="change()">保存修改</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="show2" class="col-sm-2" style="background-color: #85c5ff">test2</div>
+    <div id="show3" class="col-sm-2" style="background-color: #59aaff">test3</div>
+    <div id="show4" class="col-sm-2" style="background-color: #3176ff">test4</div>
+  </div>
+  <div class="row">
     <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
     <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
     <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
     <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-</div>
+  </div>
 </div>
 
 </body>
 
 <script type="text/javascript">
+    function change() {
+        var $authCode = $("#authCode");
+        var $authCodeDiv = $("#authCodeDiv");
+        if ($authCode.val() == null || $authCode.val() == "") {
+            alert("请输入验证码");
+            $authCodeDiv.removeClass("hidden");
+            return null;
+        }
+        var formData = $("form").serialize();
+        $.ajax({
+            url: "/userUpdate.do",
+            type: "put",
+            data: formData,
+            success: function (data) {
+                if (data == 0) {
+                    alert("修改失败");
+                } else {
+                    alert("修改成功");
+                    window.location.reload();
+                }
+            },
+            error: function (data) {
 
+            }
+        })
+    }
 </script>
 </html>

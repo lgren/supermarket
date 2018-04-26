@@ -1,6 +1,7 @@
 package com.lgren.serviceImpl;
 
 import com.lgren.dao.CartGoodsMapper;
+import com.lgren.dao.CartMapper;
 import com.lgren.pojo.po.CartGoods;
 import com.lgren.service.CartGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,22 @@ import java.util.List;
 public class CartGoodsServiceImpl implements CartGoodsService {
     @Autowired
     private CartGoodsMapper cartGoodsMapper;
+    @Autowired
+    private CartMapper cartMapper;
 
+
+    @Override
+    public int selectByUserIdandGoodsId(Long userId, Long goodsId) {
+        return cartGoodsMapper.selectByCartIdandGoodsId(cartMapper.getCartByUserId(userId).getCartId(),goodsId);
+    }
+
+    @Override
+    public int insertByUserIdAndGoodsId(Long userId, Long goodsId) {
+        CartGoods cartGoods = new CartGoods();
+        cartGoods.setGoodsId(goodsId);
+        cartGoods.setCartId(cartMapper.getCartByUserId(userId).getCartId());
+        return cartGoodsMapper.insert(cartGoods);
+    }
 
     @Override
     public List<CartGoods> getCartGoodsByCartId(Long cartId) {

@@ -15,6 +15,11 @@ public class CollectServiceImpl implements CollectService {
 
 
     @Override
+    public Collect getCollectByUserId(Long userId) {
+        return collectMapper.getCollectByUserId(userId);
+    }
+
+    @Override
     public List<Collect> selectAll() {
         return collectMapper.selectAll();
     }

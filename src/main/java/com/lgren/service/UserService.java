@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     User getUserByUsername(String username);
 
-    boolean userLogin(User user);
+    long userLogin(String username,String password);
 
     List<User> selectAll();
 

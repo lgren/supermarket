@@ -8,8 +8,9 @@ import java.util.List;
 public interface UserMapper {
     User getUserByUsername(String username);
 
-    @Select("select count(user_id) from tb_user where username=#{username} and password = #{password}")
-    int userLogin(User user);
+//    @Cacheable(key = "#userId",value = "")
+    @Select("select user_id from tb_user where username=#{param1} and password = #{param2}")
+    long userLogin(String username,String password);
 
     List<User> selectAll();
 

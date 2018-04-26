@@ -1,6 +1,7 @@
 package com.lgren.serviceImpl;
 
 import com.lgren.dao.CollectGoodsMapper;
+import com.lgren.dao.CollectMapper;
 import com.lgren.pojo.po.CollectGoods;
 import com.lgren.service.CollectGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,32 @@ import java.util.List;
 public class CollectGoodsServiceImpl implements CollectGoodsService {
     @Autowired
     private CollectGoodsMapper collectGoodsMapper;
+    @Autowired
+    private CollectMapper collectMapper;
 
+
+    @Override
+    public int selectByUserIdandGoodsId(Long userId, Long goodsId) {
+        return collectGoodsMapper.selectByCollectIdandGoodsId(collectMapper.getCollectByUserId(userId).getCollectId(),goodsId);
+    }
+
+    @Override
+    public int insertByUserIdAndGoodsId(Long userId, Long goodsId) {
+        CollectGoods collectGoods = new CollectGoods();
+        collectGoods.setGoodsId(goodsId);
+        collectGoods.setCollectId(collectMapper.getCollectByUserId(userId).getCollectId());
+        return collectGoodsMapper.insert(collectGoods);
+    }
+
+    @Override
+    public List<CollectGoods> getCollectGoodsByCollectId(Long collectId) {
+        return collectGoodsMapper.getCollectGoodsByCollectId(collectId);
+    }
+
+    @Override
+    public List<CollectGoods> getCollectGoodsByGoodsId(Long goodsId) {
+        return collectGoodsMapper.getCollectGoodsByGoodsId(goodsId);
+    }
 
     @Override
     public List<CollectGoods> selectAll() {

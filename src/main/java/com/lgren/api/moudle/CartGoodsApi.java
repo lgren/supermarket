@@ -39,7 +39,7 @@ public class CartGoodsApi {//OK
         return cartGoodsVOList;
     }
     public List<CartGoodsVO> getCartGoodsByGoodsId(Long goodsId) {
-        List<CartGoods> cartGoodsList = cartGoodsService.getCartGoodsByCartId(goodsId);
+        List<CartGoods> cartGoodsList = cartGoodsService.getCartGoodsByGoodsId(goodsId);
         List<CartGoodsVO> cartGoodsVOList = getCartGoodsVOList(cartGoodsList);
         return cartGoodsVOList;
     }

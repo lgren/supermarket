@@ -5,6 +5,8 @@ import com.lgren.pojo.po.Collect;
 import java.util.List;
 
 public interface CollectMapper {
+    Collect getCollectByUserId(Long userId);
+
     List<Collect> selectAll();
 
     int deleteByPrimaryKey(Long collectId);

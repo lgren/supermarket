@@ -10,6 +10,12 @@
   <sql id="Base_Column_List" >
     collect_goods_id, collect_id, goods_id, collect_goods_time
   </sql>
+  <select id="getCollectGoodsByGoodsId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_collect_goods where goods_id = #{goodsId,jdbcType=BIGINT}
+  </select>
+  <select id="getCollectGoodsByCollectId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_collect_goods where collect_id = #{collectId,jdbcType=BIGINT}
+  </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_collect_goods
   </select>
