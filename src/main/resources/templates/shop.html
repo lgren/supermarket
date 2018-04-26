@@ -16,7 +16,7 @@
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1 th:text="${goods.getShopDTO().getName()}+'的'+${goods.getName()}"></h1></div>
+    <div class="col-sm-12" style="text-align: center"><h1 th:text="${shopVO.getUserDTO().getNickname()}+'的'+${shopVO.getName()}"></h1></div>
     <div class="row">
       <div shiro:user="" class="col-sm-6" style="text-align: center">
         <h4>看到这个说明你是个有身份的人</h4>
@@ -26,7 +26,7 @@
       </div>
       <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
       <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
+        <a href="../toIndex">前往主页</a><br/>
         <a shiro:guest="" href="../toRegistration">注册界面</a><br/>
         <a shiro:guest="" href="../toLogin">登陆界面</a><br/>
         <a shiro:user="" href="../toCart">购物车</a><br/>
@@ -37,15 +37,15 @@
       </div>
     </div>
     <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <div>
-        <span>商品名:</span><span th:text="${goods.getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${goods.getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${goods.getImageUrl()}"></span><br/>
-        <span>原价:</span><span th:text="${goods.getPrice()}"></span><br/>
-        <span>折扣价:</span><span th:text="${#numbers.formatDecimal(goods.getPrice()*goods.getType(),0,2)}"></span><br/>
-        <a th:href="@{'toShop/' + ${goods.getShopDTO().getShopId()}}">前往店铺</a>
-        <a href="javascript:;" th:onclick="'addCartGoods('+${goods.getGoodsId()}+')'">添加到购物车</a>
-        <a href="javascript:;" th:onclick="'addCollectGoods('+${goods.getGoodsId()}+')'">添加到收藏夹</a>
+      <div th:each="goodVO : ${goodsVOList}">
+        <div>
+          <a th:href="@{'../toGoods/' + ${goodVO.getGoodsId()}}">前往</a><br/>
+          <span>商品名:</span><span th:text="${goodVO.getName()}"></span><br/>
+          <span>商品类型:</span><span th:text="${goodVO.getDiscount()}"></span><br/>
+          <span>图片:</span><span th:text="${goodVO.getImageUrl()}"></span><br/>
+          <span>原价:</span><span th:text="${goodVO.getPrice()}"></span><br/>
+          <span>折扣价:</span><span th:text="${#numbers.formatDecimal(goodVO.getPrice()*goodVO.getType(),0,2)}"></span>
+        </div>
       </div>
     </div>
     <div id="show2" class="col-sm-3" style="background-color: #85c5ff">test2</div>

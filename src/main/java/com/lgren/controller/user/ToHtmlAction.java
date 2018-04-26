@@ -109,7 +109,7 @@ public class ToHtmlAction {
         if (userId == null) {
             return "redirect:toLogin";
         }
-        map.put("myShopVOList",userHtmlService.selectMyShopByUserId(userId));
+        map.put("myShopVOList",userHtmlService.getMyShopByUserId(userId));
         return "myShop";
     }
 
@@ -119,8 +119,9 @@ public class ToHtmlAction {
         if (shopVO == null) {
             return "notFindGoods";
         }
-//        map.put("goods", goodsVO);
-        return "redirect:../remote/shop.do/2";
+        map.put("shopVO", shopVO);
+        map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId));
+        return "shop";
     }
 
 

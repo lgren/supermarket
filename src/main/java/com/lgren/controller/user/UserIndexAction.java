@@ -169,7 +169,7 @@ public class UserIndexAction {
      * @return //1:修改成功 --- f+ 1:shopId为空 10:未找到shop 11:修改失败
      */
     @ResponseBody
-    @PutMapping(value = "userUpdate.do")
+    @PutMapping(value = "shopUpdate.do")
     public String shopUpdate(MyShopDTO myShopDTO) {
         if (myShopDTO.getShopId() == null) {
             return "f1";

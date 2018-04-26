@@ -24,28 +24,16 @@ public class GoodsApi {//OK
     private ShopService shopService;
     //查询所有
     public List<GoodsVO> getAllGoods() {
-        return goodsService.selectAll().stream()
-                .map(g -> {
-                    GoodsVO goodsVO = mapper.map(g,GoodsVO.class);
-                    Shop shop = shopService.selectByPrimaryKey(g.getShopId());
-                    if (shop != null) {
-                        goodsVO.setShopDTO(mapper.map(shop,ShopDTO.class));
-                    }
-                    return goodsVO;
-                }).collect(Collectors.toList());
+        return goodsService.selectAll().stream().map(goods -> getGoodsVO(goods)).collect(Collectors.toList());
+    }
+    //查询所有
+    public List<GoodsVO> getGoodsVOList(List<Goods> goodsList) {
+        return goodsList.stream().map(goods -> getGoodsVO(goods)).collect(Collectors.toList());
     }
     //根据主键ID查询
     public GoodsVO getGoodsById(Long goodsId) {
         Goods goods = goodsService.selectByPrimaryKey(goodsId);
-        if (goods == null) {
-            return null;
-        }
-        Shop shop = shopService.selectByPrimaryKey(goods.getShopId());
-        GoodsVO goodsVO = mapper.map(goods,GoodsVO.class);
-        if (shop != null) {
-            goodsVO.setShopDTO(mapper.map(shop,ShopDTO.class));
-        }
-        return goodsVO;
+        return getGoodsVO(goods);
     }
     //添加
     public boolean addGoods(GoodsDTO goodsDTO) {
@@ -58,5 +46,16 @@ public class GoodsApi {//OK
     //通过传输一个Goods对象修改
     public boolean updateGoodsById(GoodsDTO goodsDTO) {
         return goodsService.updateByPrimaryKeySelective(mapper.map(goodsDTO,Goods.class)) > 0 ? true : false;
+    }
+    public GoodsVO getGoodsVO(Goods goods) {
+        if (goods == null) {
+            return null;
+        }
+        Shop shop = shopService.selectByPrimaryKey(goods.getShopId());
+        GoodsVO goodsVO = mapper.map(goods,GoodsVO.class);
+        if (shop != null) {
+            goodsVO.setShopDTO(mapper.map(shop,ShopDTO.class));
+        }
+        return goodsVO;
     }
 }

@@ -4,6 +4,7 @@ import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserLoginDTO;
 import com.lgren.exception.AddException;
 import com.lgren.exception.SelectException;
+import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 
 import java.util.List;
@@ -14,15 +15,15 @@ public interface UserHtmlService {
      * @param userLoginDTO
      * @return
      * @throws AddException <br/>
-     *         10:用户已存在 <br/>
-     *         11:增加用户失败 <br/>
-     *         12:未查找刚插入的用户 <br/>
-     *         13:个人购物车增加失败 <br/>
-     *         14:个人收藏夹添加失败
+     *          10:用户已存在 <br/>
+     *          11:增加用户失败 <br/>
+     *          12:未查找刚插入的用户 <br/>
+     *          13:个人购物车增加失败 <br/>
+     *          14:个人收藏夹添加失败
      */
     Long addUser(UserLoginDTO userLoginDTO) throws AddException;
 
-    List<ShopVO> selectMyShopByUserId(Long userId);
+    List<ShopVO> getMyShopByUserId(Long userId);
 
     /**
      *
@@ -34,4 +35,13 @@ public interface UserHtmlService {
      */
     void shopUpdate(MyShopDTO myShopDTO) throws SelectException;
 
+    /**
+     *
+     * @param shopId
+     * @return
+     * @throws SelectException <br/>
+     *          10:找不到商店 <br/>
+     *          11:查询商品异常 <br/>
+     */
+    List<GoodsVO> getGoodsByShopId(Long shopId);
 }

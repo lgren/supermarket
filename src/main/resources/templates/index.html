@@ -27,6 +27,7 @@
       <div shiro:guest="" class="col-sm-6" style="text-align: center">
         <h4>看到这个说明你是个游客</h4></div>
       <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="toIndex">前往主页</a><br/>
         <a shiro:guest="" href="toRegistration">注册界面</a><br/>
         <a shiro:guest="" href="toLogin">登陆界面</a><br/>
         <a shiro:user="" href="toCart">购物车</a><br/>
@@ -51,7 +52,7 @@
     <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
       <div th:each="shop : ${shops}">
         <div>
-          <a th:href="@{'remote/shop.do/' + ${shop.getShopId()}}">前往</a><br/>
+          <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
           <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
           <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
         </div>
