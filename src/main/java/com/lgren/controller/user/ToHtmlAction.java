@@ -6,6 +6,7 @@ import com.lgren.pojo.dto.UserDTO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 import com.lgren.service.UserHtmlService;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -108,12 +110,17 @@ public class ToHtmlAction {
     }
 
     @GetMapping(value = "/toMyShop")
+    @RequiresRoles("seller")
     public String toMyShop(Map<String, Object> map) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:toLogin";
         }
-        map.put("myShopVOList",userHtmlService.getMyShopByUserId(userId));
+        List<ShopVO> shopVOList = userHtmlService.getMyShopByUserId(userId);
+        if (shopVOList == null) {
+            shopVOList.add(new ShopVO());
+        }
+        map.put("myShopVOList",shopVOList);
         return "myShop";
     }
 
