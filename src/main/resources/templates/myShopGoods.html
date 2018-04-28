@@ -318,6 +318,9 @@
     }
 
     function deleteGoods(goodsId) {
+        if (!confirm("确认删除?")) {
+            return null;
+        }
         $.ajax({
             url: "../deleteGoods.do/" + goodsId,
             type: "post",
