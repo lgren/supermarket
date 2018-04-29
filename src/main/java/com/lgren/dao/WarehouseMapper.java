@@ -5,6 +5,10 @@ import com.lgren.pojo.po.Warehouse;
 import java.util.List;
 
 public interface WarehouseMapper {
+    Warehouse getWarehouseByShopId(Long shopId);
+
+    Warehouse getWarehouseByShopIdAndGoodsId(Long shopId, Long goodsId);
+
     List<Warehouse> selectAll();
 
     int deleteByPrimaryKey(Long warehouseId);

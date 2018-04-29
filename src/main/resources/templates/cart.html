@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<html id="htmlR" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
   <title>两个人商城</title>
@@ -38,18 +38,25 @@
       </div>
     </div>
     <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <div th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
+      <form th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
         <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
+        <!--隐藏域goodsId-->
+        <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
+        <!--隐藏域shopId-->
+        <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
+        <span>确认选中:</span><input type="checkbox"/><br/>
         <span>商品名:</span><span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span><br/>
         <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
         <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
         <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
         <span>折扣价:</span><span th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getType(),0,2)}"></span><br/>
-        <span>数量:</span><span th:text="${cartGoodsVO.getNumber()}"></span><br/>
+        <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
         <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
-      </div>
+      </form>
     </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">test2</div>
+    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+      <button type="button" onclick="pay()">前往支付</button>
+    </div>
     <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
     <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
   </div>
@@ -62,7 +69,7 @@
 </div>
 </body>
 
-<script type="text/javascript">
+<script type="text/javascript" th:inline="Javascript">
     function deleteCartGoods(cartGoodsId) {
         if (!confirm("确认删除?")) {
             return null;
@@ -81,6 +88,59 @@
 
             }
         })
+    }
+
+    function pay() {
+        var goodsList = [];
+        var $divs = $("#show1 form");
+        var test = [[${cart}]];
+
+/*        var $divs = $("#show1 form");
+        var cartGoodsVOList = [[${cart.getCartGoodsVOList()}]];
+        $.each($divs,function (k) {
+            var cartGoods = cartGoodsVOList[k].goodsDTO;
+            // cartGoods.goodsId = $($divs[k]).find("#goodsId").val();
+            cartGoods.number =$($divs[k]).find("#number").val();
+            goodsList[k] = cartGoods;
+        })
+        $.ajax({
+            url: "payment.do",
+            type: "post",
+            data: JSON.stringify(goodsList),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                // 数值>0为正确 --- 0没有商品 -1:参数数据和数据库比对不正确 -2:未登录
+                switch (data) {
+                    case -3 :
+                        alert("未选有商品");
+                        break;
+                    case -1 :
+                        alert("请正确操作");
+                        break;
+                    case -2 :{
+                        alert("还未登陆,请登陆");
+                        window.location.href = "toLogin";
+                    }
+                        break;
+                    default : {
+                        window.location.href = "toPayment";
+                    }
+                        break;
+                }
+            },
+            error : function (data) {
+
+            }
+        })*/
+    }
+
+
+    function doFormRequest(url,type,data) {
+        var form = document.createElement("form");
+        form.action = url;
+        form.method = type;
+
     }
 </script>
 </html>

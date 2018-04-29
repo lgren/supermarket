@@ -45,7 +45,7 @@
         <span>原价:</span><span th:text="${goods.getPrice()}"></span><br/>
         <span>折扣价:</span><span th:text="${#numbers.formatDecimal(goods.getPrice()*goods.getType(),0,2)}"></span><br/>
         <a th:href="@{'../toShop/' + ${goods.getShopDTO().getShopId()}}">前往店铺</a>
-        <a href="javascript:;" th:onclick="'addCartGoods('+${goods.getGoodsId()}+')'">添加到购物车</a>
+        <a href="javascript:;" th:onclick="'addCartGoods()'">添加到购物车</a>
         <a href="javascript:;" th:onclick="'addCollectGoods('+${goods.getGoodsId()}+')'">添加到收藏夹</a>
       </div>
     </div>
@@ -61,7 +61,7 @@
   </div>
 </div>
 </body>
-<script type="text/javascript">
+<script type="text/javascript" th:inline="javascript">
     // 购物车添加商品 -2请先登录 -1该商品失效 0添加失败 1添加成功
     function addCartGoods(goodsId) {
         $.ajax({

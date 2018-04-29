@@ -1,5 +1,6 @@
 package com.lgren.service;
 
+import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.po.CartGoods;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public interface CartGoodsService {
     int selectByUserIdandGoodsId(Long userId, Long goodsId);
 
-    int insertByUserIdAndGoodsId(Long userId ,Long goodsId);
+    int insertByUserIdAndGoodsId(Long userId ,CartGoodsDTO cartGoodsDTO);
 
     List<CartGoods> getCartGoodsByCartId(Long cartId);
 

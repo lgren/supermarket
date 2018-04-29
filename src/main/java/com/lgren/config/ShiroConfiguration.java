@@ -163,7 +163,7 @@ public class ShiroConfiguration {
 //        --登录成功后要跳转的链接
         shiroFilterFactoryBean.setSuccessUrl("/toIndex");
 //        --未授权页面 认证失败
-//        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/toIndex");
 //        filters.put("logout",null);
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put("/favicon.ico", "anon");

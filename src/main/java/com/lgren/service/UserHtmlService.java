@@ -5,7 +5,9 @@ import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserRegistrationDTO;
 import com.lgren.exception.AddException;
 import com.lgren.exception.SelectException;
+import com.lgren.exception.TransactionException;
 import com.lgren.exception.UpdateException;
+import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.vo.GoodsVO;
@@ -126,4 +128,30 @@ public interface UserHtmlService {
     boolean deleteGoods(Long goodsId);
 
     boolean deleteReceivingAddress(Long receivingAddressId);
+
+    /**
+     * @param cartGoodsDTOList
+     * @return
+     * @throws TransactionException <br/>
+     *                              1:参数数据和数据库比对不正确
+     */
+    double compareToDBAndGetAll(List<CartGoodsDTO> cartGoodsDTOList) throws TransactionException;
+
+    /**
+     * @param userId
+     * @param cartGoodsDTOList
+     * @return 用户余额
+     * @throws SelectException <br/>
+     *                         10:未找到用户
+     *                         11:余额不足
+     *                         13:未找到商品
+     *                         16:商品已售完
+     * @throws UpdateException <br/>
+     *                         12:扣款发生错误
+     *                         14:未找到商品的店铺
+     *                         15:店铺打款错误
+     * @throws AddException    <br/>
+     *                         17:订单添加失败
+     */
+    double pay(Long userId, List<CartGoodsDTO> cartGoodsDTOList) throws SelectException, UpdateException, AddException;
 }

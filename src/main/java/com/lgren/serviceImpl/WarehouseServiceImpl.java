@@ -15,6 +15,16 @@ public class WarehouseServiceImpl implements WarehouseService {
 
 
     @Override
+    public Warehouse getWarehouseByShopId(Long shopId) {
+        return warehouseMapper.getWarehouseByShopId(shopId);
+    }
+
+    @Override
+    public Warehouse getWarehouseByShopIdAndGoodsId(Long shopId, Long goodsId) {
+        return warehouseMapper.getWarehouseByShopIdAndGoodsId(shopId,goodsId);
+    }
+
+    @Override
     public List<Warehouse> selectAll() {
         return warehouseMapper.selectAll();
     }

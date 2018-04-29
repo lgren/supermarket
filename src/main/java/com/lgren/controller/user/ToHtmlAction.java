@@ -2,7 +2,9 @@ package com.lgren.controller.user;
 
 import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
+import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.UserDTO;
+import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 import com.lgren.service.UserHtmlService;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +29,8 @@ public class ToHtmlAction {
     private Mapper mapper;
     @Autowired
     private UserHtmlService userHtmlService;
+
+
 
     @Autowired
     private ShopApi shopApi;
@@ -65,8 +70,9 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toCart")
     public String toCart(Map<String, Object> map) {
+        CartVO cartVO = cartApi.getCartByUserId((Long) session.getAttribute("userId"));
         map.put("userId", session.getAttribute("userId"));
-        map.put("cart", cartApi.getCartByUserId((Long) session.getAttribute("userId")));
+        map.put("cart", cartVO);
         return "cart";
     }
 
@@ -181,6 +187,16 @@ public class ToHtmlAction {
     @GetMapping(value = "/toApplyShop")
     public String toShop() {
         return "applyShop";
+    }
+
+
+    @GetMapping(value = "/toPayment")
+    public String toTransaction(@RequestBody List<CartGoodsDTO> cartGoodsDTOList) {
+        System.out.println(cartGoodsDTOList);
+        if (session.getAttribute("userId") == null) {
+            return "toLogin";
+        }
+        return "payment";
     }
 
 

@@ -8,14 +8,15 @@ import com.lgren.controller.user.dto.UserRegistrationDTO;
 import com.lgren.dao.*;
 import com.lgren.exception.AddException;
 import com.lgren.exception.SelectException;
+import com.lgren.exception.TransactionException;
 import com.lgren.exception.UpdateException;
+import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.*;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 import com.lgren.service.UserHtmlService;
-import com.lgren.service.WarehouseService;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,14 +42,18 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     @Autowired
     private ReceivingAddressMapper receivingAddressMapper;
     @Autowired
-    private WarehouseService warehouseService;
+    private WarehouseMapper warehouseMapper;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private CartGoodsMapper cartGoodsMapper;
     @Autowired
     private GoodsApi goodsApi;
     @Autowired
     private ShopApi shopApi;
 
     /**
-     * @param userLoginDTO
+     * @param userRegistrationDTO
      * @return
      * @throws AddException <br/>
      *                      10:用户已存在 <br/>
@@ -322,6 +327,94 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     @Override
     public boolean deleteReceivingAddress(Long receivingAddressId) {
         return receivingAddressMapper.deleteByPrimaryKey(receivingAddressId) > 0 ? true : false;
+    }
+
+    /**
+     * @param cartGoodsDTOList
+     * @return
+     * @throws TransactionException <br/>
+     *                              1:参数数据和数据库比对不正确
+     */
+    @Override
+    public double compareToDBAndGetAll(List<CartGoodsDTO> cartGoodsDTOList) throws TransactionException {
+        double all = 0;
+        for (CartGoodsDTO cg : cartGoodsDTOList) {
+            boolean flag = false;
+            Goods goods = goodsMapper.selectByPrimaryKey(cg.getGoodsId());
+            if (goods != null) {
+                flag = cg.getGoodsId() != goods.getGoodsId() ? true :
+                        cg.getPrice() != goods.getPrice() ? true : false;
+            }
+            if (flag) {
+                throw new TransactionException("1");
+            }
+            all += goods.getDiscount() * goods.getPrice();
+        }
+        return all;
+    }
+
+    /**
+     * @param userId
+     * @param cartGoodsDTOList
+     * @return 用户余额
+     * @throws SelectException <br/>
+     *                         10:未找到用户
+     *                         11:余额不足
+     *                         13:未找到商品
+     *                         16:商品已售完
+     * @throws UpdateException <br/>
+     *                         12:扣款发生错误
+     *                         14:未找到商品的店铺
+     *                         15:店铺打款错误
+     * @throws AddException    <br/>
+     *                         17:订单添加失败
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public double pay(Long userId, List<CartGoodsDTO> cartGoodsDTOList) throws SelectException, UpdateException, AddException {
+        User user;
+        if (userId == null || (user = userMapper.selectByPrimaryKey(userId)) == null) {
+            throw new SelectException("10");
+        }
+        double money = compareToDBAndGetAll(cartGoodsDTOList);
+
+        double resultMoney = user.getMoney() - money;
+        if (resultMoney < 0) {
+            throw new SelectException("11");
+        }
+        user.setMoney(resultMoney);
+        if (userMapper.updateByPrimaryKeySelective(user) != 1) {
+            throw new UpdateException("12");
+        }
+        for (CartGoodsDTO cartGoodsDTO : cartGoodsDTOList) {
+            Goods goods;
+            if ((goods = goodsMapper.selectByPrimaryKey(cartGoodsDTO.getGoodsId())) == null) {
+                throw new SelectException("13");
+            }
+            Shop shop;
+            if ((shop = shopMapper.selectByPrimaryKey(goodsMapper.selectByPrimaryKey(cartGoodsDTO.getGoodsId()).getShopId())) == null) {
+                throw new SelectException("14");
+            }
+            shop.setMoney(shop.getMoney() + money);
+            if (shopMapper.updateByPrimaryKeySelective(shop) != 1) {
+                throw new UpdateException("15");
+            }
+            Warehouse warehouse;
+            if ((warehouse = warehouseMapper.getWarehouseByShopIdAndGoodsId(shop.getShopId(), cartGoodsDTO.getGoodsId())) == null) {
+                warehouse.setNumber(warehouse.getNumber() - cartGoodsDTO.getNumber());
+                if (warehouse.getNumber() < 0) {
+                    throw new SelectException("16");
+                }
+                warehouseMapper.updateByPrimaryKeySelective(warehouse);
+            }
+            Order order = new Order(null, userId, shop.getShopId(), cartGoodsDTO.getGoodsId(), cartGoodsDTO.getNumber(),
+                    goods.getPrice() * goods.getDiscount(), 1, System.currentTimeMillis(), 0,
+                    null, 0, null, 0);
+            if (orderMapper.insert(order) != 1) {
+                throw new AddException("17");
+            }
+        }
+        return resultMoney;
     }
 
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>这是登陆</h1></div>
+    <div class="row">
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+        <a shiro:user="" href="toCart">购物车</a><br/>
+        <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="toUser">个人中心</a><br/>
+        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
+    </div>
+    <div id="show1" class="col-sm-6 col-sm-offset-3">
+      <div class="row">
+        <div class="col-sm-4"><a href="javascript:;" onclick="payType(1)">两个人支付</a></div>
+        <div class="col-sm-4"><a href="javascript:;" onclick="payType(2)">支付宝支付</a></div>
+        <div class="col-sm-4"><a href="javascript:;" onclick="payType(3)">微信支付</a></div>
+        <div class="col-sm-12">
+          <form class="form-horizontal" id="lgrenPay">
+            <h3>两个人支付</h3>
+            <div class="form-group">
+              <label for="paymentPassword" class="col-sm-2 control-label">支付密码:</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" name="paymentPassword" id="paymentPassword"
+                       placeholder="payment_password"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="authCode" class="col-sm-2 control-label">验证码</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"
+                       value="yzm"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="button" class="btn btn-default" onclick="pay()">确认支付</button>
+              </div>
+            </div>
+          </form>
+          <form class="form-horizontal" id="aliPay">
+            <h3>支付宝</h3>
+          </form>
+          <form class="form-horizontal" id="tencentPay">
+            <h3>微信支付</h3>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<script type="text/javascript" th:inline="javascript">
+    function payType(type) {
+        switch (type) {
+            default:
+            case 1: {
+                $("#lgrenPay").removeClass("hidden");
+                $("#aliPay").addClass("hidden");
+                $("#tencentPay").addClass("hidden");
+            }
+                break;
+            case 2: {
+                $("#lgrenPay").addClass("hidden");
+                $("#aliPay").removeClass("hidden");
+                $("#tencentPay").addClass("hidden");
+            }
+                break;
+            case 3: {
+                $("#lgrenPay").addClass("hidden");
+                $("#aliPay").addClass("hidden");
+                $("#tencentPay").removeClass("hidden");
+            }
+                break;
+        }
+    }
+    function pay() {
+        var returnData;
+        var paymentPassword = $("#paymentPassword").val();
+        var authCode = $("#authCode").val();
+        paymentPassword == "" ? alert("密码不能为空") :
+            authCode == "" ? alert("验证码不能为空") :
+                returnData = 1;
+        if (returnData != 1) {
+            return null;
+        }
+        $.ajax({
+            url: "/pay.do",
+            type: "get",
+            data: {
+                "password": paymentPassword,
+                "authCode": authCode
+            },
+            success: function (data) {
+                // 数值>0为正确 --- f+ 1:参数数据和数据库比对不正确 2:未登录 3没有商品 10:未找到用户 11:余额不足 13:未找到商品 16:商品已售完 12:扣款发生错误 14:未找到商品的店铺 15:店铺打款错误 17:订单添加失败
+                switch (data) {
+                    case -3 :
+                        alert("未选有商品");
+                        break;
+                    case -1 :
+                        alert("请正确操作");
+                        alert("请正确操作");
+                        break;
+                    case -2 :{
+                        alert("还未登陆,请登陆");
+                        window.location.href = "toLogin";
+                    }
+                        break;
+                    default : ;
+                        break;
+                }
+            },
+            error: function (data) {
+
+            }
+        })
+
+    }
+</script>
+</html>

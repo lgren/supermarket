@@ -10,11 +10,20 @@
   <sql id="Base_Column_List" >
     warehouse_id, shop_id, goods_id, number
   </sql>
+
+  <select id="getWarehouseByShopIdAndGoodsId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from tb_warehouse where shop_id = #{param1,jdbcType=BIGINT} and goods_id = #{param2,jdbcType=BIGINT}
+  </select>
+
+  <select id="getWarehouseByShopId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from tb_warehouse where shop_id = #{shopId,jdbcType=BIGINT}
+  </select>
+
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_warehouse
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from tb_warehouse
     where warehouse_id = #{warehouseId,jdbcType=BIGINT}
