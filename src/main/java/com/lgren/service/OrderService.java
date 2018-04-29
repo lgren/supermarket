@@ -5,6 +5,8 @@ import com.lgren.pojo.po.Order;
 import java.util.List;
 
 public interface OrderService {
+    Order getOrderByUserIdAndgoodsId(Long userId, Long goodsId);
+
     List<Order> selectAll();
 
     int deleteByPrimaryKey(Long orderId);

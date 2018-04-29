@@ -19,17 +19,19 @@ public class CartGoodsVO {
 
     private Double price;
 
+    private Integer type;
+
     public CartGoodsVO() {
     }
 
-    public CartGoodsVO(Long cartGoodsId, CartDTO cartDTO, GoodsDTO goodsDTO, Date cartGoodsTime, Integer number, Double price) {
-
+    public CartGoodsVO(Long cartGoodsId, CartDTO cartDTO, GoodsDTO goodsDTO, Date cartGoodsTime, Integer number, Double price, Integer type) {
         this.cartGoodsId = cartGoodsId;
         this.cartDTO = cartDTO;
         this.goodsDTO = goodsDTO;
         this.cartGoodsTime = cartGoodsTime;
         this.number = number;
         this.price = price;
+        this.type = type;
     }
 
     @Override
@@ -41,6 +43,7 @@ public class CartGoodsVO {
                 ", cartGoodsTime=" + cartGoodsTime +
                 ", number=" + number +
                 ", price=" + price +
+                ", type=" + type +
                 '}';
     }
 
@@ -54,13 +57,14 @@ public class CartGoodsVO {
                 Objects.equals(goodsDTO, that.goodsDTO) &&
                 Objects.equals(cartGoodsTime, that.cartGoodsTime) &&
                 Objects.equals(number, that.number) &&
-                Objects.equals(price, that.price);
+                Objects.equals(price, that.price) &&
+                Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(cartGoodsId, cartDTO, goodsDTO, cartGoodsTime, number, price);
+        return Objects.hash(cartGoodsId, cartDTO, goodsDTO, cartGoodsTime, number, price, type);
     }
 
     public Long getCartGoodsId() {
@@ -110,5 +114,13 @@ public class CartGoodsVO {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

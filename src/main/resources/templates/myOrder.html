@@ -16,7 +16,7 @@
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>这是购物车</h1></div>
+    <div class="col-sm-12" style="text-align: center"><h1>我的订单-未付款</h1></div>
     <div class="row">
       <div shiro:user="" class="col-sm-6" style="text-align: center">
         <h4>看到这个说明你是个有身份的人</h4>
@@ -44,19 +44,17 @@
         <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
         <!--隐藏域shopId-->
         <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
-        <span>确认选中:</span><input type="checkbox"/><br/>
         <span>商品名:</span><span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span><br/>
         <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
         <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
         <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
         <span>折扣价:</span><span th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getType(),0,2)}"></span><br/>
-        <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
+        <span>数量:</span><span th:text="${cartGoodsVO.getNumber()}"/><br/>
         <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
+        <a href="javascript:;" th:onclick="'pay('+${cartGoodsVO.getCartGoodsId()}+','+${cartGoodsVO.getGoodsDTO().getGoodsId()}+')'">前往支付</a>
       </form>
     </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-      <button type="button" onclick="pay()">前往支付</button>
-    </div>
+    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">test2</div>
     <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
     <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
   </div>
@@ -78,7 +76,8 @@
             url: "cartGoodsDelete.do/"+cartGoodsId,
             type: "post",
             data: {
-                "_method": "delete"
+                "_method": "delete",
+                "type": 1
             },
             success: function (data) {
                 data == 0 ? alert("删除失败") : alert("删除成功");
@@ -89,23 +88,7 @@
             }
         })
     }
-
-    function pay() {
-        var cartVO = [[${cart}]];
-        var cartGoodsVOList = [];
-        var $divs = $("#show1 form");
-        $.each($divs,function (k) {
-            if ($($divs[k])[0][2].checked) {
-                var cartGoodsVO = cartVO.cartGoodsVOList[k];
-                cartGoodsVO.number = $($divs[k]).find("#number").val();
-                cartGoodsVOList.push(cartGoodsVO);
-            }
-        })
-        cartVO.cartGoodsVOList = cartGoodsVOList;
-        if (1 > cartGoodsVOList.length) {
-            alert("未选中任何商品");
-            return null;
-        }
+    function pay(cartGoodsId,goodsId) {
         doFormRequest("toPay","post",JSON.stringify(cartVO),"list");
     }
 </script>

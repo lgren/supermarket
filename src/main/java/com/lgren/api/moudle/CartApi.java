@@ -28,19 +28,24 @@ public class CartApi {//OK
     public List<CartVO> getAllCart() {
         List<Cart> cartList = cartService.selectAll();
         List<CartVO> cartVOList = cartList.stream()
-                .map(cart -> getCartVO(cart))
+                .map(cart -> getCartVO(cart,0))
                 .collect(Collectors.toList());
         return cartVOList;
     }
     //根据用户主键ID查询
     public CartVO getCartByUserId(Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
-        return getCartVO(cart);
+        return getCartVO(cart,null);
+    }
+    //根据用户主键ID查询
+    public CartVO getCartGoodsByUserIdAndType(Long userId,Integer type) {
+        Cart cart = cartService.getCartByUserId(userId);
+        return getCartVO(cart,type);
     }
     //根据主键ID查询
     public CartVO getCartById(Long cartId) {
         Cart cart = cartService.selectByPrimaryKey(cartId);
-        return getCartVO(cart);
+        return getCartVO(cart,null);
     }
     //添加
     public boolean addCart(CartDTO cartDTO) {
@@ -56,10 +61,10 @@ public class CartApi {//OK
     }
 
 
-    private CartVO getCartVO(Cart cart) {
+    private CartVO getCartVO(Cart cart,Integer type) {
         CartVO cartVO = mapper.map(cart,CartVO.class);
         UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(cart.getUserId()),UserDTO.class);
-        List<CartGoodsVO> cartGoodsVOList = cartGoodsApi.getCartGoodsByCartId(cart.getCartId());
+        List<CartGoodsVO> cartGoodsVOList = cartGoodsApi.getCartGoodsByCartIdAndType(cart.getCartId(),type);
         cartVO.setUserDTO(userDTO);
         cartVO.setCartGoodsVOList(cartGoodsVOList);
         return cartVO;

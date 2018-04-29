@@ -12,6 +12,7 @@ import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserHtmlService {
     /**
@@ -36,6 +37,7 @@ public interface UserHtmlService {
      *                         12:已经添加到了购物车
      */
     Long addCartGoods(Long userId, CartGoodsDTO cartGoodsDTO) throws SelectException;
+
 
     List<ShopVO> getMyShopByUserId(Long userId);
 
@@ -162,23 +164,26 @@ public interface UserHtmlService {
      * @throws DeleteException <br/>
      *                         18:购物车移除失败
      */
-    Double getOrder(Long userId, CartVO cartVO) throws DeleteException, SelectException, AddException;
+    Map getOrder(Long userId, CartVO cartVO) throws DeleteException, SelectException, AddException;
 
     /**
      * @param userId
-     * @param cartGoodsDTOList
+     * @param paymentPassword
      * @return 用户余额
      * @throws SelectException <br/>
      *                         10:未找到用户
      *                         11:余额不足
-     *                         13:未找到商品
-     *                         16:商品已售完
+     *                         13:未找到订单
+     *                         14:未找到店铺
+     *                         15:未找到店铺仓库
      * @throws UpdateException <br/>
      *                         12:扣款发生错误
-     *                         14:未找到商品的店铺
-     *                         15:店铺打款错误
-     * @throws AddException    <br/>
-     *                         17:订单添加失败
+     *                         16:库存不足
+     *                         17:店铺加钱失败
+     *                         18:仓库更新失败
+     *                         19:订单更新失败
+     * @throws DeleteException <br/>
+     *                         20:购物车删除失败
      */
-    double pay(Long userId, List<CartGoodsDTO> cartGoodsDTOList) throws SelectException, UpdateException, AddException;
+    Boolean pay(Double all, Long userId, String paymentPassword, List<Long> orderIdList, List<Long> cartGoodsIdList) throws DeleteException, SelectException, UpdateException;
 }

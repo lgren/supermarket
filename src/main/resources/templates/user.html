@@ -112,8 +112,62 @@
         </div>
       </form>
     </div>
-    <div id="show2" class="col-sm-2" style="background-color: #85c5ff">test2</div>
-    <div id="show3" class="col-sm-2" style="background-color: #59aaff">test3</div>
+    <div id="show2" class="col-sm-2" style="background-color: #85c5ff">
+      <form class="form-horizontal">
+        <input type="hidden" name="_method" value="put"/>
+        <div class="form-group">
+          <label for="password" class="col-sm-2 control-label">原密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" name="password" id="password" placeholder="old password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="newPassword" class="col-sm-2 control-label">新密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" name="newPassword" id="newPassword" placeholder="new password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reNewPassword" class="col-sm-2 control-label">再次输入:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="reNewPassword" placeholder="new password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" onclick="changePassword(this)">修改密码</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="show3" class="col-sm-2" style="background-color: #59aaff">
+      <form class="form-horizontal">
+        <input type="hidden" name="_method" value="put"/>
+        <div class="form-group">
+          <label for="paymentPassword" class="col-sm-2 control-label">支付密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" name="paymentPassword" id="paymentPassword" placeholder="如果未设置此栏不填"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="newPaymentPassword" class="col-sm-2 control-label">新的支付密码:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" name="newPaymentPassword" id="newPaymentPassword" placeholder="new payment password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reNewPaymentPassword" class="col-sm-2 control-label">再次输入:</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="reNewPaymentPassword" placeholder="new password"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" class="btn btn-default" onclick="changePaymentPassword(this)">修改密码</button>
+          </div>
+        </div>
+      </form>
+    </div>
     <div id="show4" class="col-sm-2" style="background-color: #3176ff">test4</div>
   </div>
   <div class="row">
@@ -226,6 +280,71 @@
 </body>
 
 <script type="text/javascript">
+    function changePaymentPassword(node) {
+        var formNode = $(node).parent().parent().parent();
+        var formData = formNode.serialize();
+        if ($("#newPaymentPassword").val() != $("#reNewPaymentPassword").val()) {
+            alert("两次密码不一致");
+            return null;
+        }
+        $.ajax({
+            url: "/changePaymentPassword.do",
+            type: "put",
+            data: formData,
+            success: function (data) {
+                //1:修改成功 --- f+ 0:session中没有userId 1:支付密码错误 2:修改失败 3:不是6位纯数字
+                switch (data) {
+                    case "1" : {
+                        alert("修改成功");
+                        window.location.reload();
+                    } break;
+                    case "f0" : {
+                        alert("未登录,请登陆");
+                        window.location.href = "toLogin";
+                    } break;
+                    case "f1" : alert("支付密码错误"); break;
+                    case "f2" : alert("修改失败"); break;
+                    case "f3" : alert("支付密码为6位纯数字"); break;
+                    default : alert("不可预料错误"); break;
+                }
+            },
+            error: function (data) {
+            }
+        })
+    }
+    function changePassword(node) {
+        var formNode = $(node).parent().parent().parent();
+        var formData = formNode.serialize();
+        if ($("#newPassword").val() != $("#reNewPassword").val()) {
+            alert("两次密码不一致");
+            return null;
+        }
+        $.ajax({
+            url: "/changePassword.do",
+            type: "put",
+            data: formData,
+            success: function (data) {
+                //1:修改成功 --- f+ 0:session中没有userId 1:密码错误 2:修改失败
+                switch (data) {
+                    case "1" : {
+                        alert("修改成功");
+                        window.location.reload();
+                    } break;
+                    case "f0" : {
+                        alert("未登录,请登陆");
+                        window.location.href = "toLogin";
+                    } break;
+                    case "f1" : alert("密码错误"); break;
+                    case "f2" : alert("修改失败"); break;
+                    default : alert("不可预料错误"); break;
+                }
+            },
+            error: function (data) {
+            }
+        })
+    }
+
+
     function change(node) {
         var formNode = $(node).parent().parent().parent();
         var $authCode = $("#authCode");

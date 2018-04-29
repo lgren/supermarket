@@ -6,11 +6,13 @@ import com.lgren.pojo.po.CartGoods;
 import java.util.List;
 
 public interface CartGoodsService {
+    int deleteByPrimaryKeyAndType(Long cartGoodsId,Integer type);
+
     int selectByUserIdandGoodsId(Long userId, Long goodsId);
 
     int insertByUserIdAndGoodsId(Long userId ,CartGoodsDTO cartGoodsDTO);
 
-    List<CartGoods> getCartGoodsByCartId(Long cartId);
+    List<CartGoods> getCartGoodsByCartIdAndType(Long cartId,Integer type);
 
     List<CartGoods> getCartGoodsByGoodsId(Long goodsId);
 

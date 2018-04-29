@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderMapper {
+    Order getOrderByUserIdAndgoodsId(Long userId, Long goodsId);
+
     @Select("select order_id from tb_order where state = #{param1,jdbcType=INTEGER} and user_id = #{param2,jdbcType=BIGINT} and goods_id = #{param3,jdbcType=BIGINT}")
     Long getOrderIdByStateAndUserIdAndGoodsId(Integer state, Long userId, Long goodsId);
 

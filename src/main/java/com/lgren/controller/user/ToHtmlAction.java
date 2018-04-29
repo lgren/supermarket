@@ -2,26 +2,28 @@ package com.lgren.controller.user;
 
 import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
+import com.lgren.pojo.dto.OrderDTO;
 import com.lgren.pojo.dto.UserDTO;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
+import com.lgren.service.OrderService;
 import com.lgren.service.UserHtmlService;
+import com.lgren.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class ToHtmlAction {
@@ -29,6 +31,10 @@ public class ToHtmlAction {
     private Mapper mapper;
     @Autowired
     private UserHtmlService userHtmlService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
 
 
@@ -44,6 +50,8 @@ public class ToHtmlAction {
     private UserApi userApi;
     @Autowired
     private ReceivingAddressApi receivingAddressApi;
+    @Autowired
+    private CartGoodsApi cartGoodsApi;
     @Autowired
     private HttpServletRequest request;
     @Autowired
@@ -69,11 +77,15 @@ public class ToHtmlAction {
     }
 
     @GetMapping(value = "/toCart")
-    public String toCart(Map<String, Object> map) {
-        CartVO cartVO = cartApi.getCartByUserId((Long) session.getAttribute("userId"));
+    public String toCart(Map<String, Object> map,Integer type) {
+        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType((Long) session.getAttribute("userId"),type == null ? 0 : type);
         map.put("userId", session.getAttribute("userId"));
         map.put("cart", cartVO);
-        return "cart";
+        if (type == null || type == 0) {
+            return "cart";
+        } else {
+            return "myOrder";
+        }
     }
 
     @GetMapping(value = "/toCollect")
@@ -194,27 +206,55 @@ public class ToHtmlAction {
      * @param map
      * @param cartVO
      * @param bindingResult
-     * @return 10:未找到用户 13:未找到商品 16:商品已售完 XXX的库存不够 14:未找到商品的店铺 17:订单添加失败 18:购物车移除失败
+     * @return 10:未找到用户 13:未找到商品 14:未找到商品的店铺 16:商品已售完 XXX的库存不够 17:订单添加失败 18:购物车移除失败 19:订单已经存在
      */
     @PostMapping(value = "/toPay")
-    public String toTransaction(Map map, CartVO cartVO, BindingResult bindingResult) {
+    public String toPay(Map map, CartVO cartVO, BindingResult bindingResult) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "login";
         }
+        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId),UserDTO.class);
+        if (userDTO.getPaymentPassword() == null || userDTO.getPaymentPassword().equals("")) {
+            return "redirect:toUser";
+        }
         try {
-            Double orderIdList = userHtmlService.getOrder(userId,cartVO);
-            if (orderIdList == null || orderIdList.equals(0D)) {
-                return "notGetOrder";
-            }
-            map.put("all",98);
-            System.out.println(orderIdList);
+//            TransactionUserAndShopDTO transactionUserAndShopDTO = userHtmlService.getOrder(userId,cartVO);
+            Map getOrderReturn = userHtmlService.getOrder(userId,cartVO);
+            map.put("all", getOrderReturn.get("all"));
+            map.put("orderIdList", getOrderReturn.get("orderIdList"));
+            map.put("cartGoodsIdList", cartVO.getCartGoodsVOList().stream()
+                    .map(cartGoodsVO -> cartGoodsVO.getCartGoodsId()).collect(Collectors.toList()));
+            return "payment";
         } catch (RuntimeException re) {
+            /*if (re.getMessage() == "19") {
+                return "redirect:toCart";
+            }*/
             map.put("exception" , re.getMessage());
             return "notNormal";
         }
+    }
 
-
+    @GetMapping(value = "/toPay",params = {"cartGoodsId", "goodsId"})
+    public String toPay(Map map,
+                        @RequestParam("cartGoodsId") Long cartGoodsId,
+                        @RequestParam("goodsId") Long goodsId){
+        Long userId = (Long) session.getAttribute("userId");
+        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId),UserDTO.class);
+        if (userDTO.getPaymentPassword() == null) {
+            return "user";
+        }
+        if (userId == null) {
+            return "login";
+        }
+        OrderDTO orderDTO = mapper.map(orderService.getOrderByUserIdAndgoodsId(userId, goodsId),OrderDTO.class);
+        map.put("all",orderDTO.getAmount()*orderDTO.getPrice());
+        List<Long> orderIdList = new ArrayList();
+        orderIdList.add(orderDTO.getOrderId());
+        map.put("orderIdList",orderIdList);
+        List<Long> cartGoodsIdList = new ArrayList<>();
+        cartGoodsIdList.add(cartGoodsId);
+        map.put("cartGoodsIdList",orderIdList);
         return "payment";
     }
 

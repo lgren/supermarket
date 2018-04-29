@@ -9,6 +9,8 @@ public class UserLoginDTO {
 
     private String password;
 
+    private String paymentPassword;
+
     private String authCode;
 
     private String autoLogin;
@@ -16,11 +18,11 @@ public class UserLoginDTO {
     public UserLoginDTO() {
     }
 
-    public UserLoginDTO(String userId, String username, String password, String authCode, String autoLogin) {
-
+    public UserLoginDTO(String userId, String username, String password, String paymentPassword, String authCode, String autoLogin) {
         this.userId = userId;
         this.username = username;
         this.password = password;
+        this.paymentPassword = paymentPassword;
         this.authCode = authCode;
         this.autoLogin = autoLogin;
     }
@@ -31,6 +33,7 @@ public class UserLoginDTO {
                 "userId='" + userId + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", paymentPassword='" + paymentPassword + '\'' +
                 ", authCode='" + authCode + '\'' +
                 ", autoLogin='" + autoLogin + '\'' +
                 '}';
@@ -44,6 +47,7 @@ public class UserLoginDTO {
         return Objects.equals(userId, that.userId) &&
                 Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&
+                Objects.equals(paymentPassword, that.paymentPassword) &&
                 Objects.equals(authCode, that.authCode) &&
                 Objects.equals(autoLogin, that.autoLogin);
     }
@@ -51,7 +55,7 @@ public class UserLoginDTO {
     @Override
     public int hashCode() {
 
-        return Objects.hash(userId, username, password, authCode, autoLogin);
+        return Objects.hash(userId, username, password, paymentPassword, authCode, autoLogin);
     }
 
     public String getUserId() {
@@ -77,6 +81,14 @@ public class UserLoginDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPaymentPassword() {
+        return paymentPassword;
+    }
+
+    public void setPaymentPassword(String paymentPassword) {
+        this.paymentPassword = paymentPassword;
     }
 
     public String getAuthCode() {

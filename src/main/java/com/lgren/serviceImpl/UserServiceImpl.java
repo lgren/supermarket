@@ -14,6 +14,16 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
+    public Long isByUserIdAndPassword(Long userId, String password) {
+        return userMapper.isByUserIdAndPassword(userId,password);
+    }
+
+    @Override
+    public String payment(Long userId, String paymentPassword) {
+        return userMapper.payment(userId, paymentPassword);
+    }
+
+    @Override
     public User getUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
     }

@@ -5,6 +5,10 @@ import com.lgren.pojo.po.User;
 import java.util.List;
 
 public interface UserService {
+    Long isByUserIdAndPassword(Long userId, String password);
+
+    String payment(Long userId, String paymentPassword);
+
     User getUserByUsername(String username);
 
     long userLogin(String username,String password);

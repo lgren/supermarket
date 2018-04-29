@@ -33,8 +33,13 @@ public class CartGoodsApi {//OK
         List<CartGoodsVO> cartGoodsVOList = getCartGoodsVOList(cartGoodsList);
         return cartGoodsVOList;
     }
+    public List<CartGoodsVO> getCartGoodsByCartIdAndType(Long cartId,Integer type) {
+        List<CartGoods> cartGoodsList = cartGoodsService.getCartGoodsByCartIdAndType(cartId,type);
+        List<CartGoodsVO> cartGoodsVOList = getCartGoodsVOList(cartGoodsList);
+        return cartGoodsVOList;
+    }
     public List<CartGoodsVO> getCartGoodsByCartId(Long cartId) {
-        List<CartGoods> cartGoodsList = cartGoodsService.getCartGoodsByCartId(cartId);
+        List<CartGoods> cartGoodsList = cartGoodsService.getCartGoodsByCartIdAndType(cartId,null);
         List<CartGoodsVO> cartGoodsVOList = getCartGoodsVOList(cartGoodsList);
         return cartGoodsVOList;
     }

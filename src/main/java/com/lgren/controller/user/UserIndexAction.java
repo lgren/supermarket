@@ -101,17 +101,78 @@ public class UserIndexAction {
     public int userUpdate(UserHtmlDTO userHtmlDTO) {
         userHtmlDTO.setUserId((Long) session.getAttribute("userId"));
         userHtmlDTO.setUsername(null);
-        userHtmlDTO.setPassword(null);
         userHtmlDTO.setPhone(null);
         userHtmlDTO.setEmail(null);
         userHtmlDTO.setMoney(null);
         if (userHtmlDTO.getUserId() == null) {
-            return 0;
+            return -1;
         }
         User user = mapper.map(userHtmlDTO, User.class);
         user.setGender("男".equals(userHtmlDTO.getGenderStr()) ? 1 : 0);
         return userService.updateByPrimaryKeySelective(user);
     }
+
+    /**
+     *
+     * @param password
+     * @param newPassword
+     * @return //1:修改成功 --- f+ 0:session中没有userId 1:密码错误 2:修改失败
+     */
+    @ResponseBody
+    @PutMapping(value = "changePassword.do")
+    public String changePassword(@RequestParam("password") String password,
+                                 @RequestParam("newPassword") String newPassword) {
+//        User user = userService.selectByPrimaryKey((Long) session.getAttribute("userId"));
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f0";
+        }
+        userId = userService.isByUserIdAndPassword(userId,password);
+        if (userId == null) {
+            return "f1";
+        }
+        User user = new User();
+        user.setUserId(userId);
+        user.setPassword(newPassword);
+        if (userService.updateByPrimaryKeySelective(user) !=1 ) {
+            return "f2";
+        }
+        return "1";
+    }
+
+    /**
+     *
+     * @param paymentPassword
+     * @param newPaymentPassword
+     * @return //1:修改成功 --- f+ 0:session中没有userId 1:支付密码错误 2:修改失败 3:长度不为6
+     */
+    @ResponseBody
+    @PutMapping(value = "changePaymentPassword.do")
+    public String changePaymentPassword(@RequestParam("paymentPassword") String paymentPassword,
+                                 @RequestParam("newPaymentPassword") String newPaymentPassword) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f0";
+        }
+        if (newPaymentPassword.length() != 6 || !NumberUtils.isNumber(newPaymentPassword)) {
+            return "f3";
+        }
+        User user = userService.selectByPrimaryKey(userId);
+        if (user.getPaymentPassword() == null || user.getPaymentPassword().equals("")){
+        } else {
+            if (!user.getPaymentPassword().equals(paymentPassword)) {
+                return "f1";
+            }
+        }
+        user.setPaymentPassword(newPaymentPassword);
+        if (userService.updateByPrimaryKeySelective(user) !=1 ) {
+            return "f2";
+        }
+
+        return "1";
+    }
+
+
 
     //收藏夹删除商品 0删除失败 1删除成功
     @ResponseBody
@@ -126,47 +187,29 @@ public class UserIndexAction {
     //购物车删除商品 0删除失败 1删除成功
     @ResponseBody
     @DeleteMapping(value = "cartGoodsDelete.do/{cartGoodsId}")
-    public int cartGoodsDelete(@PathVariable("cartGoodsId") Long cartGoodsId) {
+    public int cartGoodsDelete(@PathVariable("cartGoodsId") Long cartGoodsId, Integer type) {
         if (cartGoodsId == null) {
             return 0;
         }
-        return cartGoodsService.deleteByPrimaryKey(cartGoodsId);
+        return cartGoodsService.deleteByPrimaryKeyAndType(cartGoodsId, type == null ? 0 : type);
     }
 
     /**
-     *
      * @param cartGoodsDTO
      * @return //1:代表成功 0:代表失败 --- f+ 2:未登录 10:goodsId为空 11:未找到商品 12:已经添加到了购物车
      */
     @ResponseBody
-    @PostMapping(value = "addCartGoods.do", params = {"goodsId","number"})
+    @PostMapping(value = "addCartGoods.do", params = {"goodsId", "number"})
     public String addCartGoods(CartGoodsDTO cartGoodsDTO) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "f2";
         }
         try {
-            return userHtmlService.addCartGoods(userId,cartGoodsDTO).toString();
+            return userHtmlService.addCartGoods(userId, cartGoodsDTO).toString();
         } catch (RuntimeException se) {
             return "f" + se.getMessage();
         }
-
-
-        /*if (userId == null) {
-            return -2;
-        } else if (goodsService.selectByPrimaryKey(cartGoodsDTO.getGoodsId()) == null) {
-            return -1;
-        } else if (cartGoodsDTO.getGoodsId() == null) {
-            return 0;
-        } else if (cartGoodsService.selectByUserIdandGoodsId(userId, cartGoodsDTO.getGoodsId()) != 0) {
-            return 2;
-        }
-        if (cartGoodsDTO.getNumber() !=null) {
-            cartGoodsDTO.setNumber(cartGoodsDTO.getNumber() > 0 ? cartGoodsDTO.getNumber() : 1);
-        } else {
-            cartGoodsDTO.setNumber(1);
-        }
-        return cartGoodsService.insertByUserIdAndGoodsId(userId, cartGoodsDTO);*/
     }
 
     //收藏夹添加商品 -2请先登录 -1该商品失效 0添加失败 1添加成功 2已经添加
@@ -420,30 +463,46 @@ public class UserIndexAction {
         }
     }
 
-
     /**
-     * @param cartGoodsDTOList
-     * @return // 数值>0为正确 --- f+ 1:参数数据和数据库比对不正确 2:未登录 3没有商品 10:未找到用户 11:余额不足 13:未找到商品 16:商品已售完 12:扣款发生错误 14:未找到商品的店铺 15:店铺打款错误 17:订单添加失败
+     * @param paymentDTO
+     * @return //1 支付成功 --- f+ 1:密码长度必须是6位且为数字 2:需要支付的钱不能为空 3:验证码不能为空 4:支付密码错误 10:未找到用户 11:余额不足 12:扣款发生错误
+     *         //13:未找到订单 14:未找到店铺 15:未找到店铺仓库 16:库存不足 17:店铺加钱失败 18:仓库更新失败 19:订单更新失败 20:购物车删除失败
      */
     @ResponseBody
-    @PostMapping(value = "pay.do")
-    public String pay(@RequestBody List<CartGoodsDTO> cartGoodsDTOList) {
-        System.out.println(cartGoodsDTOList);
+    @PostMapping(value = "/pay.do")
+    public String pay(@RequestBody PaymentDTO paymentDTO) {
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
+        if (paymentDTO.getPaymentPassword().length() != 6 || !NumberUtils.isNumber(paymentDTO.getPaymentPassword())) {
+            return "f1";
+        }
+        if (paymentDTO.getAll() == null) {
             return "f2";
         }
-        if (cartGoodsDTOList.size() == 0 || cartGoodsDTOList == null) {
+        if (paymentDTO.getAuthCode() == null) {
             return "f3";
         }
-        try {
-            userHtmlService.pay(userId, cartGoodsDTOList);
-            return "" + userHtmlService.pay(userId, cartGoodsDTOList);
-        } catch (TransactionException te) {
-            return "f" + te.getMessage();
+        if (userService.payment(userId,paymentDTO.getPaymentPassword()) == null) {
+            return "f4";
         }
-
+        try {
+            userHtmlService.pay(paymentDTO.getAll(), userId, paymentDTO.getPaymentPassword(),
+                    paymentDTO.getOrderIdList(), paymentDTO.getCartGoodsIdList());
+            return "1";
+        } catch (RuntimeException re) {
+            re.printStackTrace();
+            return "f" + re.getMessage();
+        }
     }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -454,31 +513,6 @@ public class UserIndexAction {
         System.out.println(cartVO);
         return "true";
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     //测试shiro

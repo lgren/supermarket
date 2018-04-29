@@ -22,6 +22,11 @@ public class CartGoodsServiceImpl implements CartGoodsService {
 
 
     @Override
+    public int deleteByPrimaryKeyAndType(Long cartGoodsId, Integer type) {
+        return cartGoodsMapper.deleteByPrimaryKeyAndType(cartGoodsId,type);
+    }
+
+    @Override
     public int selectByUserIdandGoodsId(Long userId, Long goodsId) {
         return cartGoodsMapper.selectByCartIdandGoodsId(cartMapper.getCartByUserId(userId).getCartId(),goodsId);
     }
@@ -33,8 +38,9 @@ public class CartGoodsServiceImpl implements CartGoodsService {
     }
 
     @Override
-    public List<CartGoods> getCartGoodsByCartId(Long cartId) {
-        return cartGoodsMapper.getCartGoodsByCartId(cartId);
+    public List<CartGoods> getCartGoodsByCartIdAndType(Long cartId,Integer type) {
+
+        return type==null?cartGoodsMapper.getCartGoodsByCartId(cartId) : cartGoodsMapper.getCartGoodsByCartIdAndType(cartId,type);
     }
 
     @Override
@@ -49,7 +55,7 @@ public class CartGoodsServiceImpl implements CartGoodsService {
 
     @Override
     public int deleteByPrimaryKey(Long cartGoodsId) {
-        return cartGoodsMapper.deleteByPrimaryKey(cartGoodsId);
+        return cartGoodsMapper.deleteByPrimaryKeyAndType(cartGoodsId,0);
     }
 
     @Override
