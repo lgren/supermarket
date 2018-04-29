@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <style type="text/css" rel="stylesheet">
+    .col-sm-3 > div {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>不正常的界面</h1></div>
+    <div class="row">
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="../toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="../toRegistration">注册界面</a><br/>
+        <a shiro:guest="" href="../toLogin">登陆界面</a><br/>
+        <a shiro:user="" href="../toCart">购物车</a><br/>
+        <a shiro:user="" href="../toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="../toUser">个人中心</a><br/>
+        <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
+    </div>
+    <div id="show1" class="col-sm-3" style="background-color: #bff7ff;text-align: center;">
+      <h1 th:text="${exception}"></h1>
+    </div>
+    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">test2</div>
+    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+  </div>
+  <div class="row">
+    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+  </div>
+</div>
+</body>
+</html>

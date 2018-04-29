@@ -133,12 +133,26 @@ public class UserIndexAction {
         return cartGoodsService.deleteByPrimaryKey(cartGoodsId);
     }
 
-    //购物车添加商品 -2请先登录 -1该商品失效 0添加失败 1添加成功 2已经添加
+    /**
+     *
+     * @param cartGoodsDTO
+     * @return //1:代表成功 0:代表失败 --- f+ 2:未登录 10:goodsId为空 11:未找到商品 12:已经添加到了购物车
+     */
     @ResponseBody
-    @PostMapping(value = "addCartGoods.do", params = {"goodsId"})
-    public int addCartGoods(CartGoodsDTO cartGoodsDTO) {
+    @PostMapping(value = "addCartGoods.do", params = {"goodsId","number"})
+    public String addCartGoods(CartGoodsDTO cartGoodsDTO) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
+            return "f2";
+        }
+        try {
+            return userHtmlService.addCartGoods(userId,cartGoodsDTO).toString();
+        } catch (RuntimeException se) {
+            return "f" + se.getMessage();
+        }
+
+
+        /*if (userId == null) {
             return -2;
         } else if (goodsService.selectByPrimaryKey(cartGoodsDTO.getGoodsId()) == null) {
             return -1;
@@ -147,8 +161,12 @@ public class UserIndexAction {
         } else if (cartGoodsService.selectByUserIdandGoodsId(userId, cartGoodsDTO.getGoodsId()) != 0) {
             return 2;
         }
-        cartGoodsDTO.setNumber(cartGoodsDTO.getNumber() > 0 ? cartGoodsDTO.getNumber() : 1);
-        return cartGoodsService.insertByUserIdAndGoodsId(userId, cartGoodsDTO);
+        if (cartGoodsDTO.getNumber() !=null) {
+            cartGoodsDTO.setNumber(cartGoodsDTO.getNumber() > 0 ? cartGoodsDTO.getNumber() : 1);
+        } else {
+            cartGoodsDTO.setNumber(1);
+        }
+        return cartGoodsService.insertByUserIdAndGoodsId(userId, cartGoodsDTO);*/
     }
 
     //收藏夹添加商品 -2请先登录 -1该商品失效 0添加失败 1添加成功 2已经添加
@@ -426,6 +444,9 @@ public class UserIndexAction {
         }
 
     }
+
+
+
 
     @ResponseBody
     @PutMapping(value = "test.do")

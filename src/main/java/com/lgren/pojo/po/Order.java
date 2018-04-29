@@ -18,7 +18,7 @@ public class Order {
 
     private Integer payWay;
 
-    private Long orderTime;
+    private Date orderTime;
 
     private Integer sendGoods;
 
@@ -33,7 +33,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long orderId, Long userId, Long shopId, Long goodsId, Integer amount, Double price, Integer payWay, Long orderTime, Integer sendGoods, Date sendGoodsTime, Integer confirm, Date confirmTime, Integer state) {
+    public Order(Long orderId, Long userId, Long shopId, Long goodsId, Integer amount, Double price, Integer payWay, Date orderTime, Integer sendGoods, Date sendGoodsTime, Integer confirm, Date confirmTime, Integer state) {
 
         this.orderId = orderId;
         this.userId = userId;
@@ -152,11 +152,11 @@ public class Order {
         this.payWay = payWay;
     }
 
-    public Long getOrderTime() {
+    public Date getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(Long orderTime) {
+    public void setOrderTime(Date orderTime) {
         this.orderTime = orderTime;
     }
 

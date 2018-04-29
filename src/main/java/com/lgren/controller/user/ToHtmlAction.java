@@ -2,7 +2,6 @@ package com.lgren.controller.user;
 
 import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
-import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.UserDTO;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
@@ -13,9 +12,10 @@ import org.apache.shiro.subject.Subject;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -189,13 +189,32 @@ public class ToHtmlAction {
         return "applyShop";
     }
 
-
-    @GetMapping(value = "/toPayment")
-    public String toTransaction(@RequestBody List<CartGoodsDTO> cartGoodsDTOList) {
-        System.out.println(cartGoodsDTOList);
-        if (session.getAttribute("userId") == null) {
-            return "toLogin";
+    /**
+     *
+     * @param map
+     * @param cartVO
+     * @param bindingResult
+     * @return 10:未找到用户 13:未找到商品 16:商品已售完 XXX的库存不够 14:未找到商品的店铺 17:订单添加失败 18:购物车移除失败
+     */
+    @PostMapping(value = "/toPay")
+    public String toTransaction(Map map, CartVO cartVO, BindingResult bindingResult) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "login";
         }
+        try {
+            Double orderIdList = userHtmlService.getOrder(userId,cartVO);
+            if (orderIdList == null || orderIdList.equals(0D)) {
+                return "notGetOrder";
+            }
+            map.put("all",98);
+            System.out.println(orderIdList);
+        } catch (RuntimeException re) {
+            map.put("exception" , re.getMessage());
+            return "notNormal";
+        }
+
+
         return "payment";
     }
 

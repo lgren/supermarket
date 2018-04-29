@@ -3,13 +3,11 @@ package com.lgren.service;
 import com.lgren.controller.user.dto.ApplyShopDTO;
 import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserRegistrationDTO;
-import com.lgren.exception.AddException;
-import com.lgren.exception.SelectException;
-import com.lgren.exception.TransactionException;
-import com.lgren.exception.UpdateException;
+import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
+import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 
@@ -28,6 +26,16 @@ public interface UserHtmlService {
      *                      14:个人收藏夹添加失败
      */
     Long addUser(UserRegistrationDTO userRegistrationDTO) throws AddException;
+
+    /**
+     * @param cartGoodsDTO
+     * @return 1为成功 0为失败
+     * @throws SelectException <br/>
+     *                         10:goodsId为空
+     *                         11:未找到商品
+     *                         12:已经添加到了购物车
+     */
+    Long addCartGoods(Long userId, CartGoodsDTO cartGoodsDTO) throws SelectException;
 
     List<ShopVO> getMyShopByUserId(Long userId);
 
@@ -136,6 +144,25 @@ public interface UserHtmlService {
      *                              1:参数数据和数据库比对不正确
      */
     double compareToDBAndGetAll(List<CartGoodsDTO> cartGoodsDTOList) throws TransactionException;
+
+    /**
+     * @param userId
+     * @param cartVO
+     * @return 用户余额
+     * @throws SelectException <br/>
+     *                         10:未找到用户
+     *                         13:未找到商品
+     *                         16:商品已售完
+     *                         XXX的库存不够
+     *                         19:订单已经存在
+     * @throws UpdateException <br/>
+     *                         14:未找到商品的店铺
+     * @throws AddException    <br/>
+     *                         17:订单添加失败
+     * @throws DeleteException <br/>
+     *                         18:购物车移除失败
+     */
+    Double getOrder(Long userId, CartVO cartVO) throws DeleteException, SelectException, AddException;
 
     /**
      * @param userId

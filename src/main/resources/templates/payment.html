@@ -10,7 +10,7 @@
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>这是登陆</h1></div>
+    <div class="col-sm-12" style="text-align: center"><h1>这是支付界面</h1></div>
     <div class="row">
       <div shiro:user="" class="col-sm-6" style="text-align: center">
         <h4>看到这个说明你是个有身份的人</h4>
@@ -58,10 +58,10 @@
               </div>
             </div>
           </form>
-          <form class="form-horizontal" id="aliPay">
+          <form class="form-horizontal hidden" id="aliPay">
             <h3>支付宝</h3>
           </form>
-          <form class="form-horizontal" id="tencentPay">
+          <form class="form-horizontal hidden" id="tencentPay">
             <h3>微信支付</h3>
           </form>
         </div>
@@ -97,6 +97,7 @@
         }
     }
     function pay() {
+        var goodsDTOList = [[${goodsDTOList}]];
         var returnData;
         var paymentPassword = $("#paymentPassword").val();
         var authCode = $("#authCode").val();

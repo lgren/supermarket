@@ -6,14 +6,13 @@ import com.lgren.controller.user.dto.ApplyShopDTO;
 import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserRegistrationDTO;
 import com.lgren.dao.*;
-import com.lgren.exception.AddException;
-import com.lgren.exception.SelectException;
-import com.lgren.exception.TransactionException;
-import com.lgren.exception.UpdateException;
+import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.*;
+import com.lgren.pojo.vo.CartGoodsVO;
+import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 import com.lgren.service.UserHtmlService;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -92,6 +92,33 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             throw new AddException("14");
         }
         return user.getUserId();
+    }
+
+    /**
+     * @param cartGoodsDTO
+     * @return 1为成功 0为失败
+     * @throws SelectException <br/>
+     *                         10:goodsId为空
+     *                         11:未找到商品
+     *                         12:已经添加到了购物车
+     */
+    @Override
+    public Long addCartGoods(Long userId, CartGoodsDTO cartGoodsDTO) throws SelectException {
+        cartGoodsDTO.setCartId(cartMapper.getCartByUserId(userId).getCartId());
+        if (cartGoodsDTO.getGoodsId() == null) {
+            throw new SelectException("10");
+        } else if (goodsMapper.selectByPrimaryKey(cartGoodsDTO.getGoodsId()) == null) {
+            throw new SelectException("11");
+        } else if (cartGoodsMapper.selectByCartIdandGoodsId(cartGoodsDTO.getCartId(), cartGoodsDTO.getGoodsId()) > 0) {
+            throw new SelectException("12");
+        }
+        if (cartGoodsDTO.getNumber() != null) {
+            cartGoodsDTO.setNumber(cartGoodsDTO.getNumber() > 0 ? cartGoodsDTO.getNumber() : 1);
+        } else {
+            cartGoodsDTO.setNumber(1);
+        }
+        cartGoodsDTO.setCartGoodsTime(new Date(System.currentTimeMillis()));
+        return Long.valueOf(cartGoodsMapper.insert(mapper.map(cartGoodsDTO, CartGoods.class)));
     }
 
     @Override
@@ -355,6 +382,69 @@ public class UserHtmlServiceImpl implements UserHtmlService {
 
     /**
      * @param userId
+     * @param cartVO
+     * @return 用户余额
+     * @throws SelectException <br/>
+     *                         10:未找到用户
+     *                         13:未找到商品
+     *                         16:商品已售完
+     *                         XXX的库存不够
+     *                         19:订单已经存在
+     * @throws UpdateException <br/>
+     *                         14:未找到商品的店铺
+     * @throws AddException    <br/>
+     *                         17:订单添加失败
+     * @throws DeleteException <br/>
+     *                         18:购物车移除失败
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Double getOrder(Long userId, CartVO cartVO) throws DeleteException, SelectException, AddException {
+        Double all = 0D;
+        User user;
+        if (userId == null || (user = userMapper.selectByPrimaryKey(userId)) == null) {
+            throw new SelectException("10");
+        }
+        for (CartGoodsVO cartGoodsVO : cartVO.getCartGoodsVOList()) {
+            Long orderId = orderMapper.getOrderIdByStateAndUserIdAndGoodsId(-1, userId, cartGoodsVO.getGoodsDTO().getGoodsId());
+            if (orderId != null) {
+                throw new SelectException("19");
+            }
+            all += cartGoodsVO.getGoodsDTO().getPrice() * cartGoodsVO.getGoodsDTO().getDiscount();
+            Goods goods;
+            if ((goods = goodsMapper.selectByPrimaryKey(cartGoodsVO.getGoodsDTO().getGoodsId())) == null) {
+                throw new SelectException("13");
+            }
+            Shop shop;
+            if ((shop = shopMapper.selectByPrimaryKey(goodsMapper.selectByPrimaryKey(cartGoodsVO.getGoodsDTO().getGoodsId()).getShopId())) == null) {
+                throw new SelectException("14");
+            }
+            Warehouse warehouse;
+            if ((warehouse = warehouseMapper.getWarehouseByShopIdAndGoodsId(shop.getShopId(), cartGoodsVO.getGoodsDTO().getGoodsId())) == null) {
+                if (warehouse.getNumber() < 0) {
+                    throw new SelectException("16");
+                }
+                if (warehouse.getNumber() - cartGoodsVO.getNumber() < 0) {
+                    throw new SelectException(shop.getName() + "的库存不够");
+                }
+            }
+            Date nowTime = new Date(System.currentTimeMillis());
+            Order order = new Order(null, userId, shop.getShopId(), cartGoodsVO.getGoodsDTO().getGoodsId()
+                    , cartGoodsVO.getNumber(), goods.getPrice() * goods.getDiscount(), 1
+                    , nowTime, 0, null, 0, null, -1);
+            if (orderMapper.insert(order) != 1) {
+                throw new AddException("17");
+            }
+            if (cartGoodsMapper.deleteByPrimaryKey(cartGoodsVO.getCartGoodsId()) != 1) {
+                throw new DeleteException("18");
+            }
+//            orderIdList.add(orderMapper.getOrderIdByTimeAndUserId(nowTime, userId));
+        }
+        return all;
+    }
+
+    /**
+     * @param userId
      * @param cartGoodsDTOList
      * @return 用户余额
      * @throws SelectException <br/>
@@ -408,7 +498,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
                 warehouseMapper.updateByPrimaryKeySelective(warehouse);
             }
             Order order = new Order(null, userId, shop.getShopId(), cartGoodsDTO.getGoodsId(), cartGoodsDTO.getNumber(),
-                    goods.getPrice() * goods.getDiscount(), 1, System.currentTimeMillis(), 0,
+                    goods.getPrice() * goods.getDiscount(), 1, new Date(System.currentTimeMillis()), 0,
                     null, 0, null, 0);
             if (orderMapper.insert(order) != 1) {
                 throw new AddException("17");

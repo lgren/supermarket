@@ -50,9 +50,10 @@ spring:
     encoding: UTF-8
     content-type: text/html
     cache: false
-
   aop:
     proxy-target-class: true
+#  resources:
+#    static-locations: /static
 
 
 mybatis:

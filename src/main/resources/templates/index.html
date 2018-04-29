@@ -5,6 +5,7 @@
   <title>两个人商城</title>
   <script src="/webjars/jquery/jquery.min.js"></script>
   <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/util/myUtils.js"></script>
   <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
   <style type="text/css" rel="stylesheet">
     .col-sm-3 > div {
@@ -75,72 +76,9 @@
 </body>
 </html>
 <script>
-    /*    function ajax1() {
-            var $form = $("#form1");
-            var ser$form = $form.serialize();
-            var ser$formTest = $form.serializeArray();
-            var Json$form = JSON.stringify($form);
-            $.ajax({
-                url: "test.do",
-                type: "post",
-                data: $form.serialize(),
-                success : function (data) {
-                    console.log(data);
-                }
-            })
-        }*/
 
     function submit() {
         var test = "{'cartGoodsVOList':[{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':2,'cartGoodsTime':null,'goodsDTO':{'discount':1.0,'goodsId':2,'imageUrl':null,'name':'\u5A03\u54C8\u54C8','price':4.0,'shopId':1,'showTime':null,'type':1},'number':1,'price':3.0},{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':11,'cartGoodsTime':null,'goodsDTO':{'discount':0.8,'goodsId':1,'imageUrl':'','name':'\u53EF\u4E50','price':3.4,'shopId':1,'showTime':null,'type':1},'number':1,'price':null}],'cartId':1,'userDTO':{'avatarUrl':null,'birthday':'1983-04-22T00:00:00.000+08:00','email':'73625@qq.com','gender':1,'homeaddress':'\u56DB\u5DDD\u6210\u90FD','liveaddress':'\u5E7F\u4E1C\u6DF1\u5733','money':4000.0,'nickname':'\u4E24\u4E2A\u4EBA','password':'user','paymentPassword':'888888','phone':'17263527163','realName':'\u9646\u9E3F\u5B87','userId':1,'username':'user'}}";
-
-        console.log(doFormRequest("test.do", "put", test, null));
-    }
-
-    /**
-     * 该函数实质为创建一个form表单,然后再提交
-     * @param url 例如"localhost:8080/toIndex"
-     * @param type 例如"get",支持restful风格
-     * @param jsonData json字符串或者对象
-     * @param formId form表单Id 该函数实质为创建一个form表单,然后再提交
-     * @returns {HTMLFormElement}
-     */
-    function doFormRequest(url, type, jsonData, formId) {
-        var data = (typeof jsonData) == "string" ? eval("(" + jsonData + ")") : jsonData;
-        var form = document.createElement("form");
-        form.id = formId;
-        form.action = url;
-        type = type.toLocaleLowerCase();
-        if (type == "get") {
-            form.method = type;
-        } else {
-            form.method = "post";
-            var input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "_method";
-            input.value = ((type == "delete") ? "delete" : "put");
-            form.appendChild(input);
-        }
-        jsonToInputMini(form, data, null);
-        console.log(form);
-        document.body.appendChild(form);
-        form.submit();
-        return form;
-    }
-    function jsonToInputMini(form, data, varKey) {
-        for (var key in data) {
-            var lastKey = ((varKey == null) ? key : varKey + "." + key);
-            var value = data[key];
-            if (Array.isArray(value)) {
-                for (var ArrKey in value) jsonToInputMini(form, value[ArrKey], (lastKey + "[" + ArrKey + "]"));
-            } else if ((typeof value) == "object") {
-                jsonToInputMini(form, value, lastKey);
-            } else {
-                var input = document.createElement("input");
-                input.type = "hidden";
-                input.name = lastKey;
-                input.value = value;
-                form.appendChild(input);
-            }
-        }
+        console.log(doFormRequest("test.do", "put", test, null,null));
     }
 </script>
