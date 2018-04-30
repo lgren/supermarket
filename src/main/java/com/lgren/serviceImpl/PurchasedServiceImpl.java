@@ -15,6 +15,16 @@ public class PurchasedServiceImpl implements PurchasedService {
 
 
     @Override
+    public Purchased selectByOrderIdAndEvaluation(Long orderId, Integer evaluation) {
+        return purchasedMapper.selectByOrderIdAndEvaluation(orderId,evaluation);
+    }
+
+    @Override
+    public Purchased selectByOrderId(Long orderId) {
+        return purchasedMapper.selectByOrderId(orderId);
+    }
+
+    @Override
     public List<Purchased> selectAll() {
         return purchasedMapper.selectAll();
     }

@@ -49,7 +49,7 @@
         <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
         <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
         <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
-        <span>折扣价:</span><span th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getType(),0,2)}"></span><br/>
+        <span>折扣价:</span><span th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
         <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
         <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
       </form>

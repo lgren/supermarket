@@ -15,11 +15,22 @@
     <result column="confirm" property="confirm" jdbcType="INTEGER" />
     <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP" />
     <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="send_goods_id" property="sendGoodsId" jdbcType="BIGINT" />
+    <result column="send_goods_state" property="sendGoodsState" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    order_id, user_id, shop_id, goods_id, amount, price, pay_way, order_time, send_goods, 
-    send_goods_time, confirm, confirm_time, state
+    order_id, user_id, shop_id, goods_id, amount, price, pay_way, order_time, send_goods,
+    send_goods_time, send_goods_id, send_goods_state, confirm, confirm_time, state
   </sql>
+  <select id="getOrderListByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_order where user_id = #{userId,jdbcType = BIGINT}
+  </select>
+  <select id="getOrderListByShopId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_order where shop_id = #{ShopId,jdbcType = BIGINT}
+  </select>
+  <select id="getOrderListByGoodsId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_order where goods_id = #{GoodsId,jdbcType = BIGINT}
+  </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_order
   </select>
@@ -41,13 +52,14 @@
     insert into tb_order (order_id, user_id, shop_id, 
       goods_id, amount, price, 
       pay_way, order_time, send_goods, 
-      send_goods_time, confirm, confirm_time, 
+      send_goods_time, send_goods_id, send_goods_state, confirm, confirm_time,
       state)
     values (#{orderId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{shopId,jdbcType=BIGINT}, 
       #{goodsId,jdbcType=BIGINT}, #{amount,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, 
       #{payWay,jdbcType=INTEGER}, #{orderTime,jdbcType=TIMESTAMP}, #{sendGoods,jdbcType=INTEGER}, 
-      #{sendGoodsTime,jdbcType=TIMESTAMP}, #{confirm,jdbcType=INTEGER}, #{confirmTime,jdbcType=TIMESTAMP}, 
-      #{state,jdbcType=INTEGER})
+      #{sendGoodsTime,jdbcType=TIMESTAMP}, #{sendGoodsId,jdbcType=BIGINT},
+      #{sendGoodsState,jdbcType=INTEGER}, #{confirm,jdbcType=INTEGER},
+      #{confirmTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" useGeneratedKeys="true" keyProperty="orderId" parameterType="com.lgren.pojo.po.Order" >
     insert into tb_order
@@ -81,6 +93,12 @@
       </if>
       <if test="sendGoodsTime != null" >
         send_goods_time,
+      </if>
+      <if test="sendGoodsId != null" >
+        send_goods_id,
+      </if>
+      <if test="sendGoodsState != null" >
+        send_goods_state,
       </if>
       <if test="confirm != null" >
         confirm,
@@ -123,6 +141,12 @@
       <if test="sendGoodsTime != null" >
         #{sendGoodsTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="sendGoodsId != null" >
+        #{sendGoodsId,jdbcType=BIGINT},
+      </if>
+      <if test="sendGoodsState != null" >
+        #{sendGoodsState,jdbcType=INTEGER},
+      </if>
       <if test="confirm != null" >
         #{confirm,jdbcType=INTEGER},
       </if>
@@ -164,6 +188,12 @@
       <if test="sendGoodsTime != null" >
         send_goods_time = #{sendGoodsTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="sendGoodsId != null" >
+        send_goods_id = #{sendGoodsId,jdbcType=BIGINT},
+      </if>
+      <if test="sendGoodsState != null" >
+        send_goods_state = #{sendGoodsId,jdbcType=INTEGER},
+      </if>
       <if test="confirm != null" >
         confirm = #{confirm,jdbcType=INTEGER},
       </if>
@@ -189,6 +219,8 @@
       send_goods_time = #{sendGoodsTime,jdbcType=TIMESTAMP},
       confirm = #{confirm,jdbcType=INTEGER},
       confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      send_goods_id = #{sendGoodsId,jdbcType=BIGINT},
+      send_goods_state = #{sendGoodsId,jdbcType=INTEGER},
       state = #{state,jdbcType=INTEGER}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>

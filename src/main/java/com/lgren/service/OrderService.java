@@ -5,6 +5,12 @@ import com.lgren.pojo.po.Order;
 import java.util.List;
 
 public interface OrderService {
+    List<Order> getOrderListByUserId(Long userId);
+
+    List<Order> getOrderListByShopId(Long shopId);
+
+    List<Order> getOrderListByGoodsId(Long goodsId);
+
     Order getOrderByUserIdAndgoodsId(Long userId, Long goodsId);
 
     List<Order> selectAll();

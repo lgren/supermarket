@@ -7,6 +7,7 @@ import com.lgren.service.CollectGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,9 +25,7 @@ public class CollectGoodsServiceImpl implements CollectGoodsService {
 
     @Override
     public int insertByUserIdAndGoodsId(Long userId, Long goodsId) {
-        CollectGoods collectGoods = new CollectGoods();
-        collectGoods.setGoodsId(goodsId);
-        collectGoods.setCollectId(collectMapper.getCollectByUserId(userId).getCollectId());
+        CollectGoods collectGoods = new CollectGoods(null,collectMapper.getCollectByUserId(userId).getCollectId(),goodsId,new Date(System.currentTimeMillis()));
         return collectGoodsMapper.insert(collectGoods);
     }
 

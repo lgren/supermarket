@@ -1,11 +1,11 @@
 package com.lgren.service;
 
+import com.lgren.controller.user.dto.AddGoodsDTO;
 import com.lgren.controller.user.dto.ApplyShopDTO;
 import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserRegistrationDTO;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
-import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
@@ -53,7 +53,7 @@ public interface UserHtmlService {
     void shopUpdate(MyShopDTO myShopDTO, Long adminId) throws SelectException, UpdateException;
 
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @return
      * @throws SelectException <br/>
      *                         10:未找到goods<br/>
@@ -62,7 +62,7 @@ public interface UserHtmlService {
      * @throws UpdateException <br/>
      *                         11:修改失败<br/>
      */
-    void goodsUpdate(GoodsDTO goodsDTO) throws SelectException, UpdateException;
+    void goodsUpdate(AddGoodsDTO addGoodsDTO) throws SelectException, UpdateException;
 
     /**
      * @param receivingAddressDTO
@@ -115,14 +115,14 @@ public interface UserHtmlService {
      *                         12:添加商品失败<br/>
      */
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @throws SelectException <br/>
      *                         10:未找到shop<br/>
      *                         11:自家商品名已经存在<br/>
      * @throws AddException    <br/>
      *                         12:添加商品失败<br/>
      */
-    void addGoods(GoodsDTO goodsDTO) throws SelectException, AddException;
+    void addGoods(AddGoodsDTO addGoodsDTO) throws SelectException, AddException;
 
     /**
      * @param receivingAddressDTO
@@ -186,4 +186,16 @@ public interface UserHtmlService {
      *                         20:购物车删除失败
      */
     Boolean pay(Double all, Long userId, String paymentPassword, List<Long> orderIdList, List<Long> cartGoodsIdList) throws DeleteException, SelectException, UpdateException;
+
+    /**
+     * @param orderId
+     * @return purchasedId
+     * @throws UpdateException <br/>
+     *                         10:order(订单)更新失败
+     * @throws AddException    <br/>
+     *                         11:purchased(已购买)添加失败
+     */
+    Long confirmGoods(Long orderId) throws UpdateException, AddException;
+
+    int sendGoods(Long orderId);
 }

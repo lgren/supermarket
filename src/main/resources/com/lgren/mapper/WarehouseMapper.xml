@@ -32,13 +32,13 @@
     delete from tb_warehouse
     where warehouse_id = #{warehouseId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.lgren.pojo.po.Warehouse" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="warehouseId" parameterType="com.lgren.pojo.po.Warehouse" >
     insert into tb_warehouse (warehouse_id, shop_id, goods_id, 
       number)
     values (#{warehouseId,jdbcType=BIGINT}, #{shopId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
       #{number,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Warehouse" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="warehouseId" parameterType="com.lgren.pojo.po.Warehouse" >
     insert into tb_warehouse
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="warehouseId != null" >

@@ -45,7 +45,7 @@
         <span>图片:</span><span th:text="${collectGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
         <span>原价:</span><span th:text="${collectGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
         <span>折扣价:</span><span
-          th:text="${#numbers.formatDecimal(collectGoodsVO.getGoodsDTO().getPrice()*collectGoodsVO.getGoodsDTO().getType(),0,2)}"></span><br/>
+          th:text="${#numbers.formatDecimal(collectGoodsVO.getGoodsDTO().getPrice()*collectGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
         <a href="javascript:;" th:onclick="'deleteCollectGoods('+${collectGoodsVO.getCollectGoodsId()}+')'">删除此藏品</a>
       </div>
     </div>

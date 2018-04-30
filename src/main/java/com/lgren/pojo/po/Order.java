@@ -24,6 +24,10 @@ public class Order {
 
     private Date sendGoodsTime;
 
+    private Long sendGoodsId;
+
+    private Integer sendGoodsState;
+
     private Integer confirm;
 
     private Date confirmTime;
@@ -33,7 +37,29 @@ public class Order {
     public Order() {
     }
 
+    public Order(Long orderId, Integer confirm, Date confirmTime) {
+        this.orderId = orderId;
+        this.confirm = confirm;
+        this.confirmTime = confirmTime;
+    }
+
     public Order(Long orderId, Long userId, Long shopId, Long goodsId, Integer amount, Double price, Integer payWay, Date orderTime, Integer sendGoods, Date sendGoodsTime, Integer confirm, Date confirmTime, Integer state) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.shopId = shopId;
+        this.goodsId = goodsId;
+        this.amount = amount;
+        this.price = price;
+        this.payWay = payWay;
+        this.orderTime = orderTime;
+        this.sendGoods = sendGoods;
+        this.sendGoodsTime = sendGoodsTime;
+        this.confirm = confirm;
+        this.confirmTime = confirmTime;
+        this.state = state;
+    }
+
+    public Order(Long orderId, Long userId, Long shopId, Long goodsId, Integer amount, Double price, Integer payWay, Date orderTime, Integer sendGoods, Date sendGoodsTime, Long sendGoodsId, Integer sendGoodsState, Integer confirm, Date confirmTime, Integer state) {
 
         this.orderId = orderId;
         this.userId = userId;
@@ -45,6 +71,8 @@ public class Order {
         this.orderTime = orderTime;
         this.sendGoods = sendGoods;
         this.sendGoodsTime = sendGoodsTime;
+        this.sendGoodsId = sendGoodsId;
+        this.sendGoodsState = sendGoodsState;
         this.confirm = confirm;
         this.confirmTime = confirmTime;
         this.state = state;
@@ -63,6 +91,8 @@ public class Order {
                 ", orderTime=" + orderTime +
                 ", sendGoods=" + sendGoods +
                 ", sendGoodsTime=" + sendGoodsTime +
+                ", sendGoodsId=" + sendGoodsId +
+                ", sendGoodsState=" + sendGoodsState +
                 ", confirm=" + confirm +
                 ", confirmTime=" + confirmTime +
                 ", state=" + state +
@@ -84,6 +114,8 @@ public class Order {
                 Objects.equals(orderTime, order.orderTime) &&
                 Objects.equals(sendGoods, order.sendGoods) &&
                 Objects.equals(sendGoodsTime, order.sendGoodsTime) &&
+                Objects.equals(sendGoodsId, order.sendGoodsId) &&
+                Objects.equals(sendGoodsState, order.sendGoodsState) &&
                 Objects.equals(confirm, order.confirm) &&
                 Objects.equals(confirmTime, order.confirmTime) &&
                 Objects.equals(state, order.state);
@@ -92,7 +124,7 @@ public class Order {
     @Override
     public int hashCode() {
 
-        return Objects.hash(orderId, userId, shopId, goodsId, amount, price, payWay, orderTime, sendGoods, sendGoodsTime, confirm, confirmTime, state);
+        return Objects.hash(orderId, userId, shopId, goodsId, amount, price, payWay, orderTime, sendGoods, sendGoodsTime, sendGoodsId, sendGoodsState, confirm, confirmTime, state);
     }
 
     public Long getOrderId() {
@@ -174,6 +206,22 @@ public class Order {
 
     public void setSendGoodsTime(Date sendGoodsTime) {
         this.sendGoodsTime = sendGoodsTime;
+    }
+
+    public Long getSendGoodsId() {
+        return sendGoodsId;
+    }
+
+    public void setSendGoodsId(Long sendGoodsId) {
+        this.sendGoodsId = sendGoodsId;
+    }
+
+    public Integer getSendGoodsState() {
+        return sendGoodsState;
+    }
+
+    public void setSendGoodsState(Integer sendGoodsState) {
+        this.sendGoodsState = sendGoodsState;
     }
 
     public Integer getConfirm() {

@@ -87,6 +87,13 @@
                 name="discount" id="discount" placeholder="goods's discount min=0 max=10"/>
           </div>
         </div>
+        <div class="form-group">
+          <label for="number" class="col-sm-2 control-label">数量:</label>
+          <div class="col-sm-10">
+            <input th:value="${goodVO.getNumber() != null ? #numbers.formatDecimal(goodVO.getNumber(),0,0) : ''}"
+                type="number" min="0" class="form-control" name="number" id="number" placeholder="goods's number"/>
+          </div>
+        </div>
         <!--<div id="authCodeDiv" class="form-group hidden">
           <label for="authCode" class="col-sm-2 control-label">验证码</label>
           <div class="col-sm-10">
@@ -144,6 +151,12 @@
             <input type="number" min="0" max="10"
                    class="form-control"
                    name="discount" id="discountAdd" placeholder="goods's discount min=0 max=10 例如:8.5"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="numberAdd" class="col-sm-2 control-label">数量:</label>
+          <div class="col-sm-10">
+            <input type="number" min="0" class="form-control" name="number" id="numberAdd" placeholder="goods's number"/>
           </div>
         </div>
         <div id="authCodeDivAdd" class="form-group">

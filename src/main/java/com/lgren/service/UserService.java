@@ -11,7 +11,7 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
-    long userLogin(String username,String password);
+    Long userLogin(String username,String password);
 
     List<User> selectAll();
 

@@ -5,7 +5,6 @@ import com.lgren.dao.ShopMapper;
 import com.lgren.exception.TransactionException;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.CollectGoodsDTO;
-import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.User;
 import com.lgren.pojo.vo.CartVO;
@@ -252,24 +251,25 @@ public class UserIndexAction {
     }
 
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @return //1:修改成功 --- f+ 1:goodsID为空 2:session中userId为空 3:类型不是数字 10:未找到goods 11:修改失败 12:未找到商店 13:该店铺还在审核
      */
     @ResponseBody
     @PutMapping(value = "goodsUpdate.do")
-    public String goodsUpdate(GoodsDTO goodsDTO) {
+    public String goodsUpdate(AddGoodsDTO addGoodsDTO) {
+        addGoodsDTO.setDiscount(addGoodsDTO.getDiscount()/10);
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "f2";
         }
-        if (goodsDTO.getType() == null) {
+        if (addGoodsDTO.getType() == null) {
             return "f3";
         }
-        if (goodsDTO.getGoodsId() == null) {
+        if (addGoodsDTO.getGoodsId() == null) {
             return "f1";
         }
         try {
-            userHtmlService.goodsUpdate(goodsDTO);
+            userHtmlService.goodsUpdate(addGoodsDTO);
             return "1";
         } catch (RuntimeException se) {
             return se.getMessage();
@@ -333,26 +333,26 @@ public class UserIndexAction {
     }
 
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:该店铺还在审核
      */
     @ResponseBody
     @PostMapping(value = "addGoods.do")
-    public String addGoods(GoodsDTO goodsDTO) {
+    public String addGoods(AddGoodsDTO addGoodsDTO) {
         if (session.getAttribute("userId") == null) {
             return "f2";
         }
-        if (goodsDTO.getType() == null) {
+        if (addGoodsDTO.getType() == null) {
             return "f3";
         }
-        if (StringUtils.isEmptyOrWhitespace(goodsDTO.getName())
-                || StringUtils.isEmptyOrWhitespace(goodsDTO.getImageUrl())
-                || goodsDTO.getPrice() == null
-                || goodsDTO.getType() == null) {
+        if (StringUtils.isEmptyOrWhitespace(addGoodsDTO.getName())
+                || StringUtils.isEmptyOrWhitespace(addGoodsDTO.getImageUrl())
+                || addGoodsDTO.getPrice() == null
+                || addGoodsDTO.getType() == null) {
             return "f1";
         }
         try {
-            userHtmlService.addGoods(goodsDTO);
+            userHtmlService.addGoods(addGoodsDTO);
             return "1";
         } catch (RuntimeException ae) {
             return "f" + ae.getMessage();
@@ -493,6 +493,38 @@ public class UserIndexAction {
             return "f" + re.getMessage();
         }
     }
+
+    /**
+     *
+     * @param orderId
+     * @return //purchasedId ---  10:order(订单)更新失败 11:purchased(已购买)添加失败
+     */
+    @ResponseBody
+    @PutMapping("/confirmGoods.do")
+    public String confirmGoods(@RequestParam("orderId") Long orderId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f";
+        }
+        return "" + userHtmlService.confirmGoods(orderId);
+    }
+
+    @ResponseBody
+    @PutMapping("/sendGoods.do")
+    public String sendGoods(@RequestParam("orderId") Long orderId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f";
+        }
+        return "" + userHtmlService.sendGoods(orderId);
+    }
+
+
+
+
+
+
+
 
 
 

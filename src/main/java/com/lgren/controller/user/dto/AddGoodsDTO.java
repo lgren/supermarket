@@ -1,14 +1,12 @@
-package com.lgren.pojo.vo;
-
-import com.lgren.pojo.dto.ShopDTO;
+package com.lgren.controller.user.dto;
 
 import java.util.Date;
 import java.util.Objects;
 
-public class GoodsVO {
+public class AddGoodsDTO {
     private Long goodsId;
 
-    private ShopDTO shopDTO;
+    private Long shopId;
 
     private String imageUrl;
 
@@ -24,12 +22,13 @@ public class GoodsVO {
 
     private Integer number;
 
-    public GoodsVO() {
+    public AddGoodsDTO() {
     }
 
-    public GoodsVO(Long goodsId, ShopDTO shopDTO, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number) {
+    public AddGoodsDTO(Long goodsId, Long shopId, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number) {
+
         this.goodsId = goodsId;
-        this.shopDTO = shopDTO;
+        this.shopId = shopId;
         this.imageUrl = imageUrl;
         this.name = name;
         this.type = type;
@@ -40,26 +39,40 @@ public class GoodsVO {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public String toString() {
+        return "AddGoodsDTO{" +
+                "goodsId=" + goodsId +
+                ", shopId=" + shopId +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", price=" + price +
+                ", discount=" + discount +
+                ", showTime=" + showTime +
+                ", number=" + number +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GoodsVO goodsVO = (GoodsVO) o;
-        return Objects.equals(goodsId, goodsVO.goodsId) &&
-                Objects.equals(shopDTO, goodsVO.shopDTO) &&
-                Objects.equals(imageUrl, goodsVO.imageUrl) &&
-                Objects.equals(name, goodsVO.name) &&
-                Objects.equals(type, goodsVO.type) &&
-                Objects.equals(price, goodsVO.price) &&
-                Objects.equals(discount, goodsVO.discount) &&
-                Objects.equals(showTime, goodsVO.showTime) &&
-                Objects.equals(number, goodsVO.number);
+        AddGoodsDTO that = (AddGoodsDTO) o;
+        return Objects.equals(goodsId, that.goodsId) &&
+                Objects.equals(shopId, that.shopId) &&
+                Objects.equals(imageUrl, that.imageUrl) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(price, that.price) &&
+                Objects.equals(discount, that.discount) &&
+                Objects.equals(showTime, that.showTime) &&
+                Objects.equals(number, that.number);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(goodsId, shopDTO, imageUrl, name, type, price, discount, showTime, number);
+        return Objects.hash(goodsId, shopId, imageUrl, name, type, price, discount, showTime, number);
     }
 
     public Long getGoodsId() {
@@ -71,12 +84,12 @@ public class GoodsVO {
         this.goodsId = goodsId;
     }
 
-    public ShopDTO getShopDTO() {
-        return shopDTO;
+    public Long getShopId() {
+        return shopId;
     }
 
-    public void setShopDTO(ShopDTO shopDTO) {
-        this.shopDTO = shopDTO;
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
     }
 
     public String getImageUrl() {

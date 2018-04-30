@@ -108,27 +108,6 @@
         if (returnData != 1) {
             return null;
         }
-        /*$.ajax({
-            url: "pay.do",
-            type: "post",
-            data: JSON.stringify({
-                "all": [[${all}]],
-                "paymentPassword": paymentPassword,
-                "authCode": authCode,
-                "orderIdList": [[${orderIdList}]],
-                "cartGoodsIdList":[[${cartGoodsIdList}]]
-            }),
-            contentType: "application/json",
-            success: function (data) {
-                console.log(data);
-                console.log(data);
-            },
-            error: function (data) {
-                console.log(data);
-                console.log(data);
-            }
-        })*/
-
         $.ajax({
             url: "/pay.do",
             type: "post",
@@ -145,7 +124,10 @@
                 //1 支付成功 --- f+ 1:密码长度必须是6位且为数字 2:需要支付的钱不能为空 3:验证码不能为空 10:未找到用户 11:余额不足 12:扣款发生错误 13:未找到订单
                 //14:未找到店铺 15:未找到店铺仓库 16:库存不足 17:店铺加钱失败 18:仓库更新失败 19:订单更新失败 20:购物车删除失败
                 switch (data) {
-                    case "1" : alert("支付成功");break;
+                    case "1" : {
+                        alert("支付成功");
+                        window.location.href = [[${requestURL}]];
+                    }break;
                     case "f1" : alert("密码长度必须是6位且为数字");break;
                     case "f2" : case "f10" : case "f13" : case "f14" :
                         alert("操作异常");break;
@@ -164,7 +146,7 @@
         })
     }
     function notPay() {
-        window.location.href = "toCart";
+        window.location.href = [[${requestURL}]];
     }
 </script>
 </html>

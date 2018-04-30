@@ -7,6 +7,7 @@ import com.lgren.pojo.po.Shop;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.service.GoodsService;
 import com.lgren.service.ShopService;
+import com.lgren.service.WarehouseService;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ public class GoodsApi {//OK
     private GoodsService goodsService;
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private WarehouseService warehouseService;
     //查询所有
     public List<GoodsVO> getAllGoods() {
         return goodsService.selectAll().stream().map(goods -> getGoodsVO(goods)).collect(Collectors.toList());
@@ -56,6 +59,8 @@ public class GoodsApi {//OK
         if (shop != null) {
             goodsVO.setShopDTO(mapper.map(shop,ShopDTO.class));
         }
+        goodsVO.setDiscount(goodsVO.getDiscount()*10);
+        goodsVO.setNumber(warehouseService.getWarehouseByShopIdAndGoodsId(shop.getShopId(),goods.getGoodsId()).getNumber());
         return goodsVO;
     }
 }

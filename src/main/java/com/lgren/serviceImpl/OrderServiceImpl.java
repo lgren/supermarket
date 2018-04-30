@@ -15,6 +15,21 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    public List<Order> getOrderListByUserId(Long userId) {
+        return orderMapper.getOrderListByUserId(userId);
+    }
+
+    @Override
+    public List<Order> getOrderListByShopId(Long shopId) {
+        return orderMapper.getOrderListByShopId(shopId);
+    }
+
+    @Override
+    public List<Order> getOrderListByGoodsId(Long goodsId) {
+        return orderMapper.getOrderListByGoodsId(goodsId);
+    }
+
+    @Override
     public Order getOrderByUserIdAndgoodsId(Long userId, Long goodsId) {
         return orderMapper.getOrderByUserIdAndgoodsId(userId,goodsId);
     }

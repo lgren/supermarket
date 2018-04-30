@@ -4,9 +4,7 @@ import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
 import com.lgren.pojo.dto.OrderDTO;
 import com.lgren.pojo.dto.UserDTO;
-import com.lgren.pojo.vo.CartVO;
-import com.lgren.pojo.vo.GoodsVO;
-import com.lgren.pojo.vo.ShopVO;
+import com.lgren.pojo.vo.*;
 import com.lgren.service.OrderService;
 import com.lgren.service.UserHtmlService;
 import com.lgren.service.UserService;
@@ -49,6 +47,10 @@ public class ToHtmlAction {
     @Autowired
     private UserApi userApi;
     @Autowired
+    private OrderApi orderApi;
+    @Autowired
+    private PurchasedApi purchasedApi;
+    @Autowired
     private ReceivingAddressApi receivingAddressApi;
     @Autowired
     private CartGoodsApi cartGoodsApi;
@@ -77,15 +79,15 @@ public class ToHtmlAction {
     }
 
     @GetMapping(value = "/toCart")
-    public String toCart(Map<String, Object> map,Integer type) {
-        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType((Long) session.getAttribute("userId"),type == null ? 0 : type);
-        map.put("userId", session.getAttribute("userId"));
-        map.put("cart", cartVO);
-        if (type == null || type == 0) {
-            return "cart";
-        } else {
-            return "myOrder";
+    public String toCart(Map<String, Object> map) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "login";
         }
+        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId,0);
+        map.put("userId", userId);
+        map.put("cart", cartVO);
+        return "cart";
     }
 
     @GetMapping(value = "/toCollect")
@@ -185,7 +187,8 @@ public class ToHtmlAction {
         }
         map.put("shopVO", shopVO);
         try {
-            map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId,(Long) session.getAttribute("userId")));
+            List<GoodsVO> goodsVOList = userHtmlService.getGoodsByShopId(shopId,(Long) session.getAttribute("userId"));
+            map.put("goodsVOList", goodsVOList);
         } catch (RuntimeException re) {
             switch (re.getMessage()) {
                 case "12" : return "redirect:../toMyShop";
@@ -225,11 +228,13 @@ public class ToHtmlAction {
             map.put("orderIdList", getOrderReturn.get("orderIdList"));
             map.put("cartGoodsIdList", cartVO.getCartGoodsVOList().stream()
                     .map(cartGoodsVO -> cartGoodsVO.getCartGoodsId()).collect(Collectors.toList()));
+            map.put("requestURL",request.getHeader("Referer"));
             return "payment";
         } catch (RuntimeException re) {
             /*if (re.getMessage() == "19") {
                 return "redirect:toCart";
             }*/
+            re.printStackTrace();
             map.put("exception" , re.getMessage());
             return "notNormal";
         }
@@ -255,8 +260,38 @@ public class ToHtmlAction {
         List<Long> cartGoodsIdList = new ArrayList<>();
         cartGoodsIdList.add(cartGoodsId);
         map.put("cartGoodsIdList",orderIdList);
+        map.put("requestURL",request.getHeader("Referer"));
         return "payment";
     }
+
+    @GetMapping(value = "/toOrder")
+    public String toOrder(Map<String, Object> map) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "login";
+        }
+        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId,1);
+        map.put("userId", userId);
+        List<OrderVO> orderVOList = orderApi.getOrderByUserId(userId);
+        map.put("orderVOListByUserId", orderVOList);
+        List<PurchasedVO> purchasedVOList = purchasedApi.getPurchasedVOListByUserId(userId);
+        map.put("purchasedVOList", purchasedVOList);
+        map.put("cart", cartVO);
+
+        return "myOrder";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

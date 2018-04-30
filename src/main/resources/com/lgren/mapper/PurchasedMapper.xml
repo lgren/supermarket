@@ -22,11 +22,19 @@
     from tb_purchased
     where purchased_id = #{purchasedId,jdbcType=BIGINT}
   </select>
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from tb_purchased where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByOrderIdAndEvaluation" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="Base_Column_List" /> from tb_purchased where order_id = #{param1,jdbcType=BIGINT} and evaluation = #{param2,jdbcType=INTEGER}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from tb_purchased
     where purchased_id = #{purchasedId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.lgren.pojo.po.Purchased" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="purchasedId"  parameterType="com.lgren.pojo.po.Purchased" >
     insert into tb_purchased (purchased_id, order_id, time, 
       evaluation, evaluation_text, evaluation_time, 
       state)
@@ -34,7 +42,7 @@
       #{evaluation,jdbcType=INTEGER}, #{evaluationText,jdbcType=CHAR}, #{evaluationTime,jdbcType=TIMESTAMP}, 
       #{state,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.lgren.pojo.po.Purchased" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="purchasedId" parameterType="com.lgren.pojo.po.Purchased" >
     insert into tb_purchased
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="purchasedId != null" >

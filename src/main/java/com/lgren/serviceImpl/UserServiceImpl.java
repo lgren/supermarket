@@ -29,7 +29,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public long userLogin(String username,String password) {
+    public Long userLogin(String username,String password) {
+        if (getUserByUsername(username) == null) {
+            return null;
+        }
         return userMapper.userLogin(username,password);
     }
 

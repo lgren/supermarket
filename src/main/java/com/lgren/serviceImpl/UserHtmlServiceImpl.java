@@ -6,7 +6,6 @@ import com.lgren.controller.user.dto.*;
 import com.lgren.dao.*;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
-import com.lgren.pojo.dto.GoodsDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.*;
 import com.lgren.pojo.vo.CartGoodsVO;
@@ -44,6 +43,8 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     private OrderMapper orderMapper;
     @Autowired
     private CartGoodsMapper cartGoodsMapper;
+    @Autowired
+    private PurchasedMapper purchasedMapper;
     @Autowired
     private GoodsApi goodsApi;
     @Autowired
@@ -148,7 +149,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     }
 
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @return
      * @throws SelectException <br/>
      *                         10:未找到goods<br/>
@@ -158,27 +159,31 @@ public class UserHtmlServiceImpl implements UserHtmlService {
      *                         11:修改失败<br/>
      */
     @Override
-    public void goodsUpdate(GoodsDTO goodsDTO) throws SelectException, UpdateException {
+    public void goodsUpdate(AddGoodsDTO addGoodsDTO) throws SelectException, UpdateException {
         //查找商店
-        Shop shop = shopMapper.selectByPrimaryKey(goodsDTO.getShopId());
+        Shop shop = shopMapper.selectByPrimaryKey(addGoodsDTO.getShopId());
         if (shop == null) {
             throw new SelectException("12");
         }
+        if (warehouseMapper.updateNumberByShopIdAndGoodsId(shop.getShopId(), addGoodsDTO.getGoodsId(), addGoodsDTO.getNumber()) != 1) {
+            throw new SelectException("12");
+        }
+
         if (shop.getState() == 0) {
             throw new SelectException("13");
         }
 
-        Goods goods = goodsMapper.selectByGoodsIdAndShopId(goodsDTO.getGoodsId(), goodsDTO.getShopId());
+        Goods goods = goodsMapper.selectByGoodsIdAndShopId(addGoodsDTO.getGoodsId(), addGoodsDTO.getShopId());
         if (goods == null) {
             throw new SelectException("10");
         }
-        if (goodsDTO.getDiscount() == null || goodsDTO.getDiscount() > 10 || goodsDTO.getDiscount() < 0) {
-            goodsDTO.setDiscount(10D);
+        if (addGoodsDTO.getDiscount() == null || addGoodsDTO.getDiscount() > 10 || addGoodsDTO.getDiscount() < 0) {
+            addGoodsDTO.setDiscount(10D);
         }
-        if (Integer.valueOf(goodsDTO.getType()) < 0) {
-            goodsDTO.setType(0);
+        if (Integer.valueOf(addGoodsDTO.getType()) < 0) {
+            addGoodsDTO.setType(0);
         }
-        goods = mapper.map(goodsDTO, Goods.class);
+        goods = mapper.map(addGoodsDTO, Goods.class);
         if (goodsMapper.updateByPrimaryKeySelective(goods) < 1) {
             throw new UpdateException("11");
         }
@@ -282,7 +287,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     }
 
     /**
-     * @param goodsDTO
+     * @param addGoodsDTO
      * @throws SelectException <br/>
      *                         10:未找到shop<br/>
      *                         11:自家商品名已经存在<br/>
@@ -292,9 +297,9 @@ public class UserHtmlServiceImpl implements UserHtmlService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addGoods(GoodsDTO goodsDTO) throws SelectException, AddException {
+    public void addGoods(AddGoodsDTO addGoodsDTO) throws SelectException, AddException {
         //查找商店
-        Shop shop = shopMapper.selectByPrimaryKey(goodsDTO.getShopId());
+        Shop shop = shopMapper.selectByPrimaryKey(addGoodsDTO.getShopId());
         if (shop == null) {
             throw new SelectException("10");
         }
@@ -302,18 +307,25 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             throw new SelectException("13");
         }
         //查找自家商品名是否重名
-        if (goodsMapper.selectByGoodsIdAndShopId(goodsDTO.getGoodsId(), goodsDTO.getShopId()) != null) {
+        if (goodsMapper.selectByGoodsIdAndShopId(addGoodsDTO.getGoodsId(), addGoodsDTO.getShopId()) != null) {
             throw new SelectException("11");
         }
-        if (goodsDTO.getDiscount() == null || goodsDTO.getDiscount() < 0 || goodsDTO.getDiscount() > 10) {
-            goodsDTO.setDiscount(10D);
+        if (addGoodsDTO.getDiscount() == null || addGoodsDTO.getDiscount() < 0 || addGoodsDTO.getDiscount() > 10) {
+            addGoodsDTO.setDiscount(10D);
         }
-        if (Integer.valueOf(goodsDTO.getType()) < 0) {
-            goodsDTO.setType(0);
+        if (Integer.valueOf(addGoodsDTO.getType()) < 0) {
+            addGoodsDTO.setType(0);
         }
-        Goods goods = mapper.map(goodsDTO, Goods.class);
-        //增加商店
+        Goods goods = mapper.map(addGoodsDTO, Goods.class);
+        //增加商品
         if (goodsMapper.insertSelective(goods) != 1) {
+            throw new AddException("12");
+        }
+        Warehouse warehouse = new Warehouse();
+        warehouse.setShopId(shop.getShopId());
+        warehouse.setGoodsId(goods.getGoodsId());
+        warehouse.setNumber(1);
+        if (warehouseMapper.insertSelective(warehouse) != 1) {
             throw new AddException("12");
         }
     }
@@ -438,7 +450,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             Date nowTime = new Date(System.currentTimeMillis());
             Order order = new Order(null, userId, shop.getShopId(), cartGoodsVO.getGoodsDTO().getGoodsId()
                     , cartGoodsVO.getNumber(), goods.getPrice() * goods.getDiscount(), 1
-                    , nowTime, 0, null, 0, null, -1);
+                    , nowTime, 0, null, null, 0, 0, null, -1);
 
             Long orderId = orderMapper.getOrderIdByStateAndUserIdAndGoodsId(-1, userId, cartGoodsVO.getGoodsDTO().getGoodsId());
             if (orderId == null) {
@@ -509,7 +521,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             if (shop == null) {
                 throw new SelectException("14");
             }
-            Warehouse warehouse = warehouseMapper.getWarehouseByShopIdAndGoodsId(order.getShopId(),order.getGoodsId());
+            Warehouse warehouse = warehouseMapper.getWarehouseByShopIdAndGoodsId(order.getShopId(), order.getGoodsId());
             if (warehouse == null) {
                 throw new SelectException("15");
             }
@@ -535,6 +547,32 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             }
         }
         return true;
+    }
+
+    /**
+     * @param orderId
+     * @return purchasedId
+     * @throws UpdateException <br/>
+     *                         10:order(订单)更新失败
+     * @throws AddException    <br/>
+     *                         11:purchased(已购买)添加失败
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Long confirmGoods(Long orderId) throws UpdateException, AddException {
+        if (orderMapper.updateByPrimaryKeySelective(new Order(orderId,1,new Date(System.currentTimeMillis()))) != 1) {
+            throw new UpdateException("10");
+        }
+        Purchased purchased = new Purchased(null,orderId,new Date(System.currentTimeMillis()),0,null,null,0);
+        if (purchasedMapper.insertSelective(purchased) != 1) {
+            throw new AddException("11");
+        }
+        return purchased.getPurchasedId();
+    }
+
+    @Override
+    public int sendGoods(Long orderId) {
+        return orderMapper.updateSendGoods(orderId);
     }
 
 
