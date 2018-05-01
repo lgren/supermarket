@@ -70,10 +70,10 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toIndex")
     public String toIndex(Map<String, Object> map) {
-        PageHelper.startPage(1,2);
+//        PageHelper.startPage(1,2);
 //        PageInfo<GoodsVO> pageInfo = new PageInfo<GoodsVO>();
         map.put("goods", goodsApi.getAllGoods());
-        PageHelper.startPage(1,2);
+//        PageHelper.startPage(1,2);
         map.put("shops", shopApi.getAllShopVO());
         return "index";
     }
