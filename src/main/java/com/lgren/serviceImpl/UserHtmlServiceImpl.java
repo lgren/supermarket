@@ -282,7 +282,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
         Shop shop = mapper.map(applyShopDTO, Shop.class);
         shop.setUserId(applyShopDTO.getUserId());
         shop.setMoney(0D);
-        shop.setState(0);
+        shop.setState(1);
         //增加商店
         if (shopMapper.insertSelective(shop) != 1) {
             throw new AddException("12");
