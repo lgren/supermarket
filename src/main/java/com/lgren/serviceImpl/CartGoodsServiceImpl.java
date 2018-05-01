@@ -27,7 +27,7 @@ public class CartGoodsServiceImpl implements CartGoodsService {
     }
 
     @Override
-    public int selectByUserIdandGoodsId(Long userId, Long goodsId) {
+    public Long selectByUserIdandGoodsId(Long userId, Long goodsId) {
         return cartGoodsMapper.selectByCartIdandGoodsId(cartMapper.getCartByUserId(userId).getCartId(),goodsId);
     }
 

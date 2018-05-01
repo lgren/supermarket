@@ -5,6 +5,7 @@ import com.lgren.dao.ShopMapper;
 import com.lgren.exception.TransactionException;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.CollectGoodsDTO;
+import com.lgren.pojo.dto.PurchasedDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.User;
 import com.lgren.pojo.vo.CartVO;
@@ -185,12 +186,29 @@ public class UserIndexAction {
 
     //购物车删除商品 0删除失败 1删除成功
     @ResponseBody
-    @DeleteMapping(value = "cartGoodsDelete.do/{cartGoodsId}")
-    public int cartGoodsDelete(@PathVariable("cartGoodsId") Long cartGoodsId, Integer type) {
-        if (cartGoodsId == null) {
-            return 0;
+    @DeleteMapping(value = "cartGoodsDelete.do")
+    public String cartGoodsDelete(@RequestParam("goodsId") Long goodsId,
+                                  @RequestParam("orderId") Long orderId,
+                                  @RequestParam("type") Integer type) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f";
         }
-        return cartGoodsService.deleteByPrimaryKeyAndType(cartGoodsId, type == null ? 0 : type);
+        if (goodsId == null) {
+            return "0";
+        }
+        return "" + (userHtmlService.deleteCart(userId,goodsId,orderId,type) ? 1 : 0);
+    }
+
+    //购物车删除商品 0删除失败 1删除成功
+    @ResponseBody
+    @DeleteMapping(value = "cartGoodsDelete.do/{cartGoodsId}")
+    public String cartGoodsDelete(@PathVariable("cartGoodsId") Long cartGoodsId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f";
+        }
+        return "" + cartGoodsService.deleteByPrimaryKey(cartGoodsId);
     }
 
     /**
@@ -207,6 +225,7 @@ public class UserIndexAction {
         try {
             return userHtmlService.addCartGoods(userId, cartGoodsDTO).toString();
         } catch (RuntimeException se) {
+            se.printStackTrace();
             return "f" + se.getMessage();
         }
     }
@@ -510,18 +529,37 @@ public class UserIndexAction {
     }
 
     @ResponseBody
-    @PutMapping("/sendGoods.do")
-    public String sendGoods(@RequestParam("orderId") Long orderId) {
+    @PutMapping("/evaluationGoods.do")
+    public String evaluationGoods(PurchasedDTO purchasedDTO) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "f";
         }
-        return "" + userHtmlService.sendGoods(orderId);
+        return "" + userHtmlService.evaluationGoods(purchasedDTO);
     }
 
-
-
-
+    /**
+     *
+     * @param orderId
+     * @param sendGoodsId
+     * @return //0失败 1成功 --- f+ null:未登录 0:orderId为空,1:sendGoodsId为空
+     */
+    @ResponseBody
+    @PutMapping("/sendGoods.do")
+    public String sendGoods(@RequestParam("orderId") Long orderId,
+                            @RequestParam("sendGoodsId") Long sendGoodsId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "f";
+        }
+        if (orderId == null) {
+            return "f0";
+        }
+        if (sendGoodsId == null) {
+            return "f1";
+        }
+        return "" + userHtmlService.sendGoods(orderId,sendGoodsId);
+    }
 
 
 

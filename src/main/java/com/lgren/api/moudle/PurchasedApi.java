@@ -45,6 +45,15 @@ public class PurchasedApi {//OK
                 .map(purchased -> getPurchasedVO(purchased))
                 .collect(Collectors.toList());
     }
+    //根据shopID查询
+    public List<PurchasedVO> getPurchasedVOListByShopId(Long shopId) {
+        List<Order> orderList = orderService.getOrderListByShopId(shopId);
+        return orderList.stream()
+                .map(order -> purchasedService.selectByOrderId(order.getOrderId()))
+                .filter(purchased -> purchased != null)
+                .map(purchased -> getPurchasedVO(purchased))
+                .collect(Collectors.toList());
+    }
     //根据userID查询
     public List<PurchasedVO> getPurchasedVOListByUserIdAndEvaluation(Long userId,Integer evaluation) {
         List<Order> orderList = orderService.getOrderListByUserId(userId);

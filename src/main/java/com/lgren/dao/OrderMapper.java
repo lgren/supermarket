@@ -25,8 +25,8 @@ public interface OrderMapper {
 
     Order getOrderByUserIdAndgoodsId(Long userId, Long goodsId);
 
-    @Select("select order_id from tb_order where state = #{param1,jdbcType=INTEGER} and user_id = #{param2,jdbcType=BIGINT} and goods_id = #{param3,jdbcType=BIGINT}")
-    Long getOrderIdByStateAndUserIdAndGoodsId(Integer state, Long userId, Long goodsId);
+    @Select("select order_id from tb_order where state = #{param1,jdbcType=INTEGER} and user_id = #{param2,jdbcType=BIGINT} and goods_id = #{param3,jdbcType=BIGINT} and order_time = #{param4}")
+    Long getOrderIdByStateAndUserIdAndGoodsId(Integer state, Long userId, Long goodsId, String orderTime);
 
     @Select("select order_id from tb_order where order_time = #{param1,jdbcType=TIMESTAMP} and user_id = #{param2,jdbcType=BIGINT}")
     Long getOrderIdByTimeAndUserId(Date time, Long userId);

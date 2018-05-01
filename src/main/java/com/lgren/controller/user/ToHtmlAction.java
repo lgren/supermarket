@@ -1,11 +1,15 @@
 package com.lgren.controller.user;
 
+import com.github.pagehelper.PageHelper;
 import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
+import com.lgren.dao.CartGoodsMapper;
 import com.lgren.pojo.dto.OrderDTO;
 import com.lgren.pojo.dto.UserDTO;
+import com.lgren.pojo.po.Shop;
 import com.lgren.pojo.vo.*;
 import com.lgren.service.OrderService;
+import com.lgren.service.ShopService;
 import com.lgren.service.UserHtmlService;
 import com.lgren.service.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -33,6 +37,10 @@ public class ToHtmlAction {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ShopService shopService;
+    @Autowired
+    private CartGoodsMapper cartGoodsMapper;
 
 
 
@@ -62,7 +70,10 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toIndex")
     public String toIndex(Map<String, Object> map) {
+        PageHelper.startPage(1,2);
+//        PageInfo<GoodsVO> pageInfo = new PageInfo<GoodsVO>();
         map.put("goods", goodsApi.getAllGoods());
+        PageHelper.startPage(1,2);
         map.put("shops", shopApi.getAllShopVO());
         return "index";
     }
@@ -222,7 +233,6 @@ public class ToHtmlAction {
             return "redirect:toUser";
         }
         try {
-//            TransactionUserAndShopDTO transactionUserAndShopDTO = userHtmlService.getOrder(userId,cartVO);
             Map getOrderReturn = userHtmlService.getOrder(userId,cartVO);
             map.put("all", getOrderReturn.get("all"));
             map.put("orderIdList", getOrderReturn.get("orderIdList"));
@@ -240,10 +250,8 @@ public class ToHtmlAction {
         }
     }
 
-    @GetMapping(value = "/toPay",params = {"cartGoodsId", "goodsId"})
-    public String toPay(Map map,
-                        @RequestParam("cartGoodsId") Long cartGoodsId,
-                        @RequestParam("goodsId") Long goodsId){
+    @GetMapping(value = "/toPay",params = {"orderId"})
+    public String toPay(Map map, @RequestParam("orderId") Long orderId){
         Long userId = (Long) session.getAttribute("userId");
         UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId),UserDTO.class);
         if (userDTO.getPaymentPassword() == null) {
@@ -252,14 +260,15 @@ public class ToHtmlAction {
         if (userId == null) {
             return "login";
         }
-        OrderDTO orderDTO = mapper.map(orderService.getOrderByUserIdAndgoodsId(userId, goodsId),OrderDTO.class);
+        OrderDTO orderDTO = mapper.map(orderService.selectByPrimaryKey(orderId),OrderDTO.class);
         map.put("all",orderDTO.getAmount()*orderDTO.getPrice());
         List<Long> orderIdList = new ArrayList();
         orderIdList.add(orderDTO.getOrderId());
         map.put("orderIdList",orderIdList);
         List<Long> cartGoodsIdList = new ArrayList<>();
+        Long cartGoodsId = cartGoodsMapper.getCartGoodsByWantPayTime(orderDTO.getOrderTime().getTime());
         cartGoodsIdList.add(cartGoodsId);
-        map.put("cartGoodsIdList",orderIdList);
+        map.put("cartGoodsIdList",cartGoodsIdList);
         map.put("requestURL",request.getHeader("Referer"));
         return "payment";
     }
@@ -279,6 +288,28 @@ public class ToHtmlAction {
         map.put("cart", cartVO);
 
         return "myOrder";
+    }
+
+    @GetMapping(value = "/toMyShopOrder/{shopId}")
+    public String toMyShopOrder(Map<String, Object> map,@PathVariable("shopId") Long shopId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "login";
+        }
+        List<Shop> shopList = shopService.getShopByUserId(userId);
+        if (shopList != null) {
+            if(shopList.stream().filter(shop -> shop.getUserId() == userId).collect(Collectors.toList()) == null){
+                return "notFindShop";
+            }
+        }
+        map.put("userId", userId);
+        List<OrderVO> orderVOList = orderApi.getOrderByShopId(shopId);
+        map.put("orderVOListByUserId", orderVOList);
+        List<PurchasedVO> purchasedVOList = purchasedApi.getPurchasedVOListByShopId(shopId);
+        map.put("purchasedVOList", purchasedVOList);
+//        map.put("cart", cartVO);
+
+        return "myShopOrder";
     }
 
 

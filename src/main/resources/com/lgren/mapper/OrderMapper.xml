@@ -49,12 +49,12 @@
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" useGeneratedKeys="true" keyProperty="orderId" parameterType="com.lgren.pojo.po.Order" >
-    insert into tb_order (order_id, user_id, shop_id, 
+    insert into tb_order (order_id, user_id, shop_id,
       goods_id, amount, price, 
       pay_way, order_time, send_goods, 
       send_goods_time, send_goods_id, send_goods_state, confirm, confirm_time,
       state)
-    values (#{orderId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{shopId,jdbcType=BIGINT}, 
+    values (#{orderId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{shopId,jdbcType=BIGINT},
       #{goodsId,jdbcType=BIGINT}, #{amount,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, 
       #{payWay,jdbcType=INTEGER}, #{orderTime,jdbcType=TIMESTAMP}, #{sendGoods,jdbcType=INTEGER}, 
       #{sendGoodsTime,jdbcType=TIMESTAMP}, #{sendGoodsId,jdbcType=BIGINT},

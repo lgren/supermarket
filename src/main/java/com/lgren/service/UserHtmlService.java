@@ -6,6 +6,7 @@ import com.lgren.controller.user.dto.MyShopDTO;
 import com.lgren.controller.user.dto.UserRegistrationDTO;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
+import com.lgren.pojo.dto.PurchasedDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
@@ -137,6 +138,8 @@ public interface UserHtmlService {
 
     boolean deleteGoods(Long goodsId);
 
+    boolean deleteCart(Long userId,Long goodsId,Long orderId, Integer type);
+
     boolean deleteReceivingAddress(Long receivingAddressId);
 
     /**
@@ -197,5 +200,12 @@ public interface UserHtmlService {
      */
     Long confirmGoods(Long orderId) throws UpdateException, AddException;
 
-    int sendGoods(Long orderId);
+    int sendGoods(Long orderId, Long sendGoodsId);
+
+    /**
+     *
+     * @param purchasedDTO
+     * @return //0代表失败,1代表成功
+     */
+    int evaluationGoods(PurchasedDTO purchasedDTO) throws UpdateException;
 }

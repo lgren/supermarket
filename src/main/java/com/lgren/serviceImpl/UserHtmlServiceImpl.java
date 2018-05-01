@@ -6,12 +6,14 @@ import com.lgren.controller.user.dto.*;
 import com.lgren.dao.*;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
+import com.lgren.pojo.dto.PurchasedDTO;
 import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.*;
 import com.lgren.pojo.vo.CartGoodsVO;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
+import com.lgren.service.CartGoodsService;
 import com.lgren.service.UserHtmlService;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -45,6 +48,8 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     private CartGoodsMapper cartGoodsMapper;
     @Autowired
     private PurchasedMapper purchasedMapper;
+    @Autowired
+    private CartGoodsService cartGoodsService;
     @Autowired
     private GoodsApi goodsApi;
     @Autowired
@@ -107,7 +112,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             throw new SelectException("10");
         } else if (goodsMapper.selectByPrimaryKey(cartGoodsDTO.getGoodsId()) == null) {
             throw new SelectException("11");
-        } else if (cartGoodsMapper.selectByCartIdandGoodsId(cartGoodsDTO.getCartId(), cartGoodsDTO.getGoodsId()) > 0) {
+        } else if (cartGoodsMapper.selectByCartIdandGoodsId(cartGoodsDTO.getCartId(), cartGoodsDTO.getGoodsId()) != null) {
             throw new SelectException("12");
         }
         if (cartGoodsDTO.getNumber() != null) {
@@ -362,6 +367,13 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     }
 
     @Override
+    public boolean deleteCart(Long userId,Long goodsId,Long orderId, Integer type) {
+        Long cartGoodsId = cartGoodsService.selectByUserIdandGoodsId(userId,goodsId);
+        orderMapper.deleteByPrimaryKey(orderId);
+        return cartGoodsService.deleteByPrimaryKeyAndType(cartGoodsId, type == null ? 0 : type) > 0 ? true : false;
+    }
+
+    @Override
     public boolean deleteReceivingAddress(Long receivingAddressId) {
         return receivingAddressMapper.deleteByPrimaryKey(receivingAddressId) > 0 ? true : false;
     }
@@ -410,9 +422,6 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public Map getOrder(Long userId, CartVO cartVO) throws DeleteException, SelectException, AddException {
-        //返回结果
-//        TransactionUserAndShopDTO transactionUserAndShopDTO = new TransactionUserAndShopDTO();
-//        List<ShopOrderGetDTO> shopOrderGetDTOList = new ArrayList<>();
         Map map = new HashMap();
         List<Long> orderIdList = new ArrayList<>();
         Double all = 0D;
@@ -422,13 +431,6 @@ public class UserHtmlServiceImpl implements UserHtmlService {
         }
         UserLoginDTO userLoginDTO = mapper.map(user, UserLoginDTO.class);
         for (CartGoodsVO cartGoodsVO : cartVO.getCartGoodsVOList()) {
-            //每个商品对应的需要修改商铺的信息,userId; goodsId; number; money;
-//            ShopOrderGetDTO shopOrderGetDTO = new ShopOrderGetDTO();
-//            shopOrderGetDTO.setUserId(userId);
-//            shopOrderGetDTO.setGoodsId(cartGoodsVO.getGoodsDTO().getGoodsId());
-//            shopOrderGetDTO.setNumber(cartGoodsVO.getNumber());
-//            shopOrderGetDTO.setMoney(cartGoodsVO.getNumber()*cartGoodsVO.getGoodsDTO().getPrice());
-
             all += cartGoodsVO.getGoodsDTO().getPrice() * cartGoodsVO.getGoodsDTO().getDiscount() * cartGoodsVO.getNumber();
             Goods goods;
             if ((goods = goodsMapper.selectByPrimaryKey(cartGoodsVO.getGoodsDTO().getGoodsId())) == null) {
@@ -447,30 +449,30 @@ public class UserHtmlServiceImpl implements UserHtmlService {
                     throw new SelectException(shop.getName() + "的库存不够");
                 }
             }
-            Date nowTime = new Date(System.currentTimeMillis());
+            Long wantPayTime = null;
+            CartGoods cartGoods = cartGoodsMapper.selectByPrimaryKey(cartGoodsVO.getCartGoodsId());
+            if (cartGoods.getWantPayTime() != null) {
+                wantPayTime = cartGoods.getWantPayTime();
+            } else {
+                wantPayTime = System.currentTimeMillis();
+            }
             Order order = new Order(null, userId, shop.getShopId(), cartGoodsVO.getGoodsDTO().getGoodsId()
-                    , cartGoodsVO.getNumber(), goods.getPrice() * goods.getDiscount(), 1
-                    , nowTime, 0, null, null, 0, 0, null, -1);
-
-            Long orderId = orderMapper.getOrderIdByStateAndUserIdAndGoodsId(-1, userId, cartGoodsVO.getGoodsDTO().getGoodsId());
+                    , cartGoods.getNumber(), goods.getPrice() * goods.getDiscount(), 1
+                    , new Date(wantPayTime), 0, null, null, 0, 0, null, -1);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String orderTime = sdf.format(wantPayTime);
+            Long orderId = orderMapper.getOrderIdByStateAndUserIdAndGoodsId(-1, userId, cartGoodsVO.getGoodsDTO().getGoodsId(),orderTime);
             if (orderId == null) {
-                if (orderMapper.insert(order) != 1) {
+                if (orderMapper.insertSelective(order) != 1) {
                     throw new AddException("17");
                 }
                 orderId = order.getOrderId();
             }
             orderIdList.add(orderId);
-            /*if (cartGoodsMapper.deleteByPrimaryKey(cartGoodsVO.getCartGoodsId()) != 1) {
-                throw new DeleteException("18");
-            }*/
-            if (cartGoodsMapper.updateType(cartGoodsVO.getCartGoodsId(), 1) != 1) {
+            if (cartGoodsMapper.updateTypeAndWantPayTime(cartGoods.getCartGoodsId(), 1,wantPayTime) != 1) {
                 throw new DeleteException("18");
             }
-//            orderIdList.add(orderMapper.getOrderIdByTimeAndUserId(nowTime, userId));
-//            transactionUserAndShopDTO.setShopOrderGetDTOList(shopOrderGetDTOList);
         }
-//        transactionUserAndShopDTO.setAll(all);
-//        transactionUserAndShopDTO.setUserPaymentDTO(userLoginDTO);
         map.put("all", all);
         map.put("orderIdList", orderIdList);
         return map;
@@ -542,9 +544,7 @@ public class UserHtmlServiceImpl implements UserHtmlService {
             }
         }
         for (Long cartGoodsId : cartGoodsIdList) {
-            if (cartGoodsMapper.deleteByPrimaryKey(cartGoodsId) != 1) {
-                throw new DeleteException("20");
-            }
+            cartGoodsMapper.deleteByPrimaryKey(cartGoodsId);
         }
         return true;
     }
@@ -571,8 +571,26 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     }
 
     @Override
-    public int sendGoods(Long orderId) {
-        return orderMapper.updateSendGoods(orderId);
+    public int sendGoods(Long orderId, Long sendGoodsId) {
+        Order order = new Order();
+        order.setOrderId(orderId);
+        order.setSendGoods(1);
+        order.setSendGoodsId(sendGoodsId);
+        order.setSendGoodsTime(new Date(System.currentTimeMillis()));
+        return orderMapper.updateByPrimaryKeySelective(order);
+    }
+
+
+    /**
+     *
+     * @param purchasedDTO
+     * @return //0代表失败,1代表成功
+     */
+    @Override
+    public int evaluationGoods(PurchasedDTO purchasedDTO) {
+        purchasedDTO.setEvaluation(1);
+        purchasedDTO.setEvaluationTime(new Date(System.currentTimeMillis()));
+        return purchasedMapper.updateByPrimaryKeySelective(mapper.map(purchasedDTO,Purchased.class));
     }
 
 

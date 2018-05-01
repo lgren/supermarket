@@ -18,10 +18,13 @@ public class CartGoods {
 
     private Integer type;
 
+    private Long wantPayTime;
+
     public CartGoods() {
     }
 
-    public CartGoods(Long cartGoodsId, Long cartId, Long goodsId, Date cartGoodsTime, Integer number, Double price, Integer type) {
+    public CartGoods(Long cartGoodsId, Long cartId, Long goodsId, Date cartGoodsTime, Integer number, Double price, Integer type, Long wantPayTime) {
+
         this.cartGoodsId = cartGoodsId;
         this.cartId = cartId;
         this.goodsId = goodsId;
@@ -29,6 +32,7 @@ public class CartGoods {
         this.number = number;
         this.price = price;
         this.type = type;
+        this.wantPayTime = wantPayTime;
     }
 
     @Override
@@ -41,6 +45,7 @@ public class CartGoods {
                 ", number=" + number +
                 ", price=" + price +
                 ", type=" + type +
+                ", wantPayTime=" + wantPayTime +
                 '}';
     }
 
@@ -55,13 +60,14 @@ public class CartGoods {
                 Objects.equals(cartGoodsTime, cartGoods.cartGoodsTime) &&
                 Objects.equals(number, cartGoods.number) &&
                 Objects.equals(price, cartGoods.price) &&
-                Objects.equals(type, cartGoods.type);
+                Objects.equals(type, cartGoods.type) &&
+                Objects.equals(wantPayTime, cartGoods.wantPayTime);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(cartGoodsId, cartId, goodsId, cartGoodsTime, number, price, type);
+        return Objects.hash(cartGoodsId, cartId, goodsId, cartGoodsTime, number, price, type, wantPayTime);
     }
 
     public Long getCartGoodsId() {
@@ -119,5 +125,13 @@ public class CartGoods {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Long getWantPayTime() {
+        return wantPayTime;
+    }
+
+    public void setWantPayTime(Long wantPayTime) {
+        this.wantPayTime = wantPayTime;
     }
 }

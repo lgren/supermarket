@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lgren.dao.CartGoodsMapper" >
-  <!--<resultMap id="BaseResultMap" type="com.lgren.pojo.po.CartGoods" >
-    <id column="cart_goods_id" property="cartGoodsId" jdbcType="BIGINT" />
-    <result column="cart_id" property="cartId" jdbcType="BIGINT" />
-    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
-    <result column="cart_goods_time" property="cartGoodsTime" jdbcType="TIMESTAMP" />
-    <result column="number" property="number" jdbcType="INTEGER" />
-    <result column="price" property="price" jdbcType="DOUBLE" />
-  </resultMap>-->
   <resultMap id="BaseResultMap" type="com.lgren.pojo.po.CartGoods" >
     <id column="cart_goods_id" property="cartGoodsId" jdbcType="BIGINT" />
     <result column="cart_id" property="cartId" jdbcType="BIGINT" />
@@ -17,15 +9,14 @@
     <result column="number" property="number" jdbcType="INTEGER" />
     <result column="price" property="price" jdbcType="DOUBLE" />
     <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="want_pay_time" property="wantPayTime" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    cart_goods_id, cart_id, goods_id, cart_goods_time, number, price, type
+    cart_goods_id, cart_id, goods_id, cart_goods_time, number, price, type, want_pay_time
   </sql>
   <select id="getCartGoodsByCartIdAndType" resultMap="BaseResultMap">
       select <include refid="Base_Column_List"/> from tb_cart_goods where cart_id = #{param1} and type = #{param2}
   </select>
-
-
   <select id="getCartGoodsByCartId" resultMap="BaseResultMap">
       select <include refid="Base_Column_List"/> from tb_cart_goods where cart_id = #{cart_id}
   </select>
@@ -47,10 +38,11 @@
   </delete>
   <insert id="insert" parameterType="com.lgren.pojo.po.CartGoods" >
     insert into tb_cart_goods (cart_goods_id, cart_id, goods_id, 
-      cart_goods_time, number, price
+      cart_goods_time, number, price, want_pay_time
       )
     values (#{cartGoodsId,jdbcType=BIGINT}, #{cartId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
-      #{cartGoodsTime,jdbcType=TIMESTAMP}, #{number,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}
+      #{cartGoodsTime,jdbcType=TIMESTAMP}, #{number,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE},
+      #{wantPayTime,jdbcType=BIGINT}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.lgren.pojo.po.CartGoods" >
@@ -74,6 +66,9 @@
       <if test="price != null" >
         price,
       </if>
+      <if test="wantPayTime != null" >
+        want_pay_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="cartGoodsId != null" >
@@ -93,6 +88,9 @@
       </if>
       <if test="price != null" >
         #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="wantPayTime != null" >
+        #{wantPayTime,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -114,6 +112,12 @@
       <if test="price != null" >
         price = #{price,jdbcType=DOUBLE},
       </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="wantPayTime != null" >
+        want_pay_time = #{wantPayTime,jdbcType=BIGINT},
+      </if>
     </set>
     where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
   </update>
@@ -123,7 +127,9 @@
       goods_id = #{goodsId,jdbcType=BIGINT},
       cart_goods_time = #{cartGoodsTime,jdbcType=TIMESTAMP},
       number = #{number,jdbcType=INTEGER},
-      price = #{price,jdbcType=DOUBLE}
+      price = #{price,jdbcType=DOUBLE},
+      type = #{type,jdbcType=INTEGER},
+      want_pay_time = #{wantPayTime,jdbcType=BIGINT}
     where cart_goods_id = #{cartGoodsId,jdbcType=BIGINT}
   </update>
 </mapper>

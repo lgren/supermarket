@@ -8,7 +8,7 @@ import java.util.List;
 public interface CartGoodsService {
     int deleteByPrimaryKeyAndType(Long cartGoodsId,Integer type);
 
-    int selectByUserIdandGoodsId(Long userId, Long goodsId);
+    Long selectByUserIdandGoodsId(Long userId, Long goodsId);
 
     int insertByUserIdAndGoodsId(Long userId ,CartGoodsDTO cartGoodsDTO);
 

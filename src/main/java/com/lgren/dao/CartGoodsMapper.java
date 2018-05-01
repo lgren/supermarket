@@ -7,14 +7,17 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface CartGoodsMapper {
-    @Delete("update tb_cart_goods set type = #{param2,jdbcType=INTEGER} where cart_goods_id = #{param1,jdbcType=BIGINT}")
-    int updateType(Long cartGoodsId, Integer type);
+    @Select("select cart_goods_id from tb_cart_goods where want_pay_time = #{wantPayTime,jdbcType = BIGINT}")
+    Long getCartGoodsByWantPayTime(Long wantPayTime);
+
+    @Delete("update tb_cart_goods set type = #{param2,jdbcType=INTEGER}, want_pay_time = #{param3,jdbcType=BIGINT} where cart_goods_id = #{param1,jdbcType=BIGINT}")
+    int updateTypeAndWantPayTime(Long cartGoodsId, Integer type, Long wantPayTime);
 
     @Delete("delete from tb_cart_goods where cart_goods_id = #{param1,jdbcType=BIGINT} and type = #{param2,jdbcType=INTEGER}")
     int deleteByPrimaryKeyAndType(Long cartGoodsId,Integer type);
 
-    @Select("select count(cart_goods_id) from tb_cart_goods where cart_id = #{param1,jdbcType=BIGINT} and goods_id = #{param2,jdbcType=BIGINT}")
-    int selectByCartIdandGoodsId(Long cartId, Long goodsId);
+    @Select("select cart_goods_id from tb_cart_goods where cart_id = #{param1,jdbcType=BIGINT} and goods_id = #{param2,jdbcType=BIGINT}")
+    Long selectByCartIdandGoodsId(Long cartId, Long goodsId);
 
     List<CartGoods> getCartGoodsByCartId(Long cartId);
 

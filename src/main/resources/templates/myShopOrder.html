@@ -27,37 +27,31 @@
       <div shiro:guest="" class="col-sm-6" style="text-align: center">
         <h4>看到这个说明你是个游客</h4></div>
       <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="toRegistration">注册界面</a>
-        <a shiro:guest="" href="toLogin">登陆界面</a><br/><br/>
-        <a shiro:user="" href="toCollect">我的收藏</a><br/>
-        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-        <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a href="toSeller">卖家中心</a><br/>
+        <a href="../toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="../toRegistration">注册界面</a>
+        <a shiro:guest="" href="../toLogin">登陆界面</a><br/><br/>
+        <a shiro:user="" href="../toCollect">我的收藏</a><br/>
+        <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
+        <a shiro:user="" href="../toUser">个人中心</a><br/>
+        <a href="../toSeller">卖家中心</a><br/>
         <a href="logout">注销</a>
       </div>
     </div>
     <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
       <h2>未付款</h2>
-      <form th:if="${orderVO.getState() == -1}" th:each="orderVO : ${orderVOListByUserId}" action="toPay" method="get">
-        <a th:href="@{'toGoods/' + ${orderVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
-<!--        &lt;!&ndash;隐藏域goodsId&ndash;&gt;
+      <form th:if="${orderVO.getState() == -1}" th:each="orderVO : ${orderVOListByUserId}">
+        <a th:href="@{'../toGoods/' + ${orderVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
+        <!--隐藏域goodsId-->
         <input th:value="${orderVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
-        &lt;!&ndash;隐藏域shopId&ndash;&gt;
-        <input th:value="${orderVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>-->
-        <!--隐藏域orderId-->
-        <input th:value="${orderVO.getOrderId()}" id="orderId" name="orderId" type="hidden"/>
-        <input type="hidden" class="choose" value="0"/>
+        <!--隐藏域shopId-->
+        <input th:value="${orderVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
+        <input type="hidden" id="choose"/>
         <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
         <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
         <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>折扣价:</span><span th:text="${#numbers.formatDecimal(orderVO.getPrice(),0,2)}"></span><br/>
-        <span>数量:</span><span class="number" th:text="${orderVO.getAmount()}"/><br/>
-        <a href="javascript:;" th:onclick="'deleteCartGoods('+${orderVO.getGoodsDTO().getGoodsId()}+','+${orderVO.getOrderId()}+')'">移除</a>
-        <a href="javascript:;" th:onclick="'pay(this)'">前往支付</a>
-        <!--<input type="submit">前往支付</input>-->
+        <span>单价:</span><span th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
+        <span>数量:</span><span id="number" th:text="${orderVO.getAmount()}"/><br/>
       </form>
-
     </div>
     <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
       <h2>待发货</h2><!--orderVOListByUserId-->
@@ -65,9 +59,10 @@
         <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
         <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
         <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span
-          th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice()*orderVO.getGoodsDTO().getType(),0,2)}"></span><br/>
+        <span>单价:</span><span th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
         <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
+        <span>发货编号:</span><input type="number"/>
+        <a href="javascript:;" th:onclick="'sendGoods('+${orderVO.getOrderId()}+',this)'">确认发货</a>
       </div>
     </div>
     <div id="show3" class="col-sm-3" style="background-color: #59aaff">
@@ -80,7 +75,6 @@
           th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice()*orderVO.getGoodsDTO().getType(),0,2)}"></span><br/>
         <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
         <span>发货编号:</span><span th:text="${orderVO.getSendGoodsId()}"></span><br/>
-        <a href="javascript:;" th:onclick="'confirmGoods('+${orderVO.getOrderId()}+')'">确认收货</a>
       </div>
     </div>
     <div id="show4" class="col-sm-3" style="background-color: #3176ff">
@@ -93,8 +87,6 @@
           th:text="${#numbers.formatDecimal(purchasedVO.getOrderVO().getGoodsDTO().getPrice()*purchasedVO.getOrderVO().getGoodsDTO().getType(),0,2)}"></span><br/>
         <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
         <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
-        <span>评价:</span><textarea name="evaluationText" cols="50" rows="3"></textarea><br/>
-        <a href="javascript:;" th:onclick="'evaluationGoods('+${purchasedVO.getPurchasedId()}+',this)'">提交评价</a>
       </div>
     </div>
   </div>
@@ -114,8 +106,8 @@
         <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
         <span>评价:</span>
         <p th:if="${purchasedVO.getEvaluation() == 1}" th:text="${purchasedVO.getEvaluationText()}"></p><br/>
-        <p th:if="${purchasedVO.getEvaluation() == 0}" th:text="未评价"></p>
         <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
+        <p th:if="${purchasedVO.getEvaluation() == 0}" th:text="未评价"></p>
       </div>
     </div>
     <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
@@ -124,100 +116,32 @@
 </body>
 <script src="/util/myUtils.js"></script>
 <script type="text/javascript" th:inline="Javascript">
-    function deleteCartGoods(goodsId,orderId) {
-        if (!confirm("确认删除?")) {
+    function sendGoods(orderId,node) {
+        var $node = $(node);
+        var sendGoodsId = $node.parent().find("input").val();
+        if (sendGoodsId == null || sendGoodsId == "") {
+            alert("请填写发货单号");
             return null;
         }
         $.ajax({
-            url: "cartGoodsDelete.do",
-            type: "post",
-            data: {
-                "_method": "delete",
-                "goodsId": goodsId,
-                "orderId":orderId,
-                "type": 1
-            },
-            success: function (data) {
-                data == 0 ? alert("删除失败") : alert("删除成功");
-                window.location.reload();
-            },
-            error: function (data) {
-
-            }
-        })
-    }
-
-    function pay(node) {
-        $(node).parent().submit();
-        // "cartGoodsId", "goodsId", "orderId"
-        /*$(node).parent().find(".choose").val(1);
-        var cartVO = [[${cart}]];
-        var cartGoodsVOList = [];
-        var $divs = $("#show1 form");
-        $.each($divs, function (k) {
-            if ($($divs[k]).find(".choose").val() == 1) {
-                var cartGoodsVO = cartVO.cartGoodsVOList[k];
-                cartGoodsVO.number = $($divs[k]).find(".number").html();
-                cartGoodsVOList.push(cartGoodsVO);
-            }
-        })
-        cartVO.cartGoodsVOList = cartGoodsVOList;
-        if (1 > cartGoodsVOList.length) {
-            alert("未选中任何商品");
-            return null;
-        }*/
-
-        // doFormRequest("toPay", "post", JSON.stringify(cartVO), "list");
-    }
-
-    function confirmGoods(orderId) {
-        $.ajax({
-            url: "confirmGoods.do",
+            url: "../sendGoods.do",
             type: "put",
             data: {
-                "orderId": orderId
+                "orderId": orderId,
+                "sendGoodsId": sendGoodsId
             },
             success: function (data) {
-                //purchasedId ---  f+ 10:order(订单)更新失败 11:purchased(已购买)添加失败
+                //0失败 1成功 --- f+ null:未登录 0:orderId为空,1:sendGoodsId为空
                 switch (data) {
                     case "f": {
                         alert("未登录,前往登陆界面");
-                        window.location.href="toLogin";
+                        window.location.href="../toLogin";
                     };break;
-                    case "f10" :
-                    case "f11" :
-                        alert("确认收货失败");
-                    default :
-                        window.location.reload();
-                        break;
-                }
-            },
-            error: function (data) {
-                console.log(data);
-            }
-        })
-    }
-    
-    function evaluationGoods(purchasedId,node) {
-        var $node = $(node);
-        var evaluationText = $node.parent().find("textarea").val();
-        $.ajax({
-            url: "evaluationGoods.do",
-            type: "put",
-            data: {
-                "purchasedId": purchasedId,
-                "evaluationText": evaluationText
-            },
-            success: function (data) {
-                //0代表成功 1代表失败
-                switch (data) {
-                    case "f": {
-                        alert("未登录,前往登陆界面");
-                        window.location.href="toLogin";
-                    };break;
-                    case "0" : alert("评价失败") ;break;
+                    case "f0": alert("请正常操作");;break;
+                    case "f1": alert("请填写发货单号");;break;
+                    case "0" : alert("发货失败") ;break;
                     case "1" : {
-                        alert("评价成功");
+                        alert("发货成功");
                         window.location.reload();
                     };break;
                     default : alert("不知原因");break;
@@ -227,6 +151,7 @@
                 console.log(data);
             }
         })
+
     }
 </script>
 </html>
