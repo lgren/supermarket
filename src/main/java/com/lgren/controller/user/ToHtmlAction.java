@@ -1,6 +1,5 @@
 package com.lgren.controller.user;
 
-import com.github.pagehelper.PageHelper;
 import com.lgren.api.moudle.*;
 import com.lgren.controller.user.dto.UserHtmlDTO;
 import com.lgren.dao.CartGoodsMapper;
@@ -60,8 +59,6 @@ public class ToHtmlAction {
     private PurchasedApi purchasedApi;
     @Autowired
     private ReceivingAddressApi receivingAddressApi;
-    @Autowired
-    private CartGoodsApi cartGoodsApi;
     @Autowired
     private HttpServletRequest request;
     @Autowired

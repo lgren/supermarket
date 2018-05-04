@@ -47,9 +47,20 @@ public class UserIndexAction {
     @Autowired
     private HttpSession session;
 
+    @ResponseBody
+    @RequestMapping(value = "isAuthCode.do", params = {"authCode"})
+    public boolean authCodeVer(@RequestParam("authCode") String authCode) {
+        return isAuthCode(authCode);
+    }
+
+    private boolean isAuthCode(String authCode) {
+        return session.getAttribute("authCode").toString().equals(authCode.toLowerCase());
+    }
+
+
     /**
      * @param userLoginDTO
-     * @return //数字(userId)代表成功 ---f+ 0:用户名或密码错误 1用户名或密码为空 2已经登陆了
+     * @return //数字(userId)代表成功 ---f+ 0:用户名或密码错误 1用户名或密码为空 2已经登陆了 3验证码不正确
      */
     @ResponseBody
     @GetMapping(value = "userLogin.do")
@@ -58,9 +69,13 @@ public class UserIndexAction {
                 || StringUtils.isEmptyOrWhitespace(userLoginDTO.getPassword())) {
             return "f1";
         }
+        if (!isAuthCode(userLoginDTO.getAuthCode())) {
+            return "f3";
+        }
         Subject currentUser = SecurityUtils.getSubject();
         if (!currentUser.isAuthenticated()) {
-            UsernamePasswordToken token = new UsernamePasswordToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(userLoginDTO.getUsername(),
+                    userLoginDTO.getPassword(), userLoginDTO.isAutoLogin());
             try {
                 currentUser.login(token);
                 session.setAttribute("username", userLoginDTO.getUsername());
@@ -77,7 +92,8 @@ public class UserIndexAction {
 
     /**
      * @param userRegistrationDTO
-     * @return // 数字:成功 --- f+* 0:参数问题 1账号或密码不能为空 2账号或密码输入格式不对 10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
+     * @return // 数字:成功 --- f+* 0:参数问题 1账号或密码不能为空 2账号或密码输入格式不对 3:验证码不正确
+     *              10:用户已存在 11:增加用户失败 12:未查找刚插入的用户 13:个人购物车增加失败 14:个人收藏夹添加失败
      */
     @ResponseBody
     @PostMapping(value = "registration.do")
@@ -85,6 +101,9 @@ public class UserIndexAction {
         if (StringUtils.isEmptyOrWhitespace(userRegistrationDTO.getUsername())
                 || StringUtils.isEmptyOrWhitespace(userRegistrationDTO.getPassword())) {
             return "f1";
+        }
+        if (!isAuthCode(userRegistrationDTO.getAuthCode())) {
+            return "f3";
         }
         try {
             Long userId = userHtmlService.addUser(userRegistrationDTO);
@@ -353,7 +372,8 @@ public class UserIndexAction {
 
     /**
      * @param addGoodsDTO
-     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:该店铺还在审核
+     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 4:验证码不正确
+     *          10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:该店铺还在审核
      */
     @ResponseBody
     @PostMapping(value = "addGoods.do")
@@ -363,6 +383,9 @@ public class UserIndexAction {
         }
         if (addGoodsDTO.getType() == null) {
             return "f3";
+        }
+        if (!isAuthCode(addGoodsDTO.getAuthCode())) {
+            return "f4";
         }
         if (StringUtils.isEmptyOrWhitespace(addGoodsDTO.getName())
                 || StringUtils.isEmptyOrWhitespace(addGoodsDTO.getImageUrl())

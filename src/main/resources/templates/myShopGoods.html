@@ -94,12 +94,6 @@
                 type="number" min="0" class="form-control" name="number" id="number" placeholder="goods's number"/>
           </div>
         </div>
-        <!--<div id="authCodeDiv" class="form-group hidden">
-          <label for="authCode" class="col-sm-2 control-label">验证码</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
-          </div>
-        </div>-->
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button type="button" class="btn btn-default" th:onclick="'changeGoods(this)'">保存修改
@@ -159,10 +153,13 @@
             <input type="number" min="0" class="form-control" name="number" id="numberAdd" placeholder="goods's number"/>
           </div>
         </div>
-        <div id="authCodeDivAdd" class="form-group">
-          <label for="authCodeAdd" class="col-sm-2 control-label">验证码</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCodeAdd" placeholder="authCode"/>
+        <div class="form-group">
+          <label for="authCode" class="col-sm-2 control-label">验证码</label>
+          <div class="col-sm-5">
+            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode" value="yzm"/>
+          </div>
+          <div class="col-sm-5">
+            <img id="getAuthCode" />
           </div>
         </div>
         <div class="form-group">
@@ -257,6 +254,10 @@
     }
 
     function addGoods(node) {
+        if(!$("#authCode").hasClass("alert-success")) {
+            alert("请输入正确的验证码");
+            return null;
+        }
         var formNode = $(node).parent().parent().parent();
         var discountAddNumber = formNode.find("#discountAdd").val();
         if (discountAddNumber > 10 || 0 > discountAddNumber) {
@@ -279,7 +280,7 @@
             //data是纯数字
         }
         /*Number();*/
-        var $authCode = $("#authCodeAdd");
+        var $authCode = $("#authCode");
         if ($authCode.val() == null || $authCode.val() == "") {
             alert("请输入验证码");
             return null;
@@ -308,6 +309,9 @@
                         break;
                     case "f3":
                         alert("商品类型错误(目前只能填数字,之后做下拉框)");
+                        break;
+                    case "f4":
+                        alert("验证码错误");
                         break;
                     case "f10":
                         alert("未正确找到商店,请正确操作");
@@ -370,5 +374,24 @@
             }
         })
     }
+
+    <!-- 获取验证码 -->
+    $("#getAuthCode").click(function(){
+        var url = "../authCode.do?t=" + Math.random();
+        this.src = url;
+    }).click().show();
+
+    $("#authCode").focus(function(){
+        var $node = $(this);
+        $node.removeClass("alert-success");
+        $node.removeClass("alert-danger");
+    })
+    $("#authCode").blur(function () {
+        var $node = $(this);
+        var authCode = $node.val();
+        $.get("../isAuthCode.do?authCode="+authCode,function (data) {
+            $node.addClass(data ? "alert-success" : "alert-danger");
+        })
+    })
 </script>
 </html>

@@ -13,12 +13,13 @@ public class UserLoginDTO {
 
     private String authCode;
 
-    private String autoLogin;
+    private boolean autoLogin;
 
     public UserLoginDTO() {
     }
 
-    public UserLoginDTO(String userId, String username, String password, String paymentPassword, String authCode, String autoLogin) {
+    public UserLoginDTO(String userId, String username, String password, String paymentPassword, String authCode, boolean autoLogin) {
+
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -35,7 +36,7 @@ public class UserLoginDTO {
                 ", password='" + password + '\'' +
                 ", paymentPassword='" + paymentPassword + '\'' +
                 ", authCode='" + authCode + '\'' +
-                ", autoLogin='" + autoLogin + '\'' +
+                ", autoLogin=" + autoLogin +
                 '}';
     }
 
@@ -44,12 +45,12 @@ public class UserLoginDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserLoginDTO that = (UserLoginDTO) o;
-        return Objects.equals(userId, that.userId) &&
+        return autoLogin == that.autoLogin &&
+                Objects.equals(userId, that.userId) &&
                 Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&
                 Objects.equals(paymentPassword, that.paymentPassword) &&
-                Objects.equals(authCode, that.authCode) &&
-                Objects.equals(autoLogin, that.autoLogin);
+                Objects.equals(authCode, that.authCode);
     }
 
     @Override
@@ -99,11 +100,11 @@ public class UserLoginDTO {
         this.authCode = authCode;
     }
 
-    public String getAutoLogin() {
+    public boolean isAutoLogin() {
         return autoLogin;
     }
 
-    public void setAutoLogin(String autoLogin) {
+    public void setAutoLogin(boolean autoLogin) {
         this.autoLogin = autoLogin;
     }
 }

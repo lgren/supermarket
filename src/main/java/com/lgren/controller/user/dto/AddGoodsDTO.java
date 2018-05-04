@@ -22,10 +22,12 @@ public class AddGoodsDTO {
 
     private Integer number;
 
+    private String authCode;
+
     public AddGoodsDTO() {
     }
 
-    public AddGoodsDTO(Long goodsId, Long shopId, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number) {
+    public AddGoodsDTO(Long goodsId, Long shopId, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number, String authCode) {
 
         this.goodsId = goodsId;
         this.shopId = shopId;
@@ -36,6 +38,7 @@ public class AddGoodsDTO {
         this.discount = discount;
         this.showTime = showTime;
         this.number = number;
+        this.authCode = authCode;
     }
 
     @Override
@@ -50,6 +53,7 @@ public class AddGoodsDTO {
                 ", discount=" + discount +
                 ", showTime=" + showTime +
                 ", number=" + number +
+                ", authCode='" + authCode + '\'' +
                 '}';
     }
 
@@ -66,13 +70,14 @@ public class AddGoodsDTO {
                 Objects.equals(price, that.price) &&
                 Objects.equals(discount, that.discount) &&
                 Objects.equals(showTime, that.showTime) &&
-                Objects.equals(number, that.number);
+                Objects.equals(number, that.number) &&
+                Objects.equals(authCode, that.authCode);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(goodsId, shopId, imageUrl, name, type, price, discount, showTime, number);
+        return Objects.hash(goodsId, shopId, imageUrl, name, type, price, discount, showTime, number, authCode);
     }
 
     public Long getGoodsId() {
@@ -146,5 +151,13 @@ public class AddGoodsDTO {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
     }
 }

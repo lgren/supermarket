@@ -99,12 +99,6 @@
                    class="form-control" name="homeaddress" id="homeaddress" placeholder="homeaddress"/>
           </div>
         </div>
-        <div id="authCodeDiv" class="form-group hidden">
-          <label for="authCode" class="col-sm-2 control-label">验证码</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
-          </div>
-        </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button type="button" class="btn btn-default" onclick="change(this)">保存修改</button>
@@ -349,13 +343,6 @@
 
     function change(node) {
         var formNode = $(node).parent().parent().parent();
-        var $authCode = $("#authCode");
-        var $authCodeDiv = $("#authCodeDiv");
-        if ($authCode.val() == null || $authCode.val() == "") {
-            alert("请输入验证码");
-            $authCodeDiv.removeClass("hidden");
-            return null;
-        }
         var formData = formNode.serialize();
         $.ajax({
             url: "/userUpdate.do",
