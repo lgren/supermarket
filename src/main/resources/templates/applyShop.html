@@ -1,70 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>两个人商城</title>
-  <script src="/webjars/jquery/jquery.min.js"></script>
-  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>两个人商城</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>申请店铺</h1></div>
     <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
-        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-        <a shiro:user="" href="toCart">购物车</a><br/>
-        <a shiro:user="" href="toCollect">我的收藏</a><br/>
-        <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-        <a href="toSeller">卖家中心</a><br/>
-        <a shiro:user="" href="logout">注销</a>
-      </div>
+        <div class="col-sm-12" style="text-align: center"><h1>申请店铺</h1></div>
+        <div class="row">
+            <div shiro:user="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个有身份的人</h4>
+                <div>这是你的信息:<span shiro:principal=""></span></div>
+                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+            </div>
+            <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
+            <div id="show" class="col-sm-6" style="text-align: center">
+                <a href="toIndex">前往主页</a><br/>
+                <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+                <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+                <a shiro:user="" href="toCart">购物车</a><br/>
+                <a shiro:user="" href="toCollect">我的收藏</a><br/>
+                <a shiro:user="" href="toUser">个人中心</a><br/>
+                <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+                <a href="toSeller">卖家中心</a><br/>
+                <a shiro:user="" href="logout">注销</a>
+            </div>
+        </div>
+        <div id="show1" class="col-sm-6 col-sm-offset-3">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">店铺名:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="name" id="name" placeholder="shop's name"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description" class="col-sm-2 control-label">店铺描述:</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" name="description" id="description"
+                                  placeholder="description"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="authCode" class="col-sm-2 control-label">验证码</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"
+                               value="yzm"/>
+                    </div>
+                    <div class="col-sm-5">
+                        <img id="getAuthCode"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn btn-default" onclick="applyShop()">注册</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div id="show1" class="col-sm-6 col-sm-offset-3">
-      <form class="form-horizontal">
-        <div class="form-group">
-          <label for="name" class="col-sm-2 control-label">店铺名:</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="name" id="name" placeholder="shop's name"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="description" class="col-sm-2 control-label">店铺描述:</label>
-          <div class="col-sm-10">
-            <textarea class="form-control" name="description" id="description" placeholder="description"></textarea>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="authCode" class="col-sm-2 control-label">验证码</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" class="btn btn-default" onclick="applyShop()">注册</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 
 </body>
 
 <script type="text/javascript">
     function applyShop() {
+        if (!$("#authCode").hasClass("alert-success")) {
+            alert("请输入正确的验证码");
+            return null;
+        }
         var returnData;
         var name = $("#name").val();
         var description = $("#description").val();
@@ -90,17 +100,29 @@
                     //data是纯数字
                 }*/
                 switch (data) {
-                    case "f1" : alert("商铺名或面描述不能为空"); break;
+                    case "f1" :
+                        alert("商铺名或面描述不能为空");
+                        break;
+                    case "f3" :
+                        alert("验证码错误");
+                        break;
                     case "f10" : {
                         alert("登陆已失效,前往登陆");
                         window.location.href = "toLogin";
-                    } break;
-                    case "f11" : alert("商铺名已存在,请重新命名"); break;
-                    case "f12" : alert("添加商铺失败"); break;
+                    }
+                        break;
+                    case "f11" :
+                        alert("商铺名已存在,请重新命名");
+                        break;
+                    case "f12" :
+                        alert("添加商铺失败");
+                        break;
                     default : {
                         alert("添加成功,前往新注册商铺界面");
                         window.location.href = "toMyShop";
-                    };break;
+                    }
+                        ;
+                        break;
                 }
             },
             error: function (data) {
@@ -108,5 +130,25 @@
             }
         })
     }
+
+
+    <!-- 获取验证码 -->
+    $("#getAuthCode").click(function () {
+        var url = "authCode.do?t=" + Math.random();
+        this.src = url;
+    }).click().show();
+
+    $("#authCode").focus(function () {
+        var $node = $(this);
+        $node.removeClass("alert-success");
+        $node.removeClass("alert-danger");
+    })
+    $("#authCode").blur(function () {
+        var $node = $(this);
+        var authCode = $node.val();
+        $.get("isAuthCode.do?authCode=" + authCode, function (data) {
+            $node.addClass(data ? "alert-success" : "alert-danger");
+        })
+    })
 </script>
 </html>

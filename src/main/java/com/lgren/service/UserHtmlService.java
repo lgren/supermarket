@@ -1,9 +1,9 @@
 package com.lgren.service;
 
-import com.lgren.controller.user.dto.AddGoodsDTO;
-import com.lgren.controller.user.dto.ApplyShopDTO;
-import com.lgren.controller.user.dto.MyShopDTO;
-import com.lgren.controller.user.dto.UserRegistrationDTO;
+import com.lgren.action.user.dto.AddGoodsDTO;
+import com.lgren.action.user.dto.ApplyShopDTO;
+import com.lgren.action.user.dto.MyShopDTO;
+import com.lgren.action.user.dto.UserRegistrationDTO;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
 import com.lgren.pojo.dto.PurchasedDTO;

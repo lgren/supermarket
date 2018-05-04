@@ -1,187 +1,193 @@
 <!DOCTYPE html>
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>两个人商城</title>
-  <script src="/webjars/jquery/jquery.min.js"></script>
-  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-  <style type="text/css" rel="stylesheet">
-    .col-sm-3 > div, .col-sm-3 > form {
-      border: black 1px solid;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>两个人商城</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css" rel="stylesheet">
+        .col-sm-3 > div, .col-sm-3 > form {
+            border: black 1px solid;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1
-        th:text="${shopVO.getUserDTO().getNickname()}+'的'+${shopVO.getName()}"></h1></div>
     <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="../toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="../toRegistration">注册界面</a><br/>
-        <a shiro:guest="" href="../toLogin">登陆界面</a><br/>
-        <a shiro:user="" href="../toCart">购物车</a><br/>
-        <a shiro:user="" href="../toCollect">我的收藏</a><br/>
-        <a shiro:user="" href="../toUser">个人中心</a><br/>
-        <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
-        <a href="../toSeller">卖家中心</a><br/>
-        <a shiro:user="" href="logout">注销</a>
-      </div>
-    </div>
-    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <form th:each="goodVO : ${goodsVOList}" class="form-horizontal">
-        <!--<a th:href="@{'toMyShopGoods/' + ${shopVO.getShopId()}}">前往</a><br/>-->
-        <!--隐藏域 goodsId-->
-        <input th:value="${goodVO.getGoodsId()}" type="hidden" id="goodsId" name="goodsId"/>
-        <!--隐藏域 shopId-->
-        <input th:value="${shopVO.getShopId()}" type="hidden" id="shopId" name="shopId"/>
-        <div class="form-group">
-          <label for="name" class="col-sm-2 control-label">商品名:</label>
-          <div class="col-sm-10">
-            <input th:value="${goodVO.getName() != null ? goodVO.getName() : ''}" type="text" class="form-control"
-                   name="name" id="name" placeholder="goods's name"/>
-          </div>
+        <div class="col-sm-12" style="text-align: center"><h1
+                th:text="${shopVO.getUserDTO().getNickname()}+'的'+${shopVO.getName()}"></h1></div>
+        <div class="row">
+            <div shiro:user="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个有身份的人</h4>
+                <div>这是你的信息:<span shiro:principal=""></span></div>
+                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+            </div>
+            <div shiro:guest="" class="col-sm-6" style="text-align: center"><h4>看到这个说明你是个游客</h4></div>
+            <div id="show" class="col-sm-6" style="text-align: center">
+                <a href="../toIndex">前往主页</a><br/>
+                <a shiro:guest="" href="../toRegistration">注册界面</a><br/>
+                <a shiro:guest="" href="../toLogin">登陆界面</a><br/>
+                <a shiro:user="" href="../toCart">购物车</a><br/>
+                <a shiro:user="" href="../toCollect">我的收藏</a><br/>
+                <a shiro:user="" href="../toUser">个人中心</a><br/>
+                <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
+                <a href="../toSeller">卖家中心</a><br/>
+                <a shiro:user="" href="logout">注销</a>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="type" class="col-sm-2 control-label">商品类型:</label>
-          <div class="col-sm-10">
-            <input th:value="${goodVO.getType() != null ? goodVO.getType() : ''}" type="number"
-                   class="form-control"
-                   name="type" id="type" placeholder="goods's type"/>
-          </div>
+        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+            <form th:each="goodVO : ${goodsVOList}" class="form-horizontal">
+                <!--<a th:href="@{'toMyShopGoods/' + ${shopVO.getShopId()}}">前往</a><br/>-->
+                <!--隐藏域 goodsId-->
+                <input th:value="${goodVO.getGoodsId()}" type="hidden" id="goodsId" name="goodsId"/>
+                <!--隐藏域 shopId-->
+                <input th:value="${shopVO.getShopId()}" type="hidden" id="shopId" name="shopId"/>
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">商品名:</label>
+                    <div class="col-sm-10">
+                        <input th:value="${goodVO.getName() != null ? goodVO.getName() : ''}" type="text"
+                               class="form-control"
+                               name="name" id="name" placeholder="goods's name"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="type" class="col-sm-2 control-label">商品类型:</label>
+                    <div class="col-sm-10">
+                        <input th:value="${goodVO.getType() != null ? goodVO.getType() : ''}" type="number"
+                               class="form-control"
+                               name="type" id="type" placeholder="goods's type"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl" class="col-sm-2 control-label">图片:</label>
+                    <div class="col-sm-10">
+                        <input th:value="${goodVO.getImageUrl() != null ? goodVO.getImageUrl() : ''}" type="text"
+                               class="form-control"
+                               name="imageUrl" id="imageUrl" placeholder="goods's ImageUrl"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="price" class="col-sm-2 control-label">价格:</label>
+                    <div class="col-sm-10">
+                        <input th:value="${goodVO.getPrice() != null ? #numbers.formatDecimal(goodVO.getPrice(),0,2) : ''}"
+                               type="number"
+                               class="form-control"
+                               name="price" id="price" placeholder="goods's price"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="discount" class="col-sm-2 control-label">折扣:</label>
+                    <div class="col-sm-10">
+                        <input
+                                th:value="${goodVO.getDiscount() != null ? #numbers.formatDecimal(goodVO.getDiscount(),1,2) : ''}"
+                                type="number" min="0" max="10"
+                                class="form-control"
+                                name="discount" id="discount" placeholder="goods's discount min=0 max=10"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="number1" class="col-sm-2 control-label">数量:</label>
+                    <div class="col-sm-10">
+                        <input th:value="${goodVO.getNumber() != null ? #numbers.formatDecimal(goodVO.getNumber(),0,0) : ''}"
+                               type="number" min="0" class="form-control" name="number" id="number1"
+                               placeholder="goods's number"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn btn-default" th:onclick="'changeGoods(this)'">保存修改
+                        </button>
+                        <button type="button" class="btn btn-default"
+                                th:onclick="'deleteGoods('+${goodVO.getGoodsId()}+')'">删除商品
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-          <label for="imageUrl" class="col-sm-2 control-label">图片:</label>
-          <div class="col-sm-10">
-            <input th:value="${goodVO.getImageUrl() != null ? goodVO.getImageUrl() : ''}" type="text"
-                   class="form-control"
-                   name="imageUrl" id="imageUrl" placeholder="goods's ImageUrl"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="price" class="col-sm-2 control-label">价格:</label>
-          <div class="col-sm-10">
-            <input th:value="${goodVO.getPrice() != null ? #numbers.formatDecimal(goodVO.getPrice(),0,2) : ''}"
-                   type="number"
-                   class="form-control"
-                   name="price" id="price" placeholder="goods's price"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="discount" class="col-sm-2 control-label">折扣:</label>
-          <div class="col-sm-10">
-            <input
-                th:value="${goodVO.getDiscount() != null ? #numbers.formatDecimal(goodVO.getDiscount(),1,2) : ''}"
-                type="number" min="0" max="10"
-                class="form-control"
-                name="discount" id="discount" placeholder="goods's discount min=0 max=10"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="number" class="col-sm-2 control-label">数量:</label>
-          <div class="col-sm-10">
-            <input th:value="${goodVO.getNumber() != null ? #numbers.formatDecimal(goodVO.getNumber(),0,0) : ''}"
-                type="number" min="0" class="form-control" name="number" id="number" placeholder="goods's number"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" class="btn btn-default" th:onclick="'changeGoods(this)'">保存修改
-            </button>
-            <button type="button" class="btn btn-default" th:onclick="'deleteGoods('+${goodVO.getGoodsId()}+')'">删除商品
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-      <form class="form-horizontal">
-        <!--隐藏域 shopId-->
-        <input type="hidden" id="shopIdAdd" name="shopId" th:value="${shopVO.getShopId()}"/>
-        <div class="form-group">
-          <label for="nameAdd" class="col-sm-2 control-label">商品名:</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control"
-                   name="name" id="nameAdd" placeholder="goods's name"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="typeAdd" class="col-sm-2 control-label">商品类型:</label>
-          <div class="col-sm-10">
-            <input type="number"
-                   class="form-control"
-                   name="type" id="typeAdd" placeholder="goods's type"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="imageUrlAdd" class="col-sm-2 control-label">图片:</label>
-          <div class="col-sm-10">
-            <input type="text"
-                   class="form-control"
-                   name="imageUrl" id="imageUrlAdd" placeholder="goods's ImageUrl"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="priceAdd" class="col-sm-2 control-label">价格:</label>
-          <div class="col-sm-10">
-            <input type="number"
-                   class="form-control"
-                   name="price" id="priceAdd" placeholder="goods's price"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="discountAdd" class="col-sm-2 control-label">折扣:</label>
-          <div class="col-sm-10">
-            <input type="number" min="0" max="10"
-                   class="form-control"
-                   name="discount" id="discountAdd" placeholder="goods's discount min=0 max=10 例如:8.5"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="numberAdd" class="col-sm-2 control-label">数量:</label>
-          <div class="col-sm-10">
-            <input type="number" min="0" class="form-control" name="number" id="numberAdd" placeholder="goods's number"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="authCode" class="col-sm-2 control-label">验证码</label>
-          <div class="col-sm-5">
-            <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode" value="yzm"/>
-          </div>
-          <div class="col-sm-5">
-            <img id="getAuthCode" />
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="button" class="btn btn-default" th:onclick="'addGoods(this)'">确认添加
-            </button>
-          </div>
-        </div>
-      </form>
+        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+            <form class="form-horizontal">
+                <!--隐藏域 shopId-->
+                <input type="hidden" id="shopIdAdd" name="shopId" th:value="${shopVO.getShopId()}"/>
+                <div class="form-group">
+                    <label for="nameAdd" class="col-sm-2 control-label">商品名:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"
+                               name="name" id="nameAdd" placeholder="goods's name"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="typeAdd" class="col-sm-2 control-label">商品类型:</label>
+                    <div class="col-sm-10">
+                        <input type="number"
+                               class="form-control"
+                               name="type" id="typeAdd" placeholder="goods's type"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrlAdd" class="col-sm-2 control-label">图片:</label>
+                    <div class="col-sm-10">
+                        <input type="text"
+                               class="form-control"
+                               name="imageUrl" id="imageUrlAdd" placeholder="goods's ImageUrl"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="priceAdd" class="col-sm-2 control-label">价格:</label>
+                    <div class="col-sm-10">
+                        <input type="number"
+                               class="form-control"
+                               name="price" id="priceAdd" placeholder="goods's price"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="discountAdd" class="col-sm-2 control-label">折扣:</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="0" max="10"
+                               class="form-control"
+                               name="discount" id="discountAdd" placeholder="goods's discount min=0 max=10 例如:8.5"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="numberAdd" class="col-sm-2 control-label">数量:</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="0" class="form-control" name="number" id="numberAdd"
+                               placeholder="goods's number"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="authCode" class="col-sm-2 control-label">验证码</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"
+                               value="yzm"/>
+                    </div>
+                    <div class="col-sm-5">
+                        <img id="getAuthCode"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn btn-default" th:onclick="'addGoods(this)'">确认添加
+                        </button>
+                    </div>
+                </div>
+            </form>
 
+        </div>
+        <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+        <div id="show4" class="col-sm-3" style="background-color: #d9ff0b">
+            <a th:href="'../toMyShopOrder/'+${shopVO.getShopId()}">前往商铺订单</a>
+        </div>
     </div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-    <div id="show4" class="col-sm-3" style="background-color: #d9ff0b">
-      <a th:href="'../toMyShopOrder/'+${shopVO.getShopId()}">前往商铺订单</a>
+    <div class="row">
+        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+        <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
     </div>
-  </div>
-  <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-  </div>
 </div>
 </body>
 <script>
@@ -254,7 +260,7 @@
     }
 
     function addGoods(node) {
-        if(!$("#authCode").hasClass("alert-success")) {
+        if (!$("#authCode").hasClass("alert-success")) {
             alert("请输入正确的验证码");
             return null;
         }
@@ -302,9 +308,9 @@
                     case "f1":
                         alert("信息填写不完整");
                         break;
-                    case "f2":{
+                    case "f2": {
                         alert("登录已失效,请先登录");
-                        window.location.href="../toLogin";
+                        window.location.href = "../toLogin";
                     }
                         break;
                     case "f3":
@@ -365,7 +371,8 @@
                     case 3 :
                         alert("操作异常");
                         break;
-                    default : break;
+                    default :
+                        break;
                 }
 
             },
@@ -376,12 +383,12 @@
     }
 
     <!-- 获取验证码 -->
-    $("#getAuthCode").click(function(){
+    $("#getAuthCode").click(function () {
         var url = "../authCode.do?t=" + Math.random();
         this.src = url;
     }).click().show();
 
-    $("#authCode").focus(function(){
+    $("#authCode").focus(function () {
         var $node = $(this);
         $node.removeClass("alert-success");
         $node.removeClass("alert-danger");
@@ -389,7 +396,7 @@
     $("#authCode").blur(function () {
         var $node = $(this);
         var authCode = $node.val();
-        $.get("../isAuthCode.do?authCode="+authCode,function (data) {
+        $.get("../isAuthCode.do?authCode=" + authCode, function (data) {
             $node.addClass(data ? "alert-success" : "alert-danger");
         })
     })

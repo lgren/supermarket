@@ -1,122 +1,127 @@
 <!DOCTYPE html>
 <html id="htmlR" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>两个人商城</title>
-  <script src="/webjars/jquery/jquery.min.js"></script>
-  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-  <style type="text/css" rel="stylesheet">
-    .col-sm-3 > div, .col-sm-3 > form {
-      border: black 1px solid;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>两个人商城</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css" rel="stylesheet">
+        .col-sm-3 > div, .col-sm-3 > form {
+            border: black 1px solid;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>我的订单</h1></div>
     <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="../toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="../toRegistration">注册界面</a>
-        <a shiro:guest="" href="../toLogin">登陆界面</a><br/><br/>
-        <a shiro:user="" href="../toCollect">我的收藏</a><br/>
-        <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
-        <a shiro:user="" href="../toUser">个人中心</a><br/>
-        <a href="../toSeller">卖家中心</a><br/>
-        <a href="logout">注销</a>
-      </div>
+        <div class="col-sm-12" style="text-align: center"><h1>我的订单</h1></div>
+        <div class="row">
+            <div shiro:user="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个有身份的人</h4>
+                <div>这是你的信息:<span shiro:principal=""></span></div>
+                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+            </div>
+            <div shiro:guest="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个游客</h4></div>
+            <div id="show" class="col-sm-6" style="text-align: center">
+                <a href="../toIndex">前往主页</a><br/>
+                <a shiro:guest="" href="../toRegistration">注册界面</a>
+                <a shiro:guest="" href="../toLogin">登陆界面</a><br/><br/>
+                <a shiro:user="" href="../toCollect">我的收藏</a><br/>
+                <a shiro:hasRole="seller" href="../toMyShop">我的店铺</a><br/>
+                <a shiro:user="" href="../toUser">个人中心</a><br/>
+                <a href="../toSeller">卖家中心</a><br/>
+                <a href="logout">注销</a>
+            </div>
+        </div>
+        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+            <h2>未付款</h2>
+            <form th:if="${orderVO.getState() == -1}" th:each="orderVO : ${orderVOListByUserId}">
+                <a th:href="@{'../toGoods/' + ${orderVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
+                <!--隐藏域goodsId-->
+                <input th:value="${orderVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
+                <!--隐藏域shopId-->
+                <input th:value="${orderVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
+                <input type="hidden" id="choose"/>
+                <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>单价:</span><span
+                    th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
+                <span>数量:</span><span id="number" th:text="${orderVO.getAmount()}"/><br/>
+            </form>
+        </div>
+        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+            <h2>待发货</h2><!--orderVOListByUserId-->
+            <div th:if="${orderVO.getSendGoods() == 0}" th:unless="${orderVO.getState() == -1}"
+                 th:each="orderVO : ${orderVOListByUserId}">
+                <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>单价:</span><span
+                    th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
+                <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
+                <span>发货编号:</span><input type="number"/>
+                <a href="javascript:;" th:onclick="'sendGoods('+${orderVO.getOrderId()}+',this)'">确认发货</a>
+            </div>
+        </div>
+        <div id="show3" class="col-sm-3" style="background-color: #59aaff">
+            <h2>待收货</h2>
+            <div th:if="${(orderVO.getConfirm()+orderVO.getSendGoods()) == 1}"
+                 th:each="orderVO : ${orderVOListByUserId}">
+                <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>单价:</span><span
+                    th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice()*orderVO.getGoodsDTO().getType(),0,2)}"></span><br/>
+                <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
+                <span>发货编号:</span><span th:text="${orderVO.getSendGoodsId()}"></span><br/>
+            </div>
+        </div>
+        <div id="show4" class="col-sm-3" style="background-color: #3176ff">
+            <h2>待评价</h2>
+            <div th:if="${purchasedVO.getEvaluation() == 0}" th:each="purchasedVO : ${purchasedVOList}">
+                <span>商品名:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>单价:</span><span
+                    th:text="${#numbers.formatDecimal(purchasedVO.getOrderVO().getGoodsDTO().getPrice()*purchasedVO.getOrderVO().getGoodsDTO().getType(),0,2)}"></span><br/>
+                <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
+                <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
+            </div>
+        </div>
     </div>
-    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <h2>未付款</h2>
-      <form th:if="${orderVO.getState() == -1}" th:each="orderVO : ${orderVOListByUserId}">
-        <a th:href="@{'../toGoods/' + ${orderVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
-        <!--隐藏域goodsId-->
-        <input th:value="${orderVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
-        <!--隐藏域shopId-->
-        <input th:value="${orderVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
-        <input type="hidden" id="choose"/>
-        <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
-        <span>数量:</span><span id="number" th:text="${orderVO.getAmount()}"/><br/>
-      </form>
+    <div class="row">
+        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">
+            <h2>退款订单</h2>
+        </div>
+        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+        <div id="show7" class="col-sm-3" style="background-color: #93ff49">
+            <h2>购买记录</h2>
+            <div th:each="purchasedVO : ${purchasedVOList}">
+                <span>商品名:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>单价:</span><span
+                    th:text="${#numbers.formatDecimal(purchasedVO.getOrderVO().getGoodsDTO().getPrice()*purchasedVO.getOrderVO().getGoodsDTO().getType(),0,2)}"></span><br/>
+                <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
+                <span>评价:</span>
+                <p th:if="${purchasedVO.getEvaluation() == 1}" th:text="${purchasedVO.getEvaluationText()}"></p><br/>
+                <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
+                <p th:if="${purchasedVO.getEvaluation() == 0}" th:text="未评价"></p>
+            </div>
+        </div>
+        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
     </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-      <h2>待发货</h2><!--orderVOListByUserId-->
-      <div th:if="${orderVO.getSendGoods() == 0}" th:unless="${orderVO.getState() == -1}" th:each="orderVO : ${orderVOListByUserId}">
-        <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice(),0,2)}"></span><br/>
-        <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
-        <span>发货编号:</span><input type="number"/>
-        <a href="javascript:;" th:onclick="'sendGoods('+${orderVO.getOrderId()}+',this)'">确认发货</a>
-      </div>
-    </div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">
-      <h2>待收货</h2>
-      <div th:if="${(orderVO.getConfirm()+orderVO.getSendGoods()) == 1}" th:each="orderVO : ${orderVOListByUserId}">
-        <span>商品名:</span><span th:text="${orderVO.getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${orderVO.getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${orderVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span
-          th:text="${#numbers.formatDecimal(orderVO.getGoodsDTO().getPrice()*orderVO.getGoodsDTO().getType(),0,2)}"></span><br/>
-        <span>数量:</span><span th:text="${orderVO.getAmount()}"/><br/>
-        <span>发货编号:</span><span th:text="${orderVO.getSendGoodsId()}"></span><br/>
-      </div>
-    </div>
-    <div id="show4" class="col-sm-3" style="background-color: #3176ff">
-      <h2>待评价</h2>
-      <div th:if="${purchasedVO.getEvaluation() == 0}" th:each="purchasedVO : ${purchasedVOList}">
-        <span>商品名:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span
-          th:text="${#numbers.formatDecimal(purchasedVO.getOrderVO().getGoodsDTO().getPrice()*purchasedVO.getOrderVO().getGoodsDTO().getType(),0,2)}"></span><br/>
-        <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
-        <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">
-      <h2>退款订单</h2>
-    </div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-    <div id="show7" class="col-sm-3" style="background-color: #93ff49">
-      <h2>购买记录</h2>
-      <div th:each="purchasedVO : ${purchasedVOList}">
-        <span>商品名:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${purchasedVO.getOrderVO().getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>单价:</span><span
-          th:text="${#numbers.formatDecimal(purchasedVO.getOrderVO().getGoodsDTO().getPrice()*purchasedVO.getOrderVO().getGoodsDTO().getType(),0,2)}"></span><br/>
-        <span>数量:</span><span th:text="${purchasedVO.getOrderVO().getAmount()}"/><br/>
-        <span>评价:</span>
-        <p th:if="${purchasedVO.getEvaluation() == 1}" th:text="${purchasedVO.getEvaluationText()}"></p><br/>
-        <span>发货编号:</span><span th:text="${purchasedVO.getOrderVO().getSendGoodsId()}"></span><br/>
-        <p th:if="${purchasedVO.getEvaluation() == 0}" th:text="未评价"></p>
-      </div>
-    </div>
-    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-  </div>
 </div>
 </body>
 <script src="/util/myUtils.js"></script>
 <script type="text/javascript" th:inline="Javascript">
-    function sendGoods(orderId,node) {
+    function sendGoods(orderId, node) {
         var $node = $(node);
         var sendGoodsId = $node.parent().find("input").val();
         if (sendGoodsId == null || sendGoodsId == "") {
@@ -135,16 +140,30 @@
                 switch (data) {
                     case "f": {
                         alert("未登录,前往登陆界面");
-                        window.location.href="../toLogin";
-                    };break;
-                    case "f0": alert("请正常操作");;break;
-                    case "f1": alert("请填写发货单号");;break;
-                    case "0" : alert("发货失败") ;break;
+                        window.location.href = "../toLogin";
+                    }
+                        ;
+                        break;
+                    case "f0":
+                        alert("请正常操作");
+                        ;
+                        break;
+                    case "f1":
+                        alert("请填写发货单号");
+                        ;
+                        break;
+                    case "0" :
+                        alert("发货失败");
+                        break;
                     case "1" : {
                         alert("发货成功");
                         window.location.reload();
-                    };break;
-                    default : alert("不知原因");break;
+                    }
+                        ;
+                        break;
+                    default :
+                        alert("不知原因");
+                        break;
                 }
             },
             error: function (data) {

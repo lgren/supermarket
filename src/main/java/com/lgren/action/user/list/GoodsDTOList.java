@@ -1,4 +1,4 @@
-package com.lgren.controller.user.list;
+package com.lgren.action.user.list;
 
 import com.lgren.pojo.dto.GoodsDTO;
 

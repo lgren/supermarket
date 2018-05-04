@@ -1,7 +1,10 @@
 package com.lgren.serviceImpl;
 
-import com.lgren.dao.GoodsMapper;
+import com.lgren.dao.*;
+import com.lgren.exception.SelectException;
 import com.lgren.pojo.po.Goods;
+import com.lgren.pojo.po.Order;
+import com.lgren.service.CartGoodsService;
 import com.lgren.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +15,28 @@ import java.util.List;
 public class GoodsServiceImpl implements GoodsService {
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private CartGoodsMapper cartGoodsService;
+    @Autowired
+    private CollectGoodsMapper collectGoodsMapper;
 
+
+    @Override
+    public int deleteByShopId(Long shopId) {
+        List<Goods> goodsList = getGoodsByShopId(shopId);
+        if (goodsList.size() == 0) {
+            return 0;
+        }
+        goodsList.stream().map(g -> g.getGoodsId()).forEach(g -> {
+            cartGoodsService.deleteByGoodsId(g);
+            collectGoodsMapper.deleteByGoodsId(g);
+        });
+        orderMapper.deleteByShopId(shopId);
+        goodsMapper.deleteByShopId(shopId);
+        return 1;
+    }
 
     @Override
     public Goods selectByGoodsIdAndShopId(Long goodsId, Long userId) {

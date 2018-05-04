@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class SiteActionAOP {
-    /*@Pointcut("execution(* com.lgren.controller..*(com.lgren.pojo..*))")
+    /*@Pointcut("execution(* com.lgren.action..*(com.lgren.pojo..*))")
     public void paramObjectValidate(){}*/
 
-    /*@Pointcut("execution(* com.lgren.controller..*(com.lgren.pojo..*))")
+    /*@Pointcut("execution(* com.lgren.action..*(com.lgren.pojo..*))")
     public void test(){
         System.out.println("test111");
     }*/

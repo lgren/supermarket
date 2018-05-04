@@ -15,6 +15,11 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
+    public int deleteByGoodsId(Long goodsId) {
+        return cartMapper.deleteByGoodsId(goodsId);
+    }
+
+    @Override
     public Cart getCartByUserId(Long userId) {
         return cartMapper.getCartByUserId(userId);
     }

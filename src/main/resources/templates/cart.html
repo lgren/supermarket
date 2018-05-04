@@ -1,71 +1,73 @@
 <!DOCTYPE html>
 <html id="htmlR" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>两个人商城</title>
-  <script src="/webjars/jquery/jquery.min.js"></script>
-  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-  <style type="text/css" rel="stylesheet">
-    .col-sm-3 > div,.col-sm-3 > form {
-      border: black 1px solid;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>两个人商城</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css" rel="stylesheet">
+        .col-sm-3 > div, .col-sm-3 > form {
+            border: black 1px solid;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>这是购物车</h1></div>
     <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="toRegistration">注册界面</a>
-        <a shiro:guest="" href="toLogin">登陆界面</a><br/><br/>
-        <a shiro:user="" href="toCollect">我的收藏</a><br/>
-        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-        <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a href="toSeller">卖家中心</a><br/>
-        <a href="logout">注销</a>
-      </div>
+        <div class="col-sm-12" style="text-align: center"><h1>这是购物车</h1></div>
+        <div class="row">
+            <div shiro:user="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个有身份的人</h4>
+                <div>这是你的信息:<span shiro:principal=""></span></div>
+                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+            </div>
+            <div shiro:guest="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个游客</h4></div>
+            <div id="show" class="col-sm-6" style="text-align: center">
+                <a href="toIndex">前往主页</a><br/>
+                <a shiro:guest="" href="toRegistration">注册界面</a>
+                <a shiro:guest="" href="toLogin">登陆界面</a><br/><br/>
+                <a shiro:user="" href="toCollect">我的收藏</a><br/>
+                <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+                <a shiro:user="" href="toUser">个人中心</a><br/>
+                <a href="toSeller">卖家中心</a><br/>
+                <a href="logout">注销</a>
+            </div>
+        </div>
+        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+            <form th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
+                <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
+                <!--隐藏域goodsId-->
+                <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
+                <!--隐藏域shopId-->
+                <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
+                <span>确认选中:</span><input type="checkbox"/><br/>
+                <span>商品名:</span><span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span><br/>
+                <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
+                <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
+                <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
+                <span>折扣价:</span><span
+                    th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
+                <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
+                <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
+            </form>
+        </div>
+        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+            <button type="button" onclick="pay()">前往支付</button>
+        </div>
+        <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+        <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
     </div>
-    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <form th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
-        <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
-        <!--隐藏域goodsId-->
-        <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
-        <!--隐藏域shopId-->
-        <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
-        <span>确认选中:</span><input type="checkbox"/><br/>
-        <span>商品名:</span><span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span><br/>
-        <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
-        <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
-        <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
-        <span>折扣价:</span><span th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
-        <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
-        <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
-      </form>
+    <div class="row">
+        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+        <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
     </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-      <button type="button" onclick="pay()">前往支付</button>
-    </div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
-  </div>
-  <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-  </div>
 </div>
 </body>
 <script src="/util/myUtils.js"></script>
@@ -81,7 +83,7 @@
                 data == 0 ? alert("删除失败") : alert("删除成功");
                 window.location.reload();
             },
-            error : function (data) {
+            error: function (data) {
 
             }
         })
@@ -91,7 +93,7 @@
         var cartVO = [[${cart}]];
         var cartGoodsVOList = [];
         var $divs = $("#show1 form");
-        $.each($divs,function (k) {
+        $.each($divs, function (k) {
             if ($($divs[k])[0][2].checked) {
                 var cartGoodsVO = cartVO.cartGoodsVOList[k];
                 cartGoodsVO.number = $($divs[k]).find("#number").val();
@@ -103,7 +105,7 @@
             alert("未选中任何商品");
             return null;
         }
-        doFormRequest("toPay","post",JSON.stringify(cartVO),"list");
+        doFormRequest("toPay", "post", JSON.stringify(cartVO), "list");
     }
 </script>
 </html>

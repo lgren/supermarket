@@ -1,77 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>两个人商城</title>
-  <script src="/webjars/jquery/jquery.min.js"></script>
-  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-  <script src="/util/myUtils.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-  <style type="text/css" rel="stylesheet">
-    .col-sm-3 > div {
-      border: black 1px solid;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>两个人商城</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/util/myUtils.js"></script>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <style type="text/css" rel="stylesheet">
+        .col-sm-3 > div {
+            border: black 1px solid;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
     <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
-        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-        <a shiro:user="" href="toCart">购物车</a><br/>
-        <a shiro:user="" href="toCollect">我的收藏</a><br/>
-        <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-        <a href="toSeller">卖家中心</a><br/>
-        <a shiro:user="" href="logout">注销</a>
-      </div>
-    </div>
-    <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-      <div th:each="good : ${goods}">
-        <div>
-          <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">前往</a><br/>
-          <span>商品名:</span><span th:text="${good.getName()}"></span><br/>
-          <span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>
-          <span>图片:</span><span th:text="${good.getImageUrl()}"></span><br/>
-          <span>原价:</span><span th:text="${good.getPrice()}"></span><br/>
-          <span>折扣价:</span><span th:text="${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+        <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
+        <div class="row">
+            <div shiro:user="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个有身份的人</h4>
+                <div>这是你的信息:<span shiro:principal=""></span></div>
+                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+            </div>
+            <div shiro:guest="" class="col-sm-6" style="text-align: center">
+                <h4>看到这个说明你是个游客</h4></div>
+            <div id="show" class="col-sm-6" style="text-align: center">
+                <a href="toIndex">前往主页</a><br/>
+                <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+                <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+                <a shiro:user="" href="toCart">购物车</a><br/>
+                <a shiro:user="" href="toCollect">我的收藏</a><br/>
+                <a shiro:user="" href="toUser">个人中心</a><br/>
+                <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+                <a href="toSeller">卖家中心</a><br/>
+                <a shiro:user="" href="logout">注销</a>
+            </div>
         </div>
-      </div>
-    </div>
-    <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-      <div th:each="shop : ${shops}">
-        <div>
-          <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
-          <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
-          <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
+        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
+            <div th:each="good : ${goods}">
+                <div>
+                    <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">前往</a><br/>
+                    <span>商品名:</span><span th:text="${good.getName()}"></span><br/>
+                    <span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>
+                    <span>图片:</span><span th:text="${good.getImageUrl()}"></span><br/>
+                    <span>原价:</span><span th:text="${good.getPrice()}"></span><br/>
+                    <span>折扣价:</span><span
+                        th:text="${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+                </div>
+            </div>
         </div>
-      </div>
+        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
+            <div th:each="shop : ${shops}">
+                <div>
+                    <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
+                    <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
+                    <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
+                </div>
+            </div>
+        </div>
+        <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+        <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
     </div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
-  </div>
-  <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-  </div>
-  <!--<button style="height: 100px;width: 200px" onclick="doFormRequest('toIndex','get',null)">doFormRequest</button>
-  <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
-  <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
+    <div class="row">
+        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+        <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+    </div>
+    <!--<button style="height: 100px;width: 200px" onclick="doFormRequest('toIndex','get',null)">doFormRequest</button>
+    <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
+    <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
 </div>
 </body>
 </html>
@@ -79,6 +81,6 @@
 
     function submit() {
         var test = "{'cartGoodsVOList':[{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':2,'cartGoodsTime':null,'goodsDTO':{'discount':1.0,'goodsId':2,'imageUrl':null,'name':'\u5A03\u54C8\u54C8','price':4.0,'shopId':1,'showTime':null,'type':1},'number':1,'price':3.0},{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':11,'cartGoodsTime':null,'goodsDTO':{'discount':0.8,'goodsId':1,'imageUrl':'','name':'\u53EF\u4E50','price':3.4,'shopId':1,'showTime':null,'type':1},'number':1,'price':null}],'cartId':1,'userDTO':{'avatarUrl':null,'birthday':'1983-04-22T00:00:00.000+08:00','email':'73625@qq.com','gender':1,'homeaddress':'\u56DB\u5DDD\u6210\u90FD','liveaddress':'\u5E7F\u4E1C\u6DF1\u5733','money':4000.0,'nickname':'\u4E24\u4E2A\u4EBA','password':'user','paymentPassword':'888888','phone':'17263527163','realName':'\u9646\u9E3F\u5B87','userId':1,'username':'user'}}";
-        console.log(doFormRequest("test.do", "put", test, null,null));
+        console.log(doFormRequest("test.do", "put", test, null, null));
     }
 </script>

@@ -2,7 +2,7 @@ package com.lgren.serviceImpl;
 
 import com.lgren.api.moudle.GoodsApi;
 import com.lgren.api.moudle.ShopApi;
-import com.lgren.controller.user.dto.*;
+import com.lgren.action.user.dto.*;
 import com.lgren.dao.*;
 import com.lgren.exception.*;
 import com.lgren.pojo.dto.CartGoodsDTO;
@@ -14,6 +14,7 @@ import com.lgren.pojo.vo.CartVO;
 import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.pojo.vo.ShopVO;
 import com.lgren.service.CartGoodsService;
+import com.lgren.service.GoodsService;
 import com.lgren.service.UserHtmlService;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class UserHtmlServiceImpl implements UserHtmlService {
     private ShopMapper shopMapper;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private GoodsService goodsService;
     @Autowired
     private CollectMapper collectMapper;
     @Autowired
@@ -358,6 +361,12 @@ public class UserHtmlServiceImpl implements UserHtmlService {
 
     @Override
     public boolean deleteShop(Long shopId) {
+        List<Order> orderList = orderMapper.getOrderListByShopId(shopId);
+        int orderCount = (int) orderList.stream().filter(o -> o.getSendGoods() == 1 && o.getConfirm() == 1).count();
+        if(orderCount > 0) {
+            throw new SelectException("10");
+        }
+        goodsService.deleteByShopId(shopId);
         return shopMapper.deleteByPrimaryKey(shopId) > 0 ? true : false;
     }
 

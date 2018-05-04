@@ -1,7 +1,7 @@
-package com.lgren.controller.user;
+package com.lgren.action.user;
 
 import com.lgren.api.moudle.*;
-import com.lgren.controller.user.dto.UserHtmlDTO;
+import com.lgren.action.user.dto.UserHtmlDTO;
 import com.lgren.dao.CartGoodsMapper;
 import com.lgren.pojo.dto.OrderDTO;
 import com.lgren.pojo.dto.UserDTO;
@@ -65,7 +65,7 @@ public class ToHtmlAction {
     private HttpSession session;
     //总结  aop切到userId
 
-    @GetMapping(value = "/toIndex")
+    @GetMapping(value = {"/toIndex","/"})
     public String toIndex(Map<String, Object> map) {
 //        PageHelper.startPage(1,2);
 //        PageInfo<GoodsVO> pageInfo = new PageInfo<GoodsVO>();
@@ -309,28 +309,21 @@ public class ToHtmlAction {
         return "myShopOrder";
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @GetMapping(value = "/toRecharge")
+    public String recharge(Map map, @RequestParam("shopId") Long shopId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "login";
+        }
+        map.put("shopId",shopId);
+        return "recharge";
+    }
 
     @RequestMapping(value = "/toSeller")
     public String toSeller() {
         return "seller";
     }
+
+
+
 }

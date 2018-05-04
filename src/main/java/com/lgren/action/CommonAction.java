@@ -1,4 +1,4 @@
-package com.lgren.controller;
+package com.lgren.action;
 
 import com.lgren.util.VerifyCodeUtils;
 import org.slf4j.Logger;

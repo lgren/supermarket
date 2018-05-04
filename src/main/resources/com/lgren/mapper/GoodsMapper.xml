@@ -33,7 +33,7 @@
     delete from tb_goods
     where goods_id = #{goodsId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" useGeneratedKeys="true" keyProperty="warehouseId" parameterType="com.lgren.pojo.po.Goods" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="goodsId" parameterType="com.lgren.pojo.po.Goods" >
     insert into tb_goods (goods_id, shop_id, image_url, 
       name, type, price, discount, 
       show_time)
@@ -41,7 +41,7 @@
       #{name,jdbcType=CHAR}, #{type,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE}, #{discount,jdbcType=DOUBLE}, 
       #{showTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="warehouseId" parameterType="com.lgren.pojo.po.Goods" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="goodsId" parameterType="com.lgren.pojo.po.Goods" >
     insert into tb_goods
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="goodsId != null" >

@@ -1,32 +1,36 @@
-package com.lgren.controller.user.dto;
+package com.lgren.action.user.dto;
 
 import java.util.Objects;
 
-public class ApplyShopDTO {
-    private Long userId;
+public class MyShopDTO {
+    private Long shopId;
 
     private String name;
+
+    private Integer state;
 
     private String description;
 
     private String authCode;
 
-    public ApplyShopDTO() {
+    public MyShopDTO() {
     }
 
-    public ApplyShopDTO(Long userId, String name, String description, String authCode) {
+    public MyShopDTO(Long shopId, String name, Integer state, String description, String authCode) {
 
-        this.userId = userId;
+        this.shopId = shopId;
         this.name = name;
+        this.state = state;
         this.description = description;
         this.authCode = authCode;
     }
 
     @Override
     public String toString() {
-        return "ApplyShopDTO{" +
-                "userId=" + userId +
+        return "MyShopDTO{" +
+                "shopId=" + shopId +
                 ", name='" + name + '\'' +
+                ", state=" + state +
                 ", description='" + description + '\'' +
                 ", authCode='" + authCode + '\'' +
                 '}';
@@ -36,26 +40,27 @@ public class ApplyShopDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ApplyShopDTO that = (ApplyShopDTO) o;
-        return Objects.equals(userId, that.userId) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(authCode, that.authCode);
+        MyShopDTO myShopDTO = (MyShopDTO) o;
+        return Objects.equals(shopId, myShopDTO.shopId) &&
+                Objects.equals(name, myShopDTO.name) &&
+                Objects.equals(state, myShopDTO.state) &&
+                Objects.equals(description, myShopDTO.description) &&
+                Objects.equals(authCode, myShopDTO.authCode);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(userId, name, description, authCode);
+        return Objects.hash(shopId, name, state, description, authCode);
     }
 
-    public Long getUserId() {
+    public Long getShopId() {
 
-        return userId;
+        return shopId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
     }
 
     public String getName() {
@@ -64,6 +69,14 @@ public class ApplyShopDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     public String getDescription() {

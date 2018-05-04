@@ -1,4 +1,4 @@
-package com.lgren.controller.user;
+package com.lgren.action.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lgren.api.moudle.*;

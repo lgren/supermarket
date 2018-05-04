@@ -1,10 +1,14 @@
 package com.lgren.dao;
 
 import com.lgren.pojo.po.Goods;
+import org.apache.ibatis.annotations.Delete;
 
 import java.util.List;
 
 public interface GoodsMapper {
+    @Delete("delete from tb_goods where shop_id = #{shopId,jdbcType=BIGINT}")
+    int deleteByShopId(Long shopId);
+
     Goods selectByGoodsIdAndShopId(Long goodsId, Long userId);
 
     List<Goods> getGoodsByShopId(Long shopId);

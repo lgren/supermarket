@@ -1,4 +1,4 @@
-package com.lgren.controller.user.dto;
+package com.lgren.action.user.dto;
 
 import java.util.List;
 import java.util.Objects;

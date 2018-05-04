@@ -1,6 +1,7 @@
 package com.lgren.dao;
 
 import com.lgren.pojo.po.Order;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -8,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderMapper {
+    @Delete("delete from tb_order where shop_id = #{shopId,jdbcType=BIGINT}")
+    int deleteByShopId(Long shopId);
+
     @Update("update tb_order set confirm = 1 where order_id = #{orderId,jdbcType=BIGINT}")
     int updateConfirm(Long orderId);
 

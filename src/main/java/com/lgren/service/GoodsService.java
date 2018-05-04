@@ -5,6 +5,8 @@ import com.lgren.pojo.po.Goods;
 import java.util.List;
 
 public interface GoodsService {
+    int deleteByShopId(Long shopId);
+
     Goods selectByGoodsIdAndShopId(Long goodsId, Long userId);
 
     List<Goods> getGoodsByShopId(Long shopId);

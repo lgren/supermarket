@@ -1,10 +1,13 @@
 package com.lgren.service;
 
 import com.lgren.pojo.po.Cart;
+import org.apache.ibatis.annotations.Delete;
 
 import java.util.List;
 
 public interface CartService {
+    int deleteByGoodsId(Long goodsId);
+
     Cart getCartByUserId(Long userId);
 
     List<Cart> selectAll();

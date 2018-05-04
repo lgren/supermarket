@@ -1,12 +1,10 @@
-package com.lgren.controller.user;
+package com.lgren.action.user;
 
-import com.lgren.controller.user.dto.*;
+import com.lgren.action.user.dto.*;
 import com.lgren.dao.ShopMapper;
 import com.lgren.exception.TransactionException;
-import com.lgren.pojo.dto.CartGoodsDTO;
-import com.lgren.pojo.dto.CollectGoodsDTO;
-import com.lgren.pojo.dto.PurchasedDTO;
-import com.lgren.pojo.dto.ReceivingAddressDTO;
+import com.lgren.pojo.dto.*;
+import com.lgren.pojo.po.Shop;
 import com.lgren.pojo.po.User;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.service.*;
@@ -25,6 +23,8 @@ import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class UserIndexAction {
@@ -33,7 +33,7 @@ public class UserIndexAction {
     @Autowired
     private UserHtmlService userHtmlService;
     @Autowired
-    private ShopMapper shopMapper;
+    private ShopService shopService;
 
 
     @Autowired
@@ -354,13 +354,16 @@ public class UserIndexAction {
      * a
      *
      * @param applyShopDTO
-     * @return //数字(申请的shopId):添加成功 --- f+ 1:商店名或面熟描述为空 10:未找到user 11:商店名已经存在 12:添加商店失败 13:添加仓库失败
+     * @return //数字(申请的shopId):添加成功 --- f+ 1:商店名或面熟描述为空 3:验证码错误 10:未找到user 11:商店名已经存在 12:添加商店失败 13:添加仓库失败
      */
     @ResponseBody
     @PostMapping(value = "applyShop.do")
     public String applyShop(ApplyShopDTO applyShopDTO) {
         if (StringUtils.isEmptyOrWhitespace(applyShopDTO.getName()) || StringUtils.isEmptyOrWhitespace(applyShopDTO.getDescription())) {
             return "f1";
+        }
+        if (!isAuthCode(applyShopDTO.getAuthCode())) {
+            return "f3";
         }
         try {
             applyShopDTO.setUserId((Long) session.getAttribute("userId"));
@@ -439,7 +442,7 @@ public class UserIndexAction {
 
     /**
      * @param shopId
-     * @return // 0删除失败 1删除成功 2未登录 3.参数shopId为空
+     * @return // 0删除失败 1删除成功 2未登录 3.参数shopId为空 4有订单正在执行
      */
     @ResponseBody
     @DeleteMapping(value = "deleteShop.do/{shopId}")
@@ -450,7 +453,14 @@ public class UserIndexAction {
         if (session.getAttribute("userId") == null) {
             return 2;
         }
-        return userHtmlService.deleteShop(shopId) ? 1 : 0;
+        int result = 0;
+        try {
+            result = userHtmlService.deleteShop(shopId) ? 1 : 0;
+        } catch (RuntimeException re) {
+            re.printStackTrace();
+            return 4;
+        }
+        return result;
     }
 
     /**
@@ -583,6 +593,29 @@ public class UserIndexAction {
         }
         return "" + userHtmlService.sendGoods(orderId,sendGoodsId);
     }
+
+    @ResponseBody
+    @PutMapping(value = "/recharge.do")
+    public int recharge(Map map,
+            @RequestParam("money")Double money,
+            @RequestParam("shopId")Long shopId) {
+        Long userId = (Long) session.getAttribute("userId");
+        if(userId == null) {
+            return -1;
+        }
+        if (shopId != null) {
+            Shop shop = shopService.selectByPrimaryKey(shopId);
+            shop.setShopId(shopId);
+            shop.setMoney((shop.getMoney() + money));
+            return shopService.updateByPrimaryKeySelective(shop);
+        }
+        User user = userService.selectByPrimaryKey(userId);
+        user.setMoney((user.getMoney() + money));
+        user.setUserId(userId);
+        map.put("shopId",null);
+        return userService.updateByPrimaryKeySelective(user);
+    }
+
 
 
 
