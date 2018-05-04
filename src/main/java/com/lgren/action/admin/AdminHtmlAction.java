@@ -16,7 +16,7 @@ public class AdminHtmlAction {
     @Autowired
     private HttpSession session;
 
-    @RequestMapping(value = {"/toLogin", "/"})
+    @RequestMapping(value = {"/toLogin", "/",""})
     public String toLogin(Map map) {
         map.put("requestURL", request.getHeader("Referer"));
         return "admin/adminLogin";

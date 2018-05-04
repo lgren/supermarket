@@ -46,9 +46,9 @@ public class ShiroConfiguration {
 //      设置realm
         securityManager.setRealm(shiroRealm());
 //        --设置rememberMe管理器
-//        securityManager.setRememberMeManager(rememberMeManager());
+        securityManager.setRememberMeManager(rememberMeManager());
 //        --设置缓存
-//        securityManager.setCacheManager(ehCacheManager());
+        securityManager.setCacheManager(ehCacheManager());
         return securityManager;
     }
     /**
@@ -60,15 +60,15 @@ public class ShiroConfiguration {
     public UserRealm shiroRealm() {
         UserRealm realm = new UserRealm();
 //        --设置密码凭证匹配器
-//        realm.setCredentialsMatcher(hashedCredentialsMatcher());
+        realm.setCredentialsMatcher(hashedCredentialsMatcher());
 //        --设置缓存管理器
-//        realm.setCacheManager(ehCacheManager());
+        realm.setCacheManager(ehCacheManager());
         return realm;
     }
     /**
      * HashedCredentialsMatcher，这个类是为了对密码进行编码的，
      * 防止密码在数据库里明码保存，当然在登陆认证的时候，
-     * 这个类也负责对form里输入的密码进行编码。ßß
+     * 这个类也负责对form里输入的密码进行编码。
      */
     @Bean(name = "hashedCredentialsMatcher")
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
@@ -89,7 +89,7 @@ public class ShiroConfiguration {
         log.info("ehCacheManager()");
         EhCacheManager ehCacheManager = new EhCacheManager();
 //        --缓存配置文件
-//        ehCacheManager.setCacheManagerConfigFile("classpath:ehcache-shiro.xml");
+        ehCacheManager.setCacheManagerConfigFile("classpath:spring/ehcache-shiro.xml");
         return ehCacheManager;
     }
     /**
@@ -166,15 +166,28 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setUnauthorizedUrl("/toIndex");
 //        filters.put("logout",null);
         Map<String, String> map = new LinkedHashMap<String, String>();
+
         map.put("/favicon.ico", "anon");
+        map.put("/", "anon");
+//        map.put("", "anon");
+        map.put("/toIndex", "anon");
+        map.put("/toRegistration", "anon");
+        map.put("/registration.do", "anon");
+        map.put("/toGoods/**", "anon");
+        map.put("/toShop/**", "anon");
+        map.put("/toLogin", "anon");
         map.put("/toSeller", "anon");
+        map.put("/userLogin.do", "anon");
+        map.put("/**/authCode.do", "anon");
+        map.put("/**/isAuthCode.do", "anon");
+
+
+
         map.put("/**/logout", "logout");
         map.put("/toUser", "authc");//or"authc,roles[ROLE_USER]" 角色可以访问。由用户角色控制用户行为。
         map.put("/toShop", "authc,roles[seller]");
-        map.put("/toCart", "authc");
-        map.put("/toCollect", "authc");
 //        map.put("/user/edit/**", "authc,perms[user:edit]");// 这里为了测试，固定写死的值，也可以从数据库或其他配置中读取，此处是用权限控制
-        map.put("/**", "anon");
+        map.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }
