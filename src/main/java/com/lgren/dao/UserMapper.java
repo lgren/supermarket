@@ -16,7 +16,7 @@ public interface UserMapper {
 //    @Cacheable(key = "#userId",value = "")
 
     @Select("select user_id from tb_user where username=#{param1,jdbcType=CHAR} and password = #{param2,jdbcType=CHAR}")
-    long userLogin(String username,String password);
+    Long userLogin(String username,String password);
 
     List<User> selectAll();
 

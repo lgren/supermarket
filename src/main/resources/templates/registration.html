@@ -150,7 +150,7 @@
         $node.removeClass("alert-success");
         $node.removeClass("alert-danger");
     })
-    $("#authCode").blur(function () {
+    $("#authCode").change(function () {
         var $node = $(this);
         var authCode = $node.val();
         $.get("isAuthCode.do?authCode=" + authCode, function (data) {

@@ -47,6 +47,7 @@ public class UserRealm extends AuthorizingRealm {
         if (StringUtils.isEmptyOrWhitespace(username) || StringUtils.isEmptyOrWhitespace(password) ) {
             return simpleAuthenticationInfo;
         }
+        password = (new SimpleHash("MD5",password,null,1024)).toString();
         Long userId = userService.userLogin(username,password);
         if (userId != null) {
             simpleAuthenticationInfo = new SimpleAuthenticationInfo(username,password,getName());
@@ -57,6 +58,6 @@ public class UserRealm extends AuthorizingRealm {
     public static void main(String[] args) {
         String source = "user";
         Object salt = "user";
-        System.out.println(new SimpleHash("MD5",source,salt,1024));
+        System.out.println(new SimpleHash("MD5",source,null,1024));
     }
 }

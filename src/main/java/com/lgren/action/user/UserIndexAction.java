@@ -1,17 +1,21 @@
 package com.lgren.action.user;
 
 import com.lgren.action.user.dto.*;
-import com.lgren.dao.ShopMapper;
 import com.lgren.exception.TransactionException;
-import com.lgren.pojo.dto.*;
+import com.lgren.pojo.dto.CartGoodsDTO;
+import com.lgren.pojo.dto.CollectGoodsDTO;
+import com.lgren.pojo.dto.PurchasedDTO;
+import com.lgren.pojo.dto.ReceivingAddressDTO;
 import com.lgren.pojo.po.Shop;
 import com.lgren.pojo.po.User;
 import com.lgren.pojo.vo.CartVO;
 import com.lgren.service.*;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.ibatis.binding.BindingException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.dozer.Mapper;
@@ -24,7 +28,6 @@ import org.thymeleaf.util.StringUtils;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 public class UserIndexAction {
@@ -82,7 +85,7 @@ public class UserIndexAction {
                 Long userId = userService.getUserByUsername(userLoginDTO.getUsername()).getUserId();
                 session.setAttribute("userId", userId);
                 return userId.toString();
-            } catch (AuthenticationException ae) {
+            } catch (AuthenticationException | BindingException ae) {
                 return "f0";
             }
         }
@@ -106,7 +109,10 @@ public class UserIndexAction {
             return "f3";
         }
         try {
+            String password = userRegistrationDTO.getPassword();
+            userRegistrationDTO.setPassword((new SimpleHash("MD5",password,null,1024)).toString());
             Long userId = userHtmlService.addUser(userRegistrationDTO);
+            userRegistrationDTO.setPassword(password);
             userLogin(mapper.map(userRegistrationDTO, UserLoginDTO.class));
             return userId.toString();
         } catch (RuntimeException e) {
