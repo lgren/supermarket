@@ -1,94 +1,176 @@
 <!DOCTYPE html>
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>两个人商城</title>
-    <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/util/myUtils.js"></script>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    <style type="text/css" rel="stylesheet">
-        .col-sm-3 > div {
-            border: black 1px solid;
-            margin-bottom: 10px;
-        }
-        /* 需要在 bootstrap.css 之后调用 */
-        /* Fuck 15px for iPhone Start */
-        .row {
-          margin: 0;
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/util/myUtils.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="/js/bootstrap-paginator.min.js"></script>
+  <style type="text/css" rel="stylesheet">
+    /* 需要在 bootstrap.css 之后调用 */
+    .row {
+      margin: 0;
+    }
 
-        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
-          padding: 0;
-        }
-        /* Fuck 15px for iPhone Over */
-    </style>
+    .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+      padding: 0;
+    }
+
+    html {
+
+    }
+
+    .goodsDiv {
+      height: 228px;
+      padding: 24px 5px;
+    }
+
+    .goodsDiv > a > div {
+      padding: 24px 5px;
+    }
+
+    .goodsDiv > a > div:hover {
+      opacity: 0.7;
+      outline: solid #FF0036 1px;
+    }
+
+    .goodsImg {
+      width: 90%;
+    }
+
+    .price {
+      color: #FF0036;
+      font-size: 18px;
+    }
+
+    #show1 a:hover, #show2 a:hover {
+      text-decoration: none;
+    }
+
+    /*.col-sm-3 > div {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }*/
+  </style>
 </head>
 <body>
 <div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
     <div class="row">
-        <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
-        <div class="row">
-            <div shiro:user="" class="col-sm-6" style="text-align: center">
-                <h4>看到这个说明你是个有身份的人</h4>
-                <div>这是你的信息:<span shiro:principal=""></span></div>
-                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-            </div>
-            <div shiro:guest="" class="col-sm-6" style="text-align: center">
-                <h4>看到这个说明你是个游客</h4></div>
-            <div id="show" class="col-sm-6" style="text-align: center">
-                <a href="toIndex">前往主页</a><br/>
-                <a shiro:guest="" href="toRegistration">注册界面</a><br/>
-                <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-                <a shiro:user="" href="toCart">购物车</a><br/>
-                <a shiro:user="" href="toCollect">我的收藏</a><br/>
-                <a shiro:user="" href="toUser">个人中心</a><br/>
-                <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-                <a href="toSeller">卖家中心</a><br/>
-                <a shiro:user="" href="logout">注销</a>
-            </div>
-        </div>
-        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-            <div th:each="good : ${goods}">
-                <div>
-                    <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">前往</a><br/>
-                    <span>商品名:</span><span th:text="${good.getName()}"></span><br/>
-                    <span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>
-                    <span>图片:</span><span th:text="${good.getImageUrl()}"></span><br/>
-                    <span>原价:</span><span th:text="${good.getPrice()}"></span><br/>
-                    <span>折扣价:</span><span
-                        th:text="${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
-                </div>
-            </div>
-        </div>
-        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-            <div th:each="shop : ${shops}">
-                <div>
-                    <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
-                    <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
-                    <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
-                </div>
-            </div>
-        </div>
-        <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-        <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+      <div shiro:user="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个有身份的人</h4>
+        <div>这是你的信息:<span shiro:principal=""></span></div>
+        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
+        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
+      </div>
+      <div shiro:guest="" class="col-sm-6" style="text-align: center">
+        <h4>看到这个说明你是个游客</h4></div>
+      <div id="show" class="col-sm-6" style="text-align: center">
+        <a href="toIndex">前往主页</a><br/>
+        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
+        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
+        <a shiro:user="" href="toCart">购物车</a><br/>
+        <a shiro:user="" href="toCollect">我的收藏</a><br/>
+        <a shiro:user="" href="toUser">个人中心</a><br/>
+        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
+        <a href="toSeller">卖家中心</a><br/>
+        <a shiro:user="" href="logout">注销</a>
+      </div>
     </div>
-    <div class="row">
-        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-        <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+    <div id="show1" class="col-sm-12 row" style="background-color: #fff">
+      <div class="text-center col-sm-3 col-xs-6 goodsDiv" th:each="good : ${goods}">
+        <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">
+          <div class="center-block">
+            <img class="goodsImg" th:src="${good.getImageUrl()}"/><br/>
+            <span th:text="${good.getName()}"></span><br/>
+            <!--<span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>-->
+            <!--<span>原价:</span><span th:text="${good.getPrice()}"></span><br/>-->
+            <span class="price" th:text="'￥' + ${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+          </div>
+        </a>
+      </div>
+    <div class="row col-sm-12 text-center"><ul id='goodsPageNumber'></ul></div>
+
     </div>
-    <!--<button style="height: 100px;width: 200px" onclick="doFormRequest('toIndex','get',null)">doFormRequest</button>
-    <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
-    <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
+    <div id="show2" class="col-sm-3 row" style="background-color: #85c5ff">
+      <div th:each="shop : ${shops}">
+        <div>
+          <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
+          <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
+          <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
+        </div>
+      </div>
+    </div>
+    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
+    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+  </div>
+  <div class="row">
+    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
+    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
+    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
+    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+  </div>
+  <!--<button style="height: 100px;width: 200px" onclick="doFormRequest('toIndex','get',null)">doFormRequest</button>
+  <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
+  <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
 </div>
 </body>
 </html>
 <script>
+    $(function(){
+        var element = $('#goodsPageNumber');
+        var options = {
+            bootstrapMajorVersion:3,
+            currentPage: 3,//当前页
+            numberOfPages: 5,//每次展示多少页
+            totalPages:11,//总页数
+            size:'small',//大小
+            pageUrl: function(type, page, current){//访问连接
+                return "#"+page;
+            },
+            itemTexts: function (type, page, current) { //样式文字设置
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "前一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "最后";
+                    case "page":
+                        return ""+page;
+                }
+            },
+            tooltipTitles: function (type, page, current) { //提示框，当鼠标放上去给提示
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "尾页";
+                    default :
+                        return "第" + page + "页";
 
+                }
+            },
+            useBootstrapTooltip:true,
+            onPageClicked: function(e,originalEvent,type,page){
+                $('#alert-content').text("点击页数时，触发该函数, type: "+type+" page: "+page);
+            },
+            onPageChanged: function(e,oldPage,newPage){
+                $('#alert-content').text("当页面改变时，触发该函数, old: "+oldPage+" new: "+newPage);
+            }
+        }
+        element.bootstrapPaginator(options);
+    });
     function submit() {
         var test = "{'cartGoodsVOList':[{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':2,'cartGoodsTime':null,'goodsDTO':{'discount':1.0,'goodsId':2,'imageUrl':null,'name':'\u5A03\u54C8\u54C8','price':4.0,'shopId':1,'showTime':null,'type':1},'number':1,'price':3.0},{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':11,'cartGoodsTime':null,'goodsDTO':{'discount':0.8,'goodsId':1,'imageUrl':'','name':'\u53EF\u4E50','price':3.4,'shopId':1,'showTime':null,'type':1},'number':1,'price':null}],'cartId':1,'userDTO':{'avatarUrl':null,'birthday':'1983-04-22T00:00:00.000+08:00','email':'73625@qq.com','gender':1,'homeaddress':'\u56DB\u5DDD\u6210\u90FD','liveaddress':'\u5E7F\u4E1C\u6DF1\u5733','money':4000.0,'nickname':'\u4E24\u4E2A\u4EBA','password':'user','paymentPassword':'888888','phone':'17263527163','realName':'\u9646\u9E3F\u5B87','userId':1,'username':'user'}}";
         console.log(doFormRequest("test.do", "put", test, null, null));

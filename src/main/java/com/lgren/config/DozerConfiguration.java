@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 @Configuration
 public class DozerConfiguration {
-
     @Bean
     public DozerBeanMapper dozerBeanMapper() {
         DozerBeanMapper dozerBeanMapper = new DozerBeanMapper();
