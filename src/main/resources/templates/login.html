@@ -61,8 +61,7 @@
                 <div class="form-group">
                     <label for="authCode" class="col-sm-2 control-label">验证码</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"
-                               value="yzm"/>
+                        <input type="text" class="form-control" name="authCode" id="authCode" placeholder="authCode"/>
                     </div>
                     <div class="col-sm-5">
                         <img id="getAuthCode"/>
@@ -163,6 +162,15 @@
         var $node = $(this);
         var authCode = $node.val();
         $.get("isAuthCode.do?authCode=" + authCode, function (data) {
+            $node.addClass(data ? "alert-success" : "alert-danger");
+        })
+    })
+    $("#authCode").keyup(function () {
+        var $node = $(this);
+        var authCode = $node.val();
+        $.get("isAuthCode.do?authCode=" + authCode, function (data) {
+            $node.removeClass("alert-success");
+            $node.removeClass("alert-danger");
             $node.addClass(data ? "alert-success" : "alert-danger");
         })
     })
