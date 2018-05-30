@@ -1,5 +1,6 @@
 package com.lgren.action.test;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +16,8 @@ import java.util.List;
 
 @Controller
 public class TestAction {
+    @Value("${com.lgren.uploadPath}")
+    private String path;
     /*
      * 获取file.html页面
      */
@@ -26,7 +29,7 @@ public class TestAction {
     /**
      * 实现文件上传
      * */
-    @RequestMapping("fileUpload")
+    @RequestMapping("static/fileUpload")
     @ResponseBody
     public String fileUpload(@RequestParam("fileName") MultipartFile file){
         if(file.isEmpty()){
@@ -36,7 +39,7 @@ public class TestAction {
         int size = (int) file.getSize();
         System.out.println(fileName + "-->" + size);
 
-        String path = "/Users/lgren/Project/JavaIdeaSpace/supermarket/fileUpload" ;
+//        String path = "/Users/lgren/Project/JavaIdeaSpace/supermarket/fileUpload" ;
         File dest = new File(path + "/" + fileName);
         if(!dest.getParentFile().exists()){ //判断文件父目录是否存在
             dest.getParentFile().mkdir();

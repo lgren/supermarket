@@ -20,17 +20,24 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class UserIndexAction {
+    @Value("${com.lgren.uploadPath}")
+    private String uploadPath;
+
     @Autowired
     private Mapper mapper;
     @Autowired
@@ -47,8 +54,11 @@ public class UserIndexAction {
     private CollectGoodsService collectGoodsService;
     @Autowired
     private CartGoodsService cartGoodsService;
+
     @Autowired
     private HttpSession session;
+    @Autowired
+    private HttpServletRequest request;
 
     @ResponseBody
     @RequestMapping(value = "isAuthCode.do", params = {"authCode"})
@@ -381,7 +391,7 @@ public class UserIndexAction {
 
     /**
      * @param addGoodsDTO
-     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 4:验证码不正确
+     * @return //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 4:验证码不正确 5:未上传图片 6:保存图片失败
      *          10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:该店铺还在审核
      */
     @ResponseBody
@@ -396,12 +406,28 @@ public class UserIndexAction {
         if (!isAuthCode(addGoodsDTO.getAuthCode())) {
             return "f4";
         }
+        if (addGoodsDTO.getImage() == null) {
+            return "f5";
+        }
         if (StringUtils.isEmptyOrWhitespace(addGoodsDTO.getName())
-                || StringUtils.isEmptyOrWhitespace(addGoodsDTO.getImageUrl())
+                || addGoodsDTO.getImage() == null
                 || addGoodsDTO.getPrice() == null
                 || addGoodsDTO.getType() == null) {
             return "f1";
         }
+        String imageUrl = uploadPath + addGoodsDTO.getImage().getName();
+        addGoodsDTO.setImageUrl(imageUrl);
+        File imageFile = new File(request.getContextPath() + imageUrl);
+        if (!imageFile.getParentFile().exists()) {
+            imageFile.getParentFile().mkdirs();
+        }
+        try {
+            addGoodsDTO.getImage().transferTo(imageFile); //保存文件
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+            return "f6";
+        }
+
         try {
             userHtmlService.addGoods(addGoodsDTO);
             return "1";

@@ -1,16 +1,15 @@
 package com.lgren.action.user;
 
-import com.lgren.api.moudle.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.lgren.action.user.dto.UserHtmlDTO;
+import com.lgren.api.moudle.*;
 import com.lgren.dao.CartGoodsMapper;
 import com.lgren.pojo.dto.OrderDTO;
 import com.lgren.pojo.dto.UserDTO;
 import com.lgren.pojo.po.Shop;
 import com.lgren.pojo.vo.*;
-import com.lgren.service.OrderService;
-import com.lgren.service.ShopService;
-import com.lgren.service.UserHtmlService;
-import com.lgren.service.UserService;
+import com.lgren.service.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.dozer.Mapper;
@@ -39,6 +38,8 @@ public class ToHtmlAction {
     @Autowired
     private ShopService shopService;
     @Autowired
+    private GoodsService goodsService;
+    @Autowired
     private CartGoodsMapper cartGoodsMapper;
 
 
@@ -66,12 +67,15 @@ public class ToHtmlAction {
     //总结  aop切到userId
 
     @GetMapping(value = {"/toIndex","/"})
-    public String toIndex(Map<String, Object> map) {
-//        PageHelper.startPage(1,2);
-//        PageInfo<GoodsVO> pageInfo = new PageInfo<GoodsVO>();
-        map.put("goods", goodsApi.getAllGoods());
-//        PageHelper.startPage(1,2);
-        map.put("shops", shopApi.getAllShopVO());
+    public String toIndex(Map<String, Object> map,
+                          @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
+                          @RequestParam(value = "pageSize",defaultValue = "4") Integer pageSize) {
+        PageInfo<GoodsVO> goodsPageInfo = goodsService.selectAllPageInfo(pageNum,pageSize);
+        map.put("goods", goodsPageInfo);
+
+        PageHelper.startPage(1,2);
+        PageInfo<ShopVO> shopsPageInfo = new PageInfo<>(shopApi.getAllShopVO());
+        map.put("shops", shopsPageInfo);
         return "index";
     }
 
@@ -115,7 +119,8 @@ public class ToHtmlAction {
             userHtmlDTO.setGenderStr(userDTO.getGender() == 1 ? "男" : "女");
         }
         map.put("user", userHtmlDTO);
-        map.put("receivingAddressVOList", receivingAddressApi.getReceivingAddressVOListByUserId(userId));
+        List<ReceivingAddressVO> receivingAddressVOList = receivingAddressApi.getReceivingAddressVOListByUserId(userId);
+        map.put("receivingAddressVOList", receivingAddressVOList);
         return "user";
     }
 
@@ -134,7 +139,8 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toSeller")
     public String toSeller(Map<String, Object> map) {
-        map.put("shops", shopApi.getAllShopVO());
+        List<ShopVO> shopVOList = shopApi.getAllShopVO();
+        map.put("shops", shopVOList);
         return "seller";
     }
 

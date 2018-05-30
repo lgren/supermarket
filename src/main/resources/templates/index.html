@@ -25,17 +25,19 @@
 
     .goodsDiv {
       height: 228px;
-      padding: 24px 5px;
+      padding: 24px 0px;
+      margin: 0px 10px;
     }
 
-    .goodsDiv > a > div {
-      padding: 24px 5px;
-    }
-
-    .goodsDiv > a > div:hover {
+    .goodsDiv:hover {
       opacity: 0.7;
       outline: solid #FF0036 1px;
     }
+
+    /*.goodsDiv > a > div:hover {
+      opacity: 0.7;
+      outline: solid #FF0036 1px;
+    }*/
 
     .goodsImg {
       width: 90%;
@@ -81,23 +83,27 @@
         <a shiro:user="" href="logout">注销</a>
       </div>
     </div>
-    <div id="show1" class="col-sm-12 row" style="background-color: #fff">
-      <div class="text-center col-sm-3 col-xs-6 goodsDiv" th:each="good : ${goods}">
-        <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">
-          <div class="center-block">
-            <img class="goodsImg" th:src="${good.getImageUrl()}"/><br/>
-            <span th:text="${good.getName()}"></span><br/>
-            <!--<span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>-->
-            <!--<span>原价:</span><span th:text="${good.getPrice()}"></span><br/>-->
-            <span class="price" th:text="'￥' + ${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
-          </div>
-        </a>
+    <div id="show1" class="col-sm-12" style="background-color: #fff">
+      <div class="row">
+        <div class="text-center col-sm-3 col-xs-6" th:each="good : ${goods.getList()}">
+          <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">
+            <div class="center-block goodsDiv">
+              <img class="goodsImg" th:src="${good.getImageUrl()}"/><br/>
+              <span th:text="${good.getName()}"></span><br/>
+              <!--<span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>-->
+              <!--<span>原价:</span><span th:text="${good.getPrice()}"></span><br/>-->
+              <span class="price" th:text="'￥' + ${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+            </div>
+          </a>
+        </div>
       </div>
-    <div class="row col-sm-12 text-center"><ul id='goodsPageNumber'></ul></div>
+      <div class="row col-sm-12 text-center">
+        <ul id='goodsPageNumber'></ul>
+      </div>
 
     </div>
     <div id="show2" class="col-sm-3 row" style="background-color: #85c5ff">
-      <div th:each="shop : ${shops}">
+      <div th:each="shop : ${shops.getList()}">
         <div>
           <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
           <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
@@ -118,19 +124,18 @@
   <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
   <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
 </div>
-</body>
-</html>
-<script>
-    $(function(){
+<script type="text/javascript" th:inline="Javascript">
+    $(function () {
+        var pageInfo = [[${goods}]];
         var element = $('#goodsPageNumber');
         var options = {
-            bootstrapMajorVersion:3,
-            currentPage: 3,//当前页
+            bootstrapMajorVersion: 3,
+            currentPage: [[${goods.pageNum}]],//当前页
             numberOfPages: 5,//每次展示多少页
-            totalPages:11,//总页数
-            size:'small',//大小
-            pageUrl: function(type, page, current){//访问连接
-                return "#"+page;
+            totalPages: [[${goods.pages}]],//总页数
+            size: 'small',//大小
+            pageUrl: function (type, page, current) {//访问连接
+                return "toIndex?pageNum=" + page;
             },
             itemTexts: function (type, page, current) { //样式文字设置
                 switch (type) {
@@ -143,7 +148,7 @@
                     case "last":
                         return "最后";
                     case "page":
-                        return ""+page;
+                        return "" + page;
                 }
             },
             tooltipTitles: function (type, page, current) { //提示框，当鼠标放上去给提示
@@ -161,18 +166,21 @@
 
                 }
             },
-            useBootstrapTooltip:true,
-            onPageClicked: function(e,originalEvent,type,page){
-                $('#alert-content').text("点击页数时，触发该函数, type: "+type+" page: "+page);
+            useBootstrapTooltip: true,
+            onPageClicked: function (e, originalEvent, type, page) {
+                $('#alert-content').text("点击页数时，触发该函数, type: " + type + " page: " + page);
             },
-            onPageChanged: function(e,oldPage,newPage){
-                $('#alert-content').text("当页面改变时，触发该函数, old: "+oldPage+" new: "+newPage);
+            onPageChanged: function (e, oldPage, newPage) {
+                $('#alert-content').text("当页面改变时，触发该函数, old: " + oldPage + " new: " + newPage);
             }
         }
         element.bootstrapPaginator(options);
     });
+
     function submit() {
         var test = "{'cartGoodsVOList':[{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':2,'cartGoodsTime':null,'goodsDTO':{'discount':1.0,'goodsId':2,'imageUrl':null,'name':'\u5A03\u54C8\u54C8','price':4.0,'shopId':1,'showTime':null,'type':1},'number':1,'price':3.0},{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':11,'cartGoodsTime':null,'goodsDTO':{'discount':0.8,'goodsId':1,'imageUrl':'','name':'\u53EF\u4E50','price':3.4,'shopId':1,'showTime':null,'type':1},'number':1,'price':null}],'cartId':1,'userDTO':{'avatarUrl':null,'birthday':'1983-04-22T00:00:00.000+08:00','email':'73625@qq.com','gender':1,'homeaddress':'\u56DB\u5DDD\u6210\u90FD','liveaddress':'\u5E7F\u4E1C\u6DF1\u5733','money':4000.0,'nickname':'\u4E24\u4E2A\u4EBA','password':'user','paymentPassword':'888888','phone':'17263527163','realName':'\u9646\u9E3F\u5B87','userId':1,'username':'user'}}";
         console.log(doFormRequest("test.do", "put", test, null, null));
     }
 </script>
+</body>
+</html>

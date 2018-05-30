@@ -1,6 +1,8 @@
 package com.lgren.service;
 
+import com.github.pagehelper.PageInfo;
 import com.lgren.pojo.po.Goods;
+import com.lgren.pojo.vo.GoodsVO;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ public interface GoodsService {
     List<Goods> getGoodsByShopId(Long shopId);
 
     List<Goods> selectAll();
+
+    PageInfo<GoodsVO> selectAllPageInfo(Integer pageNum, Integer pageSize);
 
     int deleteByPrimaryKey(Long goodsId);
 

@@ -119,7 +119,7 @@
             </form>
         </div>
         <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-            <form class="form-horizontal">
+            <form class="form-horizontal" enctype="multipart/form-data">
                 <!--隐藏域 shopId-->
                 <input type="hidden" id="shopIdAdd" name="shopId" th:value="${shopVO.getShopId()}"/>
                 <div class="form-group">
@@ -140,9 +140,9 @@
                 <div class="form-group">
                     <label for="imageUrlAdd" class="col-sm-2 control-label">图片:</label>
                     <div class="col-sm-10">
-                        <input type="text"
+                        <input type="file"
                                class="form-control"
-                               name="imageUrl" id="imageUrlAdd" placeholder="goods's ImageUrl"/>
+                               name="image" id="imageUrlAdd" placeholder="goods's ImageUrl"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -223,11 +223,16 @@
             //data是纯数字
         }
         /*Number();*/
-        var formData = formNode.serialize();
+        // var formData = formNode.serialize();
+        var formData = new FormData(formNode);
         $.ajax({
             url: "../goodsUpdate.do",
             type: "put",
             data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
             success: function (data) {
                 //1:修改成功 --- f+ 1:goodsID为空 2:session中userId为空 3:类型不是数字 10:未找到goods 11:修改失败 12:未找到商店 13:该店铺还在审核
                 switch (data) {
@@ -300,13 +305,18 @@
             alert("请输入验证码");
             return null;
         }
-        var formData = formNode.serialize();
+        var formData = new FormData(formNode[0]);
         $.ajax({
             url: "../addGoods.do",
             type: "post",
             data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
             success: function (data) {
-                //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:商铺还在审核中
+                //1:添加成功 --- f+ 1:信息填写不完整 2:session中没找到userId 3:类型不是数字 5:未上传图片 6:保存图片失败
+                //10:未找到shop 11:自家商品名已经存在 12:添加商品失败 13:商铺还在审核中
                 switch (data) {
                     case "1": {
                         alert("添加成功");
@@ -328,8 +338,11 @@
                     case "f4":
                         alert("验证码错误");
                         break;
+                    case "f5":
+                        alert("未加入图片");
+                        break;
                     case "f10":
-                        alert("未正确找到商店,请正确操作");
+                        alert("图片上传失败");
                         break;
                     case "f11":
                         alert("自家此商品已经存在");
@@ -405,14 +418,14 @@
     $("#authCode").blur(function () {
         var $node = $(this);
         var authCode = $node.val();
-        $.get("isAuthCode.do?authCode=" + authCode, function (data) {
+        $.get("../isAuthCode.do?authCode=" + authCode, function (data) {
             $node.addClass(data ? "alert-success" : "alert-danger");
         })
     })
     $("#authCode").keyup(function () {
         var $node = $(this);
         var authCode = $node.val();
-        $.get("isAuthCode.do?authCode=" + authCode, function (data) {
+        $.get("../isAuthCode.do?authCode=" + authCode, function (data) {
             $node.removeClass("alert-success");
             $node.removeClass("alert-danger");
             $node.addClass(data ? "alert-success" : "alert-danger");

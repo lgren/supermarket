@@ -172,6 +172,7 @@ public class ShiroConfiguration {
         map.put("/img/**", "anon");
         map.put("/js/**", "anon");
         map.put("/css/**", "anon");
+        map.put("/webjars/**", "anon");
         map.put("/toIndex", "anon");
         map.put("/toRegistration", "anon");
         map.put("/registration.do", "anon");

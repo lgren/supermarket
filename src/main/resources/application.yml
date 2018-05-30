@@ -32,7 +32,6 @@ spring:
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 #   合并多个DruidDataSource的监控数据
     useGlobalDataSourceStat: true
-
   redis:
     database: 1
     host: localhost
@@ -63,3 +62,15 @@ spring:
 
 mybatis:
   mapper-locations: classpath:com/lgren/mapper/*.xml
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
+#自己设置的一些配置
+com:
+  lgren:
+    uploadPath: /fileUpload/
+    downloadPath: /fileDownload/

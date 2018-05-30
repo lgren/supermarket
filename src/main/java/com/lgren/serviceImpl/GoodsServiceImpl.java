@@ -1,26 +1,41 @@
 package com.lgren.serviceImpl;
 
-import com.lgren.dao.*;
-import com.lgren.exception.SelectException;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.lgren.dao.CartGoodsMapper;
+import com.lgren.dao.CollectGoodsMapper;
+import com.lgren.dao.GoodsMapper;
+import com.lgren.dao.OrderMapper;
+import com.lgren.pojo.dto.ShopDTO;
 import com.lgren.pojo.po.Goods;
-import com.lgren.pojo.po.Order;
-import com.lgren.service.CartGoodsService;
+import com.lgren.pojo.po.Shop;
+import com.lgren.pojo.vo.GoodsVO;
 import com.lgren.service.GoodsService;
+import com.lgren.service.ShopService;
+import com.lgren.service.WarehouseService;
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
+    @Autowired
+    private Mapper mapper;
     @Autowired
     private GoodsMapper goodsMapper;
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private CartGoodsMapper cartGoodsService;
-    @Autowired
     private CollectGoodsMapper collectGoodsMapper;
+    @Autowired
+    private ShopService shopService;
+    @Autowired
+    private WarehouseService warehouseService;
+    @Autowired
+    private CartGoodsMapper cartGoodsService;
 
 
     @Override
@@ -54,6 +69,17 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public PageInfo<GoodsVO> selectAllPageInfo(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Goods> goodsList = goodsMapper.selectAll();
+        PageInfo<Goods> goodsPageInfo = new PageInfo<>(goodsList);
+        List<GoodsVO> goodsVOList = goodsList.stream().map(goods -> getGoodsVO(goods)).collect(Collectors.toList());
+        PageInfo goodsVOPageInfo = goodsPageInfo;
+        goodsVOPageInfo.setList(goodsVOList);
+        return goodsVOPageInfo;
+    }
+
+    @Override
     public int deleteByPrimaryKey(Long goodsId) {
         return goodsMapper.deleteByPrimaryKey(goodsId);
     }
@@ -81,5 +107,19 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public int updateByPrimaryKey(Goods record) {
         return goodsMapper.updateByPrimaryKey(record);
+    }
+
+    public GoodsVO getGoodsVO(Goods goods) {
+        if (goods == null) {
+            return null;
+        }
+        Shop shop = shopService.selectByPrimaryKey(goods.getShopId());
+        GoodsVO goodsVO = mapper.map(goods,GoodsVO.class);
+        if (shop != null) {
+            goodsVO.setShopDTO(mapper.map(shop,ShopDTO.class));
+        }
+        goodsVO.setDiscount(goodsVO.getDiscount()*10);
+        goodsVO.setNumber(warehouseService.getWarehouseByShopIdAndGoodsId(shop.getShopId(),goods.getGoodsId()).getNumber());
+        return goodsVO;
     }
 }

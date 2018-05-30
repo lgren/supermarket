@@ -1,5 +1,7 @@
 package com.lgren.action.user.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,10 +26,12 @@ public class AddGoodsDTO {
 
     private String authCode;
 
+    private MultipartFile image;
+
     public AddGoodsDTO() {
     }
 
-    public AddGoodsDTO(Long goodsId, Long shopId, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number, String authCode) {
+    public AddGoodsDTO(Long goodsId, Long shopId, String imageUrl, String name, Integer type, Double price, Double discount, Date showTime, Integer number, String authCode, MultipartFile image) {
 
         this.goodsId = goodsId;
         this.shopId = shopId;
@@ -39,6 +43,7 @@ public class AddGoodsDTO {
         this.showTime = showTime;
         this.number = number;
         this.authCode = authCode;
+        this.image = image;
     }
 
     @Override
@@ -54,6 +59,7 @@ public class AddGoodsDTO {
                 ", showTime=" + showTime +
                 ", number=" + number +
                 ", authCode='" + authCode + '\'' +
+                ", image=" + image +
                 '}';
     }
 
@@ -71,13 +77,14 @@ public class AddGoodsDTO {
                 Objects.equals(discount, that.discount) &&
                 Objects.equals(showTime, that.showTime) &&
                 Objects.equals(number, that.number) &&
-                Objects.equals(authCode, that.authCode);
+                Objects.equals(authCode, that.authCode) &&
+                Objects.equals(image, that.image);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(goodsId, shopId, imageUrl, name, type, price, discount, showTime, number, authCode);
+        return Objects.hash(goodsId, shopId, imageUrl, name, type, price, discount, showTime, number, authCode, image);
     }
 
     public Long getGoodsId() {
@@ -159,5 +166,13 @@ public class AddGoodsDTO {
 
     public void setAuthCode(String authCode) {
         this.authCode = authCode;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 }

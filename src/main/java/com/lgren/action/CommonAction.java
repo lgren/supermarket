@@ -1,21 +1,31 @@
 package com.lgren.action;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.lgren.dao.GoodsMapper;
+import com.lgren.pojo.po.Goods;
 import com.lgren.util.VerifyCodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class CommonAction {
     private Logger logger = LoggerFactory.getLogger(CommonAction.class);
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private GoodsMapper goodsMapper;
 
     @RequestMapping(value="authCode.do",method=RequestMethod.GET)
     public void getYzm(HttpServletResponse response){
@@ -37,4 +47,23 @@ public class CommonAction {
             logger.error("生成验证码错误"+e.getMessage());
         }
     }
+
+    @ResponseBody
+    @GetMapping(value = "/test")
+    public String test() {
+        PageHelper.startPage(1,2);
+        List<Goods> goodsList = goodsMapper.selectAll();
+        PageInfo<Goods> goodsPageInfo = new PageInfo<>(goodsList);
+        return "test";
+    }
+
+
+
+
+
+
+
+
+
+
 }
