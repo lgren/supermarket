@@ -30,6 +30,11 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    public List<Shop> selectFind(String content) {
+        return shopMapper.selectFind(content);
+    }
+
+    @Override
     public int deleteByPrimaryKey(Long shopId) {
         return shopMapper.deleteByPrimaryKey(shopId);
     }

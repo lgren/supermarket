@@ -23,6 +23,9 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List"/> from tb_goods
   </select>
+  <select id="selectFind" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from tb_goods where name like concat(concat("%",#{content，jdbcType=CHAR}),"%")
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />

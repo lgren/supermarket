@@ -80,6 +80,17 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public PageInfo<GoodsVO> selectFindInfo(String content, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        List<Goods> goodsList = goodsMapper.selectFind(content);
+        PageInfo<Goods> goodsPageInfo = new PageInfo<>(goodsList);
+        List<GoodsVO> goodsVOList = goodsList.stream().map(goods -> getGoodsVO(goods)).collect(Collectors.toList());
+        PageInfo goodsVOPageInfo = goodsPageInfo;
+        goodsVOPageInfo.setList(goodsVOList);
+        return goodsVOPageInfo;
+    }
+
+    @Override
     public int deleteByPrimaryKey(Long goodsId) {
         return goodsMapper.deleteByPrimaryKey(goodsId);
     }

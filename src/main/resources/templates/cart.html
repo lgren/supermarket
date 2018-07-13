@@ -1,83 +1,114 @@
 <!DOCTYPE html>
 <html id="htmlR" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>两个人商城</title>
-    <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    <style type="text/css" rel="stylesheet">
-        .col-sm-3 > div, .col-sm-3 > form {
-            border: black 1px solid;
-            margin-bottom: 10px;
-        }
-        /* 需要在 bootstrap.css 之后调用 */
-        /* Fuck 15px for iPhone Start */
-        .row {
-          margin: 0;
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>两个人商城</title>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/js/layer.js"></script>
+  <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <style type="text/css" rel="stylesheet">
+    .col-sm-3 > div, .col-sm-3 > form {
+      border: black 1px solid;
+      margin-bottom: 10px;
+    }
 
-        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
-          padding: 0;
-        }
-        /* Fuck 15px for iPhone Over */
-    </style>
+    #show1 img {
+      width: 110px;
+    }
+
+    #show1 form {
+      background-color: #FEF8E4;
+      margin-bottom: 10px;
+      padding: 5px;
+      outline: 1px #000000 solid;
+    }
+
+    /* 需要在 bootstrap.css 之后调用 */
+    /* Fuck 15px for iPhone Start */
+    .row {
+      margin: 0;
+    }
+
+    .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+      padding: 0;
+    }
+
+    /* Fuck 15px for iPhone Over */
+  </style>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12" style="text-align: center"><h1>这是购物车</h1></div>
-        <div class="row">
-            <div shiro:user="" class="col-sm-6" style="text-align: center">
-                <h4>看到这个说明你是个有身份的人</h4>
-                <div>这是你的信息:<span shiro:principal=""></span></div>
-                <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-                <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-            </div>
-            <div shiro:guest="" class="col-sm-6" style="text-align: center">
-                <h4>看到这个说明你是个游客</h4></div>
-            <div id="show" class="col-sm-6" style="text-align: center">
-                <a href="toIndex">前往主页</a><br/>
-                <a shiro:guest="" href="toRegistration">注册界面</a>
-                <a shiro:guest="" href="toLogin">登陆界面</a><br/><br/>
-                <a shiro:user="" href="toCollect">我的收藏</a><br/>
-                <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-                <a shiro:user="" href="toUser">个人中心</a><br/>
-                <a href="toSeller">卖家中心</a><br/>
-                <a href="logout">注销</a>
-            </div>
-        </div>
-        <div id="show1" class="col-sm-3" style="background-color: #bff7ff">
-            <form th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
-                <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">前往</a><br/>
-                <!--隐藏域goodsId-->
-                <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
-                <!--隐藏域shopId-->
-                <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
-                <span>确认选中:</span><input type="checkbox"/><br/>
-                <span>商品名:</span><span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span><br/>
-                <span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>
-                <span>图片:</span><span th:text="${cartGoodsVO.getGoodsDTO().getImageUrl()}"></span><br/>
-                <span>原价:</span><span th:text="${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
-                <span>折扣价:</span><span
-                    th:text="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
-                <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" id="number" type="number" min="1"/><br/>
-                <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
-            </form>
-        </div>
-        <div id="show2" class="col-sm-3" style="background-color: #85c5ff">
-            <button type="button" onclick="pay()">前往支付</button>
-        </div>
-        <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-        <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
+<div class="container">
+  <div class="row">
+    <div shiro:user="" style="text-align: center" class="col-xs-2">
+      <span>已登录</span>
+      <a href="logout">注销</a>
     </div>
-    <div class="row">
-        <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-        <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-        <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-        <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
+    <div shiro:guest="" class="col-xs-3" style="text-align: left">
+      <span>未登录</span><br/>
+      <a shiro:guest="" href="toLogin">登陆</a>
+      <a shiro:guest="" href="toRegistration">注册</a>
     </div>
+    <div class="col-xs-9" style="text-align: right">
+      <a href="toIndex">主页</a>
+      <a shiro:user="" href="toCart">购物车</a>
+      <a shiro:user="" href="toCollect">我的收藏</a>
+      <a shiro:user="" href="toUser">个人中心</a>
+      <br/>
+      <a shiro:hasRole="seller" href="toMyShop">我的店铺</a>
+      <a style="margin-right: 4px;"  href="toSeller">卖家中心</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>购物车</h1></div>
+    <div id="show1" class="col-sm-12" style="    height: 300px;background-color: #f5f5f5;">
+      <span>已选商品（不含运费）:</span>
+      <span id="allMoney" style="color: #EC5328">￥0</span>
+      <button style="background-color: #EC5328;color: #FFFFFF" class="btn btn-default" onclick="pay()">结算</button>
+      <form class="row" th:each="cartGoodsVO : ${cart.getCartGoodsVOList()}">
+        <div class="col-sm-1">
+          <!--隐藏域goodsId-->
+          <input th:value="${cartGoodsVO.getGoodsDTO().getGoodsId()}" id="goodsId" type="hidden"/>
+          <!--隐藏域shopId-->
+          <input th:value="${cartGoodsVO.getGoodsDTO().getShopId()}" id="shopId" type="hidden"/>
+          <input type="checkbox" onchange="selectGoods()"/><br/>
+        </div>
+        <div class="col-sm-2">
+          <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">
+            <img th:src="${cartGoodsVO.getGoodsDTO().getImageUrl()}"/>
+          </a>
+        </div>
+        <div class="col-sm-1">
+          <a th:href="@{'toGoods/' + ${cartGoodsVO.getGoodsDTO().getGoodsId()}}">
+            <span th:text="${cartGoodsVO.getGoodsDTO().getName()}"></span>
+          </a>
+        </div>
+        <div class="col-sm-1 col-sm-offset-1" style="background-color: #F5F5F5">
+          <span>原价:</span>
+          <del>
+            <span style="color: #9C9C9C" th:text="'￥'+${cartGoodsVO.getGoodsDTO().getPrice()}"></span><br/>
+          </del>
+          <span>现价:</span>
+          <span
+              th:text="'￥'+${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"></span><br/>
+          <input class="discountMoney" type="hidden"
+                 th:value="${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount(),0,2)}"/><br/>
+        </div>
+        <div class="col-sm-1 col-sm-offset-1">
+          <span>数量:</span><input th:value="${cartGoodsVO.getNumber()}" class="number" id="number" type="number" min="1"/><br/>
+        </div>
+        <div class="col-sm-1 col-sm-offset-1">
+          <span>金额：</span><br/>
+          <span id="allMoneyOne" th:text="'￥'+${#numbers.formatDecimal(cartGoodsVO.getGoodsDTO().getPrice()*cartGoodsVO.getGoodsDTO().getDiscount()*cartGoodsVO.getNumber(),0,2)}"></span><br/>
+        </div>
+        <div class="col-sm-1 col-sm-offset-1">
+          <a href="javascript:;" th:onclick="'deleteCartGoods('+${cartGoodsVO.getCartGoodsId()}+')'">移除</a>
+        </div>
+        <!--<span>商品类型:</span><span th:text="${cartGoodsVO.getGoodsDTO().getDiscount()}"></span><br/>-->
+      </form>
+    </div>
+  </div>
 </div>
 </body>
 <script src="/util/myUtils.js"></script>
@@ -90,7 +121,7 @@
             url: "cartGoodsDelete.do/" + cartGoodsId,
             type: "delete",
             success: function (data) {
-                data == 0 ? alert("删除失败") : alert("删除成功");
+                data == 0 ? layer.msg("删除失败") : layer.msg("删除成功");
                 window.location.reload();
             },
             error: function (data) {
@@ -99,12 +130,37 @@
         })
     }
 
+    function selectGoods() {
+        var allMoney = 0;
+        var $divs = $("#show1 form");
+        $.each($divs, function (k) {
+            if ($($($divs[k])[0]).find("input[type=checkbox]")[0].checked) {
+                allMoney += $($($divs[k])[0]).find("#number").val() * $($($divs[k])[0]).find(".discountMoney").val();
+            }
+        })
+        $("#allMoney").html("￥" + allMoney);
+    }
+
+    $(".number").keyup(function () {
+        var $node = $(this).parent().parent();
+        var allMoney = $node.find(".discountMoney").val() * $node.find(".number").val();
+        $node.find("#allMoneyOne").html("￥"+allMoney);
+        selectGoods();
+    })
+
+    $(".number").change(function () {
+        var $node = $(this).parent().parent();
+        var allMoney = $node.find(".discountMoney").val() * $node.find(".number").val();
+        $node.find("#allMoneyOne").html("￥"+allMoney);
+        selectGoods();
+    })
+
     function pay() {
         var cartVO = [[${cart}]];
         var cartGoodsVOList = [];
         var $divs = $("#show1 form");
         $.each($divs, function (k) {
-            if ($($divs[k])[0][2].checked) {
+            if ($($($divs[k])[0]).find("input[type=checkbox]")[0].checked) {
                 var cartGoodsVO = cartVO.cartGoodsVOList[k];
                 cartGoodsVO.number = $($divs[k]).find("#number").val();
                 cartGoodsVOList.push(cartGoodsVO);
@@ -112,7 +168,7 @@
         })
         cartVO.cartGoodsVOList = cartGoodsVOList;
         if (1 > cartGoodsVOList.length) {
-            alert("未选中任何商品");
+            layer.msg("未选中任何商品");
             return null;
         }
         doFormRequest("toPay", "post", JSON.stringify(cartVO), "list");

@@ -17,6 +17,8 @@ public interface GoodsService {
 
     PageInfo<GoodsVO> selectAllPageInfo(Integer pageNum, Integer pageSize);
 
+    PageInfo<GoodsVO> selectFindInfo(String content,Integer pageNum, Integer pageSize);
+
     int deleteByPrimaryKey(Long goodsId);
 
     int insert(Goods record);

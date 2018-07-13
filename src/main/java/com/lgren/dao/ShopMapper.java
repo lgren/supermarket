@@ -15,6 +15,8 @@ public interface ShopMapper {
 
     List<Shop> selectAll();
 
+    List<Shop> selectFind(String content);
+
     int deleteByPrimaryKey(Long shopId);
 
     int insert(Shop record);

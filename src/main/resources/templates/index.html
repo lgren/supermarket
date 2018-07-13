@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>两个人商城</title>
   <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/js/layer.js"></script>
   <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
   <script src="/util/myUtils.js"></script>
-  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
   <script src="/js/bootstrap-paginator.min.js"></script>
+  <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
   <style type="text/css" rel="stylesheet">
     /* 需要在 bootstrap.css 之后调用 */
     .row {
@@ -24,7 +25,7 @@
     }
 
     .goodsDiv {
-      height: 228px;
+      height: 200px;
       padding: 24px 0px;
       margin: 0px 10px;
     }
@@ -33,11 +34,6 @@
       opacity: 0.7;
       outline: solid #FF0036 1px;
     }
-
-    /*.goodsDiv > a > div:hover {
-      opacity: 0.7;
-      outline: solid #FF0036 1px;
-    }*/
 
     .goodsImg {
       width: 90%;
@@ -51,81 +47,90 @@
     #show1 a:hover, #show2 a:hover {
       text-decoration: none;
     }
-
-    /*.col-sm-3 > div {
-      border: black 1px solid;
-      margin-bottom: 10px;
-    }*/
   </style>
 </head>
 <body>
 <div class="container">
   <div class="row">
-    <div class="col-sm-12" style="text-align: center"><h1>这是主页</h1></div>
-    <div class="row">
-      <div shiro:user="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个有身份的人</h4>
-        <div>这是你的信息:<span shiro:principal=""></span></div>
-        <div shiro:hasRole="seller"><span>你不仅是个有身份的人,还是个开了个店的人</span></div>
-        <div shiro:hasRole="buyer"><span>你不仅是个有身份的人,还是个......的人</span></div>
-      </div>
-      <div shiro:guest="" class="col-sm-6" style="text-align: center">
-        <h4>看到这个说明你是个游客</h4></div>
-      <div id="show" class="col-sm-6" style="text-align: center">
-        <a href="toIndex">前往主页</a><br/>
-        <a shiro:guest="" href="toRegistration">注册界面</a><br/>
-        <a shiro:guest="" href="toLogin">登陆界面</a><br/>
-        <a shiro:user="" href="toCart">购物车</a><br/>
-        <a shiro:user="" href="toCollect">我的收藏</a><br/>
-        <a shiro:user="" href="toUser">个人中心</a><br/>
-        <a shiro:hasRole="seller" href="toMyShop">我的店铺</a><br/>
-        <a href="toSeller">卖家中心</a><br/>
-        <a shiro:user="" href="logout">注销</a>
-      </div>
+    <div shiro:user="" style="text-align: center" class="col-xs-2">
+      <span>已登录</span>
+      <a href="logout">注销</a>
     </div>
-    <div id="show1" class="col-sm-12" style="background-color: #fff">
-      <div class="row">
-        <div class="text-center col-sm-3 col-xs-6" th:each="good : ${goods.getList()}">
-          <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">
+    <div shiro:guest="" class="col-xs-3" style="text-align: left">
+      <span>未登录</span><br/>
+      <a shiro:guest="" href="toLogin">登陆</a>
+      <a shiro:guest="" href="toRegistration">注册</a>
+    </div>
+    <div class="col-xs-9" style="text-align: right">
+      <a href="toIndex">主页</a>
+      <a shiro:user="" href="toCart">购物车</a>
+      <a shiro:user="" href="toCollect">我的收藏</a>
+      <a shiro:user="" href="toUser">个人中心</a>
+      <br/>
+      <a shiro:hasRole="seller" href="toMyShop">我的店铺</a>
+      <a style="margin-right: 4px;"  href="toSeller">卖家中心</a>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-sm-12" style="text-align: center"><h1>主页</h1></div>
+    <div class="row">
+      <div style="margin-bottom: 20px" class="col-sm-12">
+        <form class="form-inline" action="/toIndex" method="get">
+          <div class="form-group col-sm-4">
+            <div class="input-group">
+              <select class="form-control" name="findType" id="findType">
+                <option value="goods">商品</option>
+                <option value="shop">店铺</option>
+              </select>
+              <div class="input-group-addon">:</div>
+              <input type="text" th:value="${content}" class="form-control" name="content" id="content"/>
+            </div>
+          </div>
+          <div class="col-sm-2"><input type="submit" class="btn btn-default" value="查询"/></div>
+        </form>
+      </div>
+      <div id="show1" class="col-sm-9" style="background-color: #f5f5f5;">
+        <div class="row" style="height: 456px">
+          <div class="text-center col-sm-4 col-xs-6" th:each="good : ${goods.getList()}">
+            <a th:href="@{'toGoods/' + ${good.getGoodsId()}}">
+              <div class="center-block goodsDiv">
+                <div><img class="goodsImg" th:src="${good.getImageUrl()}"/></div>
+                <div style="position: relative;bottom: -20px;">
+                  <span th:text="${good.getName()}"></span><br/>
+                  <span class="price"
+                        th:text="'￥' + ${#numbers.formatDecimal(good.getPrice()*good.getDiscount()/10,0,2)}"></span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="row col-sm-12 text-center">
+          <ul id='goodsPageNumber'></ul>
+        </div>
+      </div>
+
+      <div id="show2" class="col-sm-3 row" style="background-color: #ebebeb">
+        <div class="text-center col-sm-12" th:each="shop : ${shops.getList()}">
+          <a th:href="@{'toShop/' + ${shop.getShopId()}}">
             <div class="center-block goodsDiv">
-              <img class="goodsImg" th:src="${good.getImageUrl()}"/><br/>
-              <span th:text="${good.getName()}"></span><br/>
-              <!--<span>商品类型:</span><span th:text="${good.getDiscount()}"></span><br/>-->
-              <!--<span>原价:</span><span th:text="${good.getPrice()}"></span><br/>-->
-              <span class="price" th:text="'￥' + ${#numbers.formatDecimal(good.getPrice()*good.getType(),0,2)}"></span>
+              <div><img class="goodsImg" src="img/彼岸图网/58.jpg"/></div>
+              <div>
+                <span th:text="${shop.getName()}"></span><br/>
+                <span th:text="${shop.getDescription()}"></span>
+              </div>
             </div>
           </a>
         </div>
       </div>
-      <div class="row col-sm-12 text-center">
-        <ul id='goodsPageNumber'></ul>
-      </div>
-
     </div>
-    <div id="show2" class="col-sm-3 row" style="background-color: #85c5ff">
-      <div th:each="shop : ${shops.getList()}">
-        <div>
-          <a th:href="@{'toShop/' + ${shop.getShopId()}}">前往</a><br/>
-          <span>店铺名:</span><span th:text="${shop.getName()}"></span><br/>
-          <span>店铺描述:</span><span th:text="${shop.getDescription()}"></span><br/>
-        </div>
-      </div>
-    </div>
-    <div id="show3" class="col-sm-3" style="background-color: #59aaff">test3</div>
-    <div id="show4" class="col-sm-3" style="background-color: #3176ff">test4</div>
   </div>
-  <div class="row">
-    <div id="show5" class="col-sm-3" style="background-color: #d5ffbf">test5</div>
-    <div id="show6" class="col-sm-3" style="background-color: #bcff84">test6</div>
-    <div id="show7" class="col-sm-3" style="background-color: #93ff49">test7</div>
-    <div id="show8" class="col-sm-3" style="background-color: #08ff0d">test8</div>
-  </div>
-  <!--<button style="height: 100px;width: 200px" onclick="doFormRequest('toIndex','get',null)">doFormRequest</button>
-  <button style="height: 100px;width: 200px" onclick="submit()">submit</button>
-  <button style="height: 100px;width: 200px" onclick="ajax1()">ajax提交</button>-->
 </div>
 <script type="text/javascript" th:inline="Javascript">
+    //<![CDATA[
     $(function () {
+        $("#findType").val([[${findType}]]);
         var pageInfo = [[${goods}]];
         var element = $('#goodsPageNumber');
         var options = {
@@ -135,7 +140,8 @@
             totalPages: [[${goods.pages}]],//总页数
             size: 'small',//大小
             pageUrl: function (type, page, current) {//访问连接
-                return "toIndex?pageNum=" + page;
+                // return "toIndex?pageNum=" + page;
+                return "toIndex?pageNum=" + page + "&findType=goods" + "&content=" + $("#content").val();
             },
             itemTexts: function (type, page, current) { //样式文字设置
                 switch (type) {
@@ -181,6 +187,8 @@
         var test = "{'cartGoodsVOList':[{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':2,'cartGoodsTime':null,'goodsDTO':{'discount':1.0,'goodsId':2,'imageUrl':null,'name':'\u5A03\u54C8\u54C8','price':4.0,'shopId':1,'showTime':null,'type':1},'number':1,'price':3.0},{'cartDTO':{'cartGoods':1,'cartId':1,'userId':1},'cartGoodsId':11,'cartGoodsTime':null,'goodsDTO':{'discount':0.8,'goodsId':1,'imageUrl':'','name':'\u53EF\u4E50','price':3.4,'shopId':1,'showTime':null,'type':1},'number':1,'price':null}],'cartId':1,'userDTO':{'avatarUrl':null,'birthday':'1983-04-22T00:00:00.000+08:00','email':'73625@qq.com','gender':1,'homeaddress':'\u56DB\u5DDD\u6210\u90FD','liveaddress':'\u5E7F\u4E1C\u6DF1\u5733','money':4000.0,'nickname':'\u4E24\u4E2A\u4EBA','password':'user','paymentPassword':'888888','phone':'17263527163','realName':'\u9646\u9E3F\u5B87','userId':1,'username':'user'}}";
         console.log(doFormRequest("test.do", "put", test, null, null));
     }
+
+    //]]>
 </script>
 </body>
 </html>

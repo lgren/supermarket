@@ -15,6 +15,8 @@ public interface GoodsMapper {
 
     List<Goods> selectAll();
 
+    List<Goods> selectFind(String content);
+
     int deleteByPrimaryKey(Long goodsId);
 
     int insert(Goods record);

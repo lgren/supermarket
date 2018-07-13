@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface UserMapper {
+//    @Cacheable(value = "user", key = "'User:'+#user_id")
     @Select("select user_id from tb_user where user_id=#{param1,jdbcType=BIGINT} and password = #{param2,jdbcType=CHAR}")
     Long isByUserIdAndPassword(Long userId, String password);
 

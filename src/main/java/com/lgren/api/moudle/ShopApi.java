@@ -37,6 +37,14 @@ public class ShopApi {//OK
                 .collect(Collectors.toList());
         return shopVOList;
     }
+    //模糊查询所有VO
+    public List<ShopVO> getFindShopVO(String content) {
+        List<Shop> shopList = shopService.selectFind(content);
+        List<ShopVO> shopVOList = shopList.stream()
+                .map(shop -> getShopVO(shop))
+                .collect(Collectors.toList());
+        return shopVOList;
+    }
     //查询根据userId查询ShopVOList
     public List<ShopVO> getShopVOListByUserId(Long userId) {
         List<Shop> shopList = shopService.getShopByUserId(userId);

@@ -180,6 +180,8 @@ public class ShiroConfiguration {
         map.put("/toShop/**", "anon");
         map.put("/toLogin", "anon");
         map.put("/toSeller", "anon");
+        map.put("/addCartGoods.do", "anon");
+        map.put("/addCollectGoods.do", "anon");
         map.put("/userLogin.do", "anon");
         map.put("/**/authCode.do", "anon");
         map.put("/**/isAuthCode.do", "anon");

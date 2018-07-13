@@ -43,7 +43,6 @@ public class ToHtmlAction {
     private CartGoodsMapper cartGoodsMapper;
 
 
-
     @Autowired
     private ShopApi shopApi;
     @Autowired
@@ -66,16 +65,43 @@ public class ToHtmlAction {
     private HttpSession session;
     //总结  aop切到userId
 
-    @GetMapping(value = {"/toIndex","/"})
+    @GetMapping(value = {"/toIndex", "/"})
     public String toIndex(Map<String, Object> map,
-                          @RequestParam(value = "pageNum",defaultValue = "1") Integer pageNum,
-                          @RequestParam(value = "pageSize",defaultValue = "4") Integer pageSize) {
-        PageInfo<GoodsVO> goodsPageInfo = goodsService.selectAllPageInfo(pageNum,pageSize);
+                          @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                          @RequestParam(value = "pageSize", defaultValue = "4") Integer pageSize) {
+        PageInfo<GoodsVO> goodsPageInfo = goodsService.selectAllPageInfo(pageNum, pageSize);
         map.put("goods", goodsPageInfo);
 
-        PageHelper.startPage(1,2);
+        PageHelper.startPage(1, 2);
         PageInfo<ShopVO> shopsPageInfo = new PageInfo<>(shopApi.getAllShopVO());
         map.put("shops", shopsPageInfo);
+        map.put("content", "");
+        map.put("findType", "goods");
+        return "index";
+    }
+
+    @GetMapping(value = {"/toIndex", "/"}, params = {"findType","content"})
+    public String toIndexFind(Map<String, Object> map,
+                              @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                              @RequestParam(value = "pageSize", defaultValue = "4") Integer pageSize,
+                              @RequestParam(value = "findType") String findType,
+                              @RequestParam(value = "content") String content
+                              ) {
+        PageInfo<GoodsVO> goodsPageInfo = new PageInfo<GoodsVO>();
+        PageInfo<ShopVO> shopsPageInfo = new PageInfo<ShopVO>();
+        if ("goods".equals(findType)) {
+            goodsPageInfo = goodsService.selectFindInfo(content,pageNum, pageSize);
+            PageHelper.startPage(1, 2);
+            shopsPageInfo = new PageInfo<>(shopApi.getAllShopVO());
+        } else {
+            goodsPageInfo = goodsService.selectAllPageInfo(pageNum, pageSize);
+            PageHelper.startPage(1, 2);
+            shopsPageInfo = new PageInfo<>(shopApi.getFindShopVO(content));
+        }
+        map.put("goods", goodsPageInfo);
+        map.put("shops", shopsPageInfo);
+        map.put("content", content);
+        map.put("findType", findType);
         return "index";
     }
 
@@ -86,7 +112,7 @@ public class ToHtmlAction {
 
     @GetMapping(value = "/toLogin")
     public String toLogin(Map<String, Object> map) {
-        map.put("requestURL",request.getHeader("Referer"));
+        map.put("requestURL", request.getHeader("Referer"));
         return "login";
     }
 
@@ -96,7 +122,7 @@ public class ToHtmlAction {
         if (userId == null) {
             return "login";
         }
-        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId,0);
+        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId, 0);
         map.put("userId", userId);
         map.put("cart", cartVO);
         return "cart";
@@ -159,12 +185,13 @@ public class ToHtmlAction {
         if (shopVOList == null) {
             shopVOList.add(new ShopVO());
         }
-        map.put("myShopVOList",shopVOList);
+        map.put("myShopVOList", shopVOList);
         return "myShop";
     }
 
     /**
      * 处理异常 10:找不到商店 11:查询商品异常
+     *
      * @param map
      * @param shopId
      * @return
@@ -180,8 +207,10 @@ public class ToHtmlAction {
             map.put("goodsVOList", userHtmlService.getGoodsByShopId(shopId));
         } catch (RuntimeException re) {
             switch (re.getMessage()) {
-                case "10" : return "notFindShop";
-                default: break;
+                case "10":
+                    return "notFindShop";
+                default:
+                    break;
             }
         }
         return "shop";
@@ -189,6 +218,7 @@ public class ToHtmlAction {
 
     /**
      * 处理异常 10:找不到商店 11:查询商品异常 12:该用户与商铺负责人不匹配
+     *
      * @param map
      * @param shopId
      * @return
@@ -201,13 +231,16 @@ public class ToHtmlAction {
         }
         map.put("shopVO", shopVO);
         try {
-            List<GoodsVO> goodsVOList = userHtmlService.getGoodsByShopId(shopId,(Long) session.getAttribute("userId"));
+            List<GoodsVO> goodsVOList = userHtmlService.getGoodsByShopId(shopId, (Long) session.getAttribute("userId"));
             map.put("goodsVOList", goodsVOList);
         } catch (RuntimeException re) {
             switch (re.getMessage()) {
-                case "12" : return "redirect:../toMyShop";
-                case "10" : return "notFindShop";
-                default: break;
+                case "12":
+                    return "redirect:../toMyShop";
+                case "10":
+                    return "notFindShop";
+                default:
+                    break;
             }
         }
         return "myShopGoods";
@@ -219,7 +252,6 @@ public class ToHtmlAction {
     }
 
     /**
-     *
      * @param map
      * @param cartVO
      * @param bindingResult
@@ -231,48 +263,49 @@ public class ToHtmlAction {
         if (userId == null) {
             return "login";
         }
-        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId),UserDTO.class);
+        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId), UserDTO.class);
         if (userDTO.getPaymentPassword() == null || userDTO.getPaymentPassword().equals("")) {
             return "redirect:toUser";
         }
         try {
-            Map getOrderReturn = userHtmlService.getOrder(userId,cartVO);
+            Map getOrderReturn = userHtmlService.getOrder(userId, cartVO);
             map.put("all", getOrderReturn.get("all"));
             map.put("orderIdList", getOrderReturn.get("orderIdList"));
-            map.put("cartGoodsIdList", cartVO.getCartGoodsVOList().stream()
-                    .map(cartGoodsVO -> cartGoodsVO.getCartGoodsId()).collect(Collectors.toList()));
-            map.put("requestURL",request.getHeader("Referer"));
+            List<Long> cartIdList = cartVO.getCartGoodsVOList().stream()
+                    .map(cartGoodsVO -> cartGoodsVO.getCartGoodsId()).collect(Collectors.toList());
+            map.put("cartGoodsIdList", cartIdList);
+            map.put("requestURL", request.getHeader("Referer"));
             return "payment";
         } catch (RuntimeException re) {
             /*if (re.getMessage() == "19") {
                 return "redirect:toCart";
             }*/
             re.printStackTrace();
-            map.put("exception" , re.getMessage());
+            map.put("exception", re.getMessage());
             return "notNormal";
         }
     }
 
-    @GetMapping(value = "/toPay",params = {"orderId"})
-    public String toPay(Map map, @RequestParam("orderId") Long orderId){
+    @GetMapping(value = "/toPay", params = {"orderId"})
+    public String toPay(Map map, @RequestParam("orderId") Long orderId) {
         Long userId = (Long) session.getAttribute("userId");
-        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId),UserDTO.class);
+        UserDTO userDTO = mapper.map(userService.selectByPrimaryKey(userId), UserDTO.class);
         if (userDTO.getPaymentPassword() == null) {
             return "user";
         }
         if (userId == null) {
             return "login";
         }
-        OrderDTO orderDTO = mapper.map(orderService.selectByPrimaryKey(orderId),OrderDTO.class);
-        map.put("all",orderDTO.getAmount()*orderDTO.getPrice());
+        OrderDTO orderDTO = mapper.map(orderService.selectByPrimaryKey(orderId), OrderDTO.class);
+        map.put("all", orderDTO.getAmount() * orderDTO.getPrice());
         List<Long> orderIdList = new ArrayList();
         orderIdList.add(orderDTO.getOrderId());
-        map.put("orderIdList",orderIdList);
+        map.put("orderIdList", orderIdList);
         List<Long> cartGoodsIdList = new ArrayList<>();
         Long cartGoodsId = cartGoodsMapper.getCartGoodsByWantPayTime(orderDTO.getOrderTime().getTime());
         cartGoodsIdList.add(cartGoodsId);
-        map.put("cartGoodsIdList",cartGoodsIdList);
-        map.put("requestURL",request.getHeader("Referer"));
+        map.put("cartGoodsIdList", cartGoodsIdList);
+        map.put("requestURL", request.getHeader("Referer"));
         return "payment";
     }
 
@@ -282,7 +315,7 @@ public class ToHtmlAction {
         if (userId == null) {
             return "login";
         }
-        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId,1);
+        CartVO cartVO = cartApi.getCartGoodsByUserIdAndType(userId, 1);
         map.put("userId", userId);
         List<OrderVO> orderVOList = orderApi.getOrderByUserId(userId);
         map.put("orderVOListByUserId", orderVOList);
@@ -294,14 +327,14 @@ public class ToHtmlAction {
     }
 
     @GetMapping(value = "/toMyShopOrder/{shopId}")
-    public String toMyShopOrder(Map<String, Object> map,@PathVariable("shopId") Long shopId) {
+    public String toMyShopOrder(Map<String, Object> map, @PathVariable("shopId") Long shopId) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "login";
         }
         List<Shop> shopList = shopService.getShopByUserId(userId);
         if (shopList != null) {
-            if(shopList.stream().filter(shop -> shop.getUserId() == userId).collect(Collectors.toList()) == null){
+            if (shopList.stream().filter(shop -> shop.getUserId() == userId).collect(Collectors.toList()) == null) {
                 return "notFindShop";
             }
         }
@@ -321,7 +354,7 @@ public class ToHtmlAction {
         if (userId == null) {
             return "login";
         }
-        map.put("shopId",shopId);
+        map.put("shopId", shopId);
         return "recharge";
     }
 
@@ -329,7 +362,6 @@ public class ToHtmlAction {
     public String toSeller() {
         return "seller";
     }
-
 
 
 }
